@@ -126,7 +126,7 @@ except pkg_resources.DistributionNotFound:
     # TODO: 2015-09-05: fails since last month: workaround like this:
     # (Maybe a better solution here: https://github.com/google/oauth2client/commit/a39aa25091946e33b17b52cbe19b5b88d79a28b0)
     g_dict = {}
-    exec(open("../../ftpsync/__init__.py").read(), g_dict)
+    exec(open("../../stressor/__init__.py").read(), g_dict)
     release = g_dict["__version__"]
     del g_dict
     print('Using workaround (direct read): %s' % release)
