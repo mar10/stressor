@@ -1,0 +1,37 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+black = "==19.10b0"
+cheroot = "*"
+flake8 = "*" #"~=3.5"
+flake8-bugbear = "*" # "~=18.2"
+flake8-quotes = "*" # "~=1.0"
+isort = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+recommonmark = "*"
+setuptools = "~=40.2"
+Sphinx = "~=2.2"
+sphinx_rtd_theme = "*"
+tox = "~=3.2"
+twine = "~=1.11"
+wheel = "*"
+wsgidav = "*"
+stressor = {path = ".",editable = true}
+
+[packages]
+fabulist = "*"
+PyYAML = "~=5.2"
+lxml = "~=4.4"
+requests = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+# TODO: remove this when black releases a real version
+allow_prereleases = true

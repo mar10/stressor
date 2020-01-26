@@ -1,0 +1,54 @@
+file_version: stressor#0
+
+run_config:
+  name: Test Scenario 1
+
+  # Initial context value definitions.
+  context:
+    verbose: 4
+    base_url: http://127.0.0.1:8082
+    timeout: 1
+
+  # Define how long
+  sessions:
+    users: $load(users.yaml)
+    count: 3
+    threads_per_process: 5
+    duration: 5
+
+  # Define what actions should be performed by every session
+  scenario:
+    - sequence: init
+    - sequence: main
+      repeat: 3
+    - sequence: end
+
+
+# List of named action sequences. Used as building blocks for scenarios
+sequences:
+  # 'init' is the reserved name for the set-up sequence.
+  init:
+    # Log-in
+    - activity: GetRequest
+      url: login
+      params:
+        auth: [user.name, user.password]
+
+  # Other sections can have arbitrary names and are excuted in order of appearance
+  main:
+    - activity: PutRequest
+      url: $(base_url)/test_file.txt
+      data: "Test"
+      assert_max_time: 0.5
+
+    - activity: $sleep(0.3)
+
+    - activity: GetRequest
+      url: $(base_url)/wsgidav_test_file.txt
+      assert_match: "Test"
+
+
+  # 'end' is the reserved name for the tear-down sequence
+  end:
+    - activity: GetRequest
+      url: $(base_url)/log_out

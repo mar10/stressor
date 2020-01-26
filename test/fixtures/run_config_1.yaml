@@ -1,0 +1,6 @@
+tag: Test-Run fixture
+project: ./project_1
+params:
+  base_url: http://127.0.0.1:8080/my_app
+suites:
+  - load_page

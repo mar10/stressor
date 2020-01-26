@@ -1,0 +1,71 @@
+# wsgidav -r test/fixtures/htdocs --host 127.0.0.1 --port 8082 --auth anonymous
+# See http://wsgidav.readthedocs.io/en/latest/user_guide_configure.html
+
+server: "cheroot"
+host: 127.0.0.1
+port: 8082
+
+provider_mapping:
+    "/": "test/fixtures/htdocs"
+
+# ==============================================================================
+# AUTHENTICATION
+http_authenticator:
+    accept_basic: true
+    accept_digest: true
+    default_to_digest: true
+    trusted_auth_header: null
+    domain_controller: null
+
+# Additional options for SimpleDomainController only:
+simple_dc:
+    # Access control per share.
+    # These routes must match the provider mapping.
+    # NOTE: Provider routes without a matching entry here, are inaccessible.
+    user_mapping:
+        "*": true # default (used for all shares that are not explicitly listed)
+            # "user1":
+            #     password: "abc123"
+            #     # Optional: passed to downstream middleware as environ["wsgidav.auth.roles"]
+            #     roles: ["editor"]
+            # "user2":
+            #     password: "def456"
+            #     password: "qwerty"
+        # "/pub": true  # Pass true to allow anonymous access
+
+
+# ==============================================================================
+# DEBUGGING
+
+#: Set verbosity level (but will be overridden by -v or -q arguments)
+verbose: 3
+
+#: Set logging output format
+#: (see https://docs.python.org/3/library/logging.html#logging.Formatter)
+logger_format: "%(asctime)s.%(msecs)03d - %(levelname)-8s: %(message)s"
+# logger_format: "%(asctime)s.%(msecs)03d - <%(thread)05d> %(name)-27s %(levelname)-8s: %(message)s"
+#logger_format: "%(asctime)s.%(msecs)03d - %(levelname)-8s: %(message)s"
+logger_date_format: "%H:%M:%S"
+
+#: Let ErrorPrinter middleware catch all exceptions to return as 500 Internal Error
+error_printer:
+    catch_all: false
+
+dir_browser:
+    enable: true
+    ignore:
+        - ".DS_Store"  # macOS folder meta data
+        - "Thumbs.db"  # Windows image previews
+        - "._*"  # macOS hidden data files
+    icon: true
+    response_trailer: true
+    show_user: true
+    show_logout: true
+    davmount: false
+    ms_mount: false
+    ms_sharepoint_support: true
+
+property_manager: true
+mutable_live_props:
+    - "{DAV:}getlastmodified"
+lock_manager: true

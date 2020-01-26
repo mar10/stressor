@@ -1,0 +1,4 @@
+[run]
+omit =
+    stressor/stressor_cli.py
+    stressor/cli_common.py

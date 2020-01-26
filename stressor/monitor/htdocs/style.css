@@ -1,0 +1,112 @@
+body {
+  background-color: #eee;
+  margin: 0;
+  padding: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Logo Image */
+
+span.logo {
+  display: inline-block;
+  border-radius: 4px;
+  vertical-align: text-bottom;
+  background-position: 0 0;
+  background-size: 50px 50px;
+  background-repeat: no-repeat;
+  width: 50px;
+  height: 50px;
+  background-image: url(stage_ready.png);
+}
+body.stage-running span.logo {
+  background-image: url(stage_running_ok.png);
+}
+body.stage-running.has-errors span.logo {
+  background-image: url(stage_running_ok.png);
+}
+body.stage-waiting span.logo {
+  background-image: url(stage_done_ok.png);
+}
+body.stage-waiting.has-errors span.logo {
+  background-image: url(stage_done_error.png);
+}
+
+/* Stage Badge  */
+
+span.stage {
+  border: 1px solid gray;
+  border-radius: 4px;
+  box-shadow: 2px 2px 4px #555;
+  vertical-align: super;
+  padding: 2px 8px;
+  font-variant: small-caps;
+  font-size: smaller;
+}
+body.stage-waiting span.stage {
+  color: #555;
+  background-color: #eee;
+}
+body.has-errors span.logo,
+body.has-errors span.stage {
+  border-color: red;
+  box-shadow: 2px 2px 4px #900;
+}
+
+/* Info panes, etc. */
+
+body.has-errors #statusContainer,
+#statusContainer.error {
+  color: red;
+}
+div.info {
+  width: 100%;
+  background-color: white;
+  overflow: auto;
+  padding: 2px 4px;
+}
+#statusBar {
+  width: 100%;
+  text-align: right;
+  color: gray;
+  font-size: small;
+  margin-top: 4px;
+}
+#statusBar a {
+  text-decoration: none;
+  color: gray;
+}
+
+/* */
+
+table.metrics {
+  margin: 0 auto;
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+}
+table.metrics tbody tr:nth-child(odd) {
+  background: #f8f8f8;
+}
+table.metrics tbody tr:hover {
+  background: #eee;
+}
+
+table.metrics th,
+table.metrics td {
+  /* background-color: white; */
+  border: 1px solid #eee;
+  padding: 1px 4px;
+}
+table.metrics td.num {
+  text-align: right;
+}
+table.metrics tr.sum {
+  font-weight: bold;
+}
+table.metrics tr.no-data td {
+  text-align: center;
+  font-weight: lighter;
+  font-style: italic;
+}
+
+/* */

@@ -1,0 +1,83 @@
+file_version: stressor#0
+
+# The run configuration defines how the `sequences` are executed in parallel
+# sessions.
+run_config:
+  name: Test scenario 1
+  details: Some details...
+  # Initial context value definitions.
+  # All used parameters must be listed here in the form:
+  #   parameter_name: default_value
+  # Set `null` value to make it mandatory, i.e. must be passed by caller.
+  context:
+    base_url: http://127.0.0.1:8082
+    # base_url: http://example.com
+    user: {name: "joe", password: "secret", guid: "{1234}"}
+    new_title: "Test title"
+    timeout: 5
+
+  sessions:
+    users: $load(users.yaml)
+    count: 2
+    threads_per_process: 5
+
+  # Define what actions should be performed by every session
+  scenario:
+    - sequence: init
+    - sequence: main
+    - sequence: end
+
+  until: null
+
+# List of named action sequences. Used as building blocks for scenarios
+sequences:
+  # 'init' is the reserved name for the set-up sequence
+  init:
+    # Log-in
+    - activity: PostRequest
+      url: $(base_url)/my-login-service
+      params:
+        name: $(user.name)
+        password: $(user.password)
+        assert_json:
+          status: ok
+          store_json:
+            user_guid: result.guid
+      # Allow unit-test in dry-run mode:
+      mock_result: {"status": "ok", "result": {"guid": "1234"}}
+
+    - activity: Sleep
+      duration: .1
+
+    - activity: $sleep(.1)
+
+    # - activity: $debug()
+
+
+  # Other sections can have arbitrary names and are executed in order of appearance
+  main:
+    - activity: PostRequest
+      # Use `base_url` by default:
+      url: elements/
+      params:
+        title: $(new_title)
+      assert_match: ".*Foo.*"
+      # Allow unit-test in dry-run mode:
+      mock_result: "<html><body>Test-Foo</body></html>"
+
+    - activity: RunScript
+      path: script_1.py
+
+    # - activity: RunScript
+    #   script: |
+    #     from fabulist import Fabulist
+
+    #     fab = Fabulist()
+    #     temp = fab.quote("${verb}")
+
+  # 'end' is the reserved name for the tear-down sequence
+  end:
+    - activity: DeleteRequest
+      url: $(base_url)/my-logout
+      params:
+        guid: $(user.guid)

@@ -1,0 +1,159 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Stressor Monitor</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script
+      defer
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="monitor.js"></script>
+  </head>
+  <body class="stage-ready">
+    <h1>
+      <span class="logo"></span>
+      Stressor Monitor `
+      <span class="name">???</span>
+      `
+      <span class="stage">ready</span>
+    </h1>
+
+    <div id="details" class="info">???</div>
+    <div id="statusContainer" class="info"></div>
+    <!-- Scenario: '<span class="name">???</span>'<br />
+    Details: '...'<br />
+    base_url: '...'<br />
+    Start: xxx, End: yyy -->
+
+    <button type="button" id="btnStop" disabled>Stop Run Manager</button>
+    <button type="button" id="btnRestart" disabled>Restart</button>
+    <button type="button" id="btnSave" disabled>Save Results</button>
+    Update freq.
+    <input
+      type="range"
+      id="pollFreq"
+      name="pollFreq"
+      min="0"
+      max="5"
+      value="3"
+      step="1"
+    />
+
+    <input
+      type="checkbox"
+      name="ignoreSleep"
+      checked="checked"
+      id="cbIgnoreSleep"
+    />
+    <label for="cbIgnoreSleep">Ignore sleep times</label>
+    <hr />
+
+    <h2>Run Status (<span id="sessionCount">3 / 3</span> sessions)</h2>
+
+    <table id="run-metrics" class="metrics">
+      <!-- The colgroup is used by our JS code to copy class names to TDs -->
+      <colgroup>
+        <col class="text" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th rowspan="2">Sequence</th>
+          <th rowspan="2">Activities</th>
+          <th rowspan="2">Errors</th>
+          <th colspan="3">Sequence Time</th>
+          <th colspan="3">Activity Time</th>
+        </tr>
+        <tr>
+          <!-- rowspan -->
+          <!-- rowspan -->
+          <!-- rowspan -->
+          <th>Σ</th>
+          <th>Max.</th>
+          <th>Ø</th>
+          <th>Σ</th>
+          <th>Max.</th>
+          <th>Ø</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="no-data">
+          <td colspan="9">Nothing to display.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Monitored Activities</h2>
+
+    <table id="special-metrics" class="metrics">
+      <!-- The colgroup is used by our JS code to copy class names to TDs -->
+      <colgroup>
+        <col class="text" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="text" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Activity</th>
+          <th>Count</th>
+          <th>Errors</th>
+          <th>Σ</th>
+          <th>Max.</th>
+          <th>Ø</th>
+          <th>Last Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="no-data">
+          <td colspan="7">Use `monitor` option to mark activities.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span id="sessionCount">3 / 3</span> Running Sessions</h2>
+
+    <table id="session-metrics" class="metrics">
+      <!-- The colgroup is used by our JS code to copy class names to TDs -->
+      <colgroup>
+        <col class="num" />
+        <col class="text" />
+        <col class="text" />
+        <col class="num" />
+        <col class="num" />
+        <col class="num" />
+        <col class="text" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ID</th>
+          <th>User</th>
+          <th>Sequences</th>
+          <th>Activities</th>
+          <th>Errors</th>
+          <th>Current Path</th>
+          <!-- <th>Last Error</th> -->
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="statusBar">
+      <a href="https://github.com/mar10/stressor">Stressor</a> &copy; 2020
+      Martin Wendt
+    </div>
+  </body>
+</html>

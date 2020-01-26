@@ -1,0 +1,6 @@
+tag: Test-Run STAGING nightly $(datetime_iso)
+project: ./sample_project
+params:
+  base_url: https://example.com/staging_server/my_app
+suites:
+  - load_page

@@ -1,0 +1,4 @@
+- name: User_1
+  password: secret
+- name: User_2
+  password: guessme
