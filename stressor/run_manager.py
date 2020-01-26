@@ -10,7 +10,6 @@ import webbrowser
 from collections import defaultdict
 
 from stressor.config_manager import ConfigManager
-from stressor.deep_dict import get_dict_attr
 from stressor.monitor.server import Monitor
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User

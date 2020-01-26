@@ -7,8 +7,6 @@ import logging
 import sys
 import types
 import warnings
-from collections import defaultdict
-from pprint import pformat
 
 logger = logging.getLogger("stressor")
 
