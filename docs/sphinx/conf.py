@@ -122,14 +122,15 @@ except pkg_resources.DistributionNotFound:
     print('Has to be available.  Either install the package into your')
     print('development environment or run "setup.py develop" to setup the')
     print('metadata.  A virtualenv is recommended!')
-    # sys.exit(1)
-    # TODO: 2015-09-05: fails since last month: workaround like this:
-    # (Maybe a better solution here: https://github.com/google/oauth2client/commit/a39aa25091946e33b17b52cbe19b5b88d79a28b0)
-    g_dict = {}
-    exec(open("../../stressor/__init__.py").read(), g_dict)
-    release = g_dict["__version__"]
-    del g_dict
-    print('Using workaround (direct read): %s' % release)
+    sys.exit(1)
+    # # TODO: 2015-09-05: fails since last month: workaround like this:
+    # # (Maybe a better solution here: https://github.com/google/oauth2client/commit/a39aa25091946e33b17b52cbe19b5b88d79a28b0)
+    # g_dict = {}
+    # exec(open("../../stressor/_version.py").read(), g_dict)
+    # # exec(open("../../stressor/__init__.py").read(), g_dict)
+    # release = g_dict["__version__"]
+    # del g_dict
+    # print('Using workaround (direct read): %s' % release)
 
 version = '.'.join(release.split('.')[:2])
 

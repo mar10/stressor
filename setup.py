@@ -44,9 +44,9 @@ class SphinxCommand(Command):
         import subprocess
 
         res = subprocess.call(
-            "sphinx-build -b html doc/sphinx doc/sphinx-build", shell=True
+            "sphinx-build -b html docs/sphinx docs/sphinx-build", shell=True
         )
-        outdir = os.path.join("doc", "sphinx-build")
+        outdir = os.path.join("docs", "sphinx-build")
         if res:
             print("ERROR: sphinx-build exited with code {}".format(res))
         else:
@@ -76,7 +76,7 @@ for cmd in ["bdist_msi"]:
 #   2. users may prefer another server
 #   3. there may already cherrypy versions installed
 
-install_requires = ["PyYAML"]
+install_requires = ["lxml", "PyYAML", "requests"]
 setup_requires = install_requires
 tests_require = []
 
@@ -110,7 +110,7 @@ if use_cx_freeze:
                 base=None,
                 # base="Win32GUI",
                 targetName="stressor.exe",
-                icon="doc/logo.ico",
+                icon="docs/logo.ico",
                 shortcutName="stressor",
                 # requires cx_Freeze PR#94:
                 # copyright="(c) 2009-2019 Martin Wendt",
@@ -144,7 +144,7 @@ build_exe_options = {
     "includes": install_requires,
     "include_files": [],
     "packages": [
-        "asyncio",  # https://stackoverflow.com/a/41881598/19166
+        # "asyncio",  # https://stackoverflow.com/a/41881598/19166
         # "wsgidav.dir_browser",
         # "wsgidav.dc.nt_dc",
     ],
@@ -158,6 +158,9 @@ bdist_msi_options = {
     "upgrade_code": "{92F74137-38D1-48F6-9730-D5128C8B611E}",
     "add_to_path": True,
 }
+
+packages = find_packages(exclude=["test"])
+print("setup.py: find_packages() -> {}".format(packages))
 
 setup(
     name="stressor",
@@ -196,7 +199,7 @@ setup(
     ],
     keywords="web server load test stress",
     license="MIT",
-    packages=find_packages(exclude=["tests"]),
+    packages=packages,
     package_data={
         # If any package contains *.txt files, include them:
         # "": ["*.css", "*.html", "*.ico", "*.js"],
