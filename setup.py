@@ -203,7 +203,7 @@ setup(
     package_data={
         # If any package contains *.txt files, include them:
         # "": ["*.css", "*.html", "*.ico", "*.js"],
-        # "wsgidav.dir_br owser": ["htdocs/*.*"]
+        # "wsgidav.dir_browser": ["htdocs/*.*"]
     },
     install_requires=install_requires,
     setup_requires=setup_requires,

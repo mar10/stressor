@@ -57,7 +57,7 @@ class HTTPRequestActivity(ActivityBase):
 
     def __init__(self, config_manager, **activity_args):
         # def __init__(self, compile_path, method, url, params=None, **activity_args):
-        self.compile_path = config_manager.stack
+        self.compile_path = str(config_manager.stack)
         check_arg(activity_args.get("method"), str)
         check_arg(activity_args.get("url"), str)
         check_arg(activity_args.get("params"), dict, or_none=True)
@@ -195,7 +195,9 @@ class HTTPRequestActivity(ActivityBase):
                 # print(result, key, value)
                 match, msg = match_value(pattern, value, key)
                 if not match:
-                    raise ActivityAssertionError("Unexpected JSON result: {}".format(msg))
+                    raise ActivityAssertionError(
+                        "Unexpected JSON result: {}".format(msg)
+                    )
 
         arg = expanded_args.get("assert_html")
         if arg:

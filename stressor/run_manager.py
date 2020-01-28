@@ -114,15 +114,17 @@ class RunManager:
         stats_info = self.stats.get_monitor_info()
         sessions = []
         for idx, sess in enumerate(self.session_list, 1):
-            sessions.append([
-                idx,
-                sess.session_id,
-                sess.user.name,
-                "n.a.",
-                sess.stats["activity.count"],
-                sess.stats["errors"],
-                str(sess.context_stack),
-            ])
+            sessions.append(
+                [
+                    idx,
+                    sess.session_id,
+                    sess.user.name,
+                    "n.a.",
+                    sess.stats["activity.count"],
+                    sess.stats["errors"],
+                    str(sess.context_stack),
+                ]
+            )
         res = {
             "name": self.config_manager.name,
             "stage": self.stage,

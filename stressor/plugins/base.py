@@ -69,8 +69,8 @@ class ActivityBase(ABC):
     #: if any of those args is not defined
     _mandatory_args = None
 
-    #: (bool)
-    _default_monitor = False
+    # #: (bool)
+    # _default_monitor = False
 
     #: (bool)
     _default_ignore_timing = False
@@ -107,10 +107,10 @@ class ActivityBase(ABC):
             - Optionally call `compiler.add_warning()`
 
         Attributes:
-            compile_path (:class:`PathStack`):
+            compile_path (str):
             raw_args (dict):
         Args:
-            compile_path (str):
+            compile_path (:class:`PathStack`):
                 The location breadcrumb path of this activity in the configration
                 structure, e.g. 'main/#4'.
             activity_args (dict):
@@ -118,7 +118,7 @@ class ActivityBase(ABC):
                 Note that the arguments are read at load-time and are not yet
                 expanded (i.e. may contain `$(context_var)` macros).
         """
-        self.compile_path = config_manager.stack  # compile_path
+        self.compile_path = str(config_manager.stack)
         self.raw_args = activity_args
 
     def __str__(self):

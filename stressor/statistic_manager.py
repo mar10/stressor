@@ -23,12 +23,20 @@ class StatisticManager:
     def __getitem__(self, key):
         return self.stats[key]
 
+    def _make_key(self, key_or_activity):
+        if isinstance(key_or_activity, str):
+            return key_or_activity
+        key = key_or_activity.compile_path
+        return key
+
     def inc(self, key, ofs=1):
+        key = self._make_key(key)
         self.stats[key] += ofs
         if self.parent:
             self.parent.inc(key, ofs)
 
     def add_timing(self, key, elap):
+        key = self._make_key(key)
         self.timing_keys.add(key)
         count = self.stats[key + ".count"] + 1
         self.stats[key + ".count"] = count
@@ -42,6 +50,13 @@ class StatisticManager:
 
         if self.parent:
             self.parent.add_timing(key, elap)
+
+    def add_error(self, key, error):
+        key = self._make_key(key)
+        self.stats[key + ".errors"] += 1
+        self.stats[key + ".last_error"] = "{}".format(error)
+        if self.parent:
+            self.parent.add_error(key, error)
 
     def has_errors(self, or_warnings=False):
         error_count = self.stats["errors"]
@@ -86,21 +101,23 @@ class StatisticManager:
                 f("activity.time_avg", True),
             ]
         )
-
+        # List of all activities that are marked `monitor: true`
         activity_stats = []
-        # activity_stats.append(
-        #     [
-        #         "Σ",
-        #         f("activity.count"),
-        #         f("errors"),
-        #         f("session.time", True),
-        #         f("session.time_max", True),
-        #         f("session.time_avg", True),
-        #         f("activity.time", True),
-        #         f("activity.time_max", True),
-        #         f("activity.time_avg", True),
-        #     ]
-        # )
+        for k in self.stats:
+            if not k.startswith("/config") or not k.endswith(".count"):
+                continue
+            k = k.rsplit(".", 1)[0]
+            activity_stats.append(
+                [
+                    k,
+                    f(k + ".count"),
+                    f(k + ".errors"),
+                    f(k + ".time", True),
+                    f(k + ".time_max", True),
+                    f(k + ".time_avg", True),
+                    f(k + ".last_error") or "n.a.",
+                ]
+            )
 
         res = {
             "hasErrors": self.has_errors(),

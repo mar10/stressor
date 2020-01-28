@@ -279,6 +279,7 @@ class ConfigManager:
         # TODO:
         #   - if init is given, it must be first?
         #   - if end is given, it must be last?
+        #   - assert_json, assert_match, ...
         return file_version
 
     def _compile(self, value, parent=None, parent_key=None, stack=None):

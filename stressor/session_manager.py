@@ -110,6 +110,9 @@ class SessionManager:
         logger.info(self.session_id, *args)
         # self.publish("log", self.session_id, *args, level="info")
 
+    def has_errors(self, or_warnings=False):
+        return self.stats["errors"] > 0
+
     def report_activity_start(self, activity):
         """Called by session runner before activities is executed."""
         logger.info(
@@ -117,6 +120,8 @@ class SessionManager:
                 "DRY-RUN" if self.dry_run else "Execute", self.context_stack, activity,
             )
         )
+        if activity.raw_args.get("monitor"):
+            self.stats["special.{}.".format(activity.compile_path)]
 
     def report_activity_error(self, activity, activity_args, exc):
         """Called session runner when activity `execute()` or assertions raise an error."""
@@ -146,10 +151,10 @@ class SessionManager:
         # self.results[level].append({"msg": msg, "path": path})
         return
 
-    def has_errors(self, or_warnings=False):
-        return self.stats["errors"] > 0
+    def report_activity_result(self, activity, activity_args, result, elap):
+        """Called session runner when activity `execute()` or assertions raise an error."""
 
-    def _check_result(self, activity, activity_args, result, elap):
+    def _process_activity_result(self, activity, activity_args, result, elap):
         """Perform common checks.
 
         Raises:
@@ -226,7 +231,6 @@ class SessionManager:
                     session=self,
                     sequence=sequence,
                     activity=activity,
-                    # activity_cls=activity_cls,
                     expanded_args=expanded_args,
                     context=context,
                     path=stack,
@@ -239,18 +243,26 @@ class SessionManager:
                     result = activity.execute(self, **expanded_args)
                     context["last_result"] = result
                     # Evaluate standard `assert_...` and `store_...` clauses:
-                    self._check_result(
-                        activity, activity_args, result, time.time() - start_activity,
+                    elap = time.time() - start_activity
+                    self._process_activity_result(
+                        activity, activity_args, result, elap,
+                    )
+                    self.report_activity_result(
+                        activity, activity_args, result, elap,
                     )
 
                 except Exception as e:
                     error = e
                     self.report_activity_error(activity, activity_args, e)
+                    if expanded_args.get("monitor"):
+                        self.stats.add_error(activity, e)
                     # return False
 
                 finally:
                     elap = time.time() - start_activity
                     self.stats.add_timing("activity", elap)
+                    if expanded_args.get("monitor"):
+                        self.stats.add_timing(activity, elap)
                     self.publish(
                         "end_activity",
                         session=self,
