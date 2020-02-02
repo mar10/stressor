@@ -126,7 +126,7 @@ class HTTPRequestActivity(ActivityBase):
         expanded_args.setdefault("timeout", session.get_context("timeout"))
         assert "timeout" in expanded_args
 
-        print("session.dry_run", session.dry_run)
+        # print("session.dry_run", session.dry_run)
         if session.dry_run:
             return expanded_args.get("mock_result", "dummy_result")
 

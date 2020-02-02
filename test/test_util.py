@@ -5,7 +5,13 @@
 """
 import pytest
 
-from stressor.util import assert_always, PathStack, check_arg
+from stressor.util import (
+    assert_always,
+    PathStack,
+    check_arg,
+    shorten_string,
+    format_elap,
+)
 
 
 class TestBasics:
@@ -43,3 +49,20 @@ class TestBasics:
         assert path.pop() == "root"
         with pytest.raises(IndexError):
             path.pop()
+
+    def test_shorten_string(self):
+        s = (
+            "Do you see any Teletubbies in here?"
+            "Do you see a slender plastic tag clipped to my shirt with my name printed on it?"
+        )
+        assert shorten_string(None, 10) is None
+        assert len(shorten_string(s, 20)) == 20
+        assert len(shorten_string(s, 20, min_tail_chars=7)) == 20
+        assert shorten_string(s, 20) == "Do you see any [...]"
+        assert shorten_string(s, 20, min_tail_chars=7) == "Do you s[...] on it?"
+
+    def test_format_elap(self):
+        assert format_elap(1.23456) == "1.2 sec"
+        assert format_elap(1.23456, high_prec=True) == "1.235 sec"
+        assert format_elap(3677) == "1:01:17 hrs"
+        assert format_elap(12.34, count=10) == "12.3 sec, 0.8 items/sec"

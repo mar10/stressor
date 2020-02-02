@@ -113,4 +113,5 @@ class Monitor(Thread):
             logger.info("Monitor server stopped.")
 
     def shutdown(self):
-        self.httpd.shutdown()
+        if self.httpd:
+            self.httpd.shutdown()

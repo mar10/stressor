@@ -86,7 +86,16 @@ class PathStack:
 
 def init_logging(verbose=3):
     """CLI calls this."""
-    level = logging.INFO if verbose <= 3 else logging.DEBUG
+    if verbose < 1:
+        level = logging.CRITICAL
+    elif verbose < 2:
+        level = logging.ERROR
+    elif verbose < 3:
+        level = logging.WARNING
+    elif verbose < 4:
+        level = logging.INFO
+    else:
+        level = logging.DEBUG
     logging.basicConfig(
         level=level,
         # format="%(asctime)s.%(msecs)03d <%(thread)d> %(levelname)-7s %(message)s",

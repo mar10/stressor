@@ -173,6 +173,7 @@ class RunManager:
             sess = SessionManager(self, context, name, user)
             self.session_list.append(sess)
             t = threading.Thread(name=name, target=self._run_one, args=[sess])
+            t.setDaemon(True)  # Required to make Ctrl-C work
             thread_list.append(t)
 
         logger.info("Starting session workers...")
@@ -235,7 +236,14 @@ class RunManager:
             webbrowser.open_new_tab("http://127.0.0.1:8081/")
 
         try:
-            res = self.run_in_threads(user_list, context)
+            try:
+                res = False
+                res = self.run_in_threads(user_list, context)
+            except KeyboardInterrupt:
+                # if not self.stop_request.is_set():
+                logger.warning("Caught Ctrl-C: terminating...")
+                self.stop()
+
             if monitor:
                 self.set_stage("waiting")
                 self.stop_request.wait()

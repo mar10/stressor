@@ -105,8 +105,12 @@ table.metrics td.num {
   text-align: right;
   width: 5em;
 }
+table.metrics td.err-num {
+  background-color: #dfd;
+}
 table.metrics td.warn {
   color: red;
+  background-color: #fdd;
 }
 table.metrics td.ok {
   color: green;
