@@ -8,7 +8,7 @@ $ pipenv install
 $ stressor -h
 ```
 
-Run in virtual debugging environmment:
+Run in a virtual debugging environmment:
 
 ```bash
 $ pipenv shell

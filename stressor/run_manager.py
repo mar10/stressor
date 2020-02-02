@@ -139,7 +139,7 @@ class RunManager:
 
     def load_config(self, run_config_file):
         """Load configuration file and set shortcuts."""
-        cr = ConfigManager()
+        cr = ConfigManager(self.stats)
         cr.read(run_config_file, load_files=True)
 
         self.config_manager = cr

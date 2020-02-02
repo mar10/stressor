@@ -4,7 +4,7 @@
 """
 """
 import logging
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from pprint import pformat
 
 from stressor.util import check_arg, format_elap
@@ -19,6 +19,8 @@ class StatisticManager:
         self.parent = parent
         self.timing_keys = set()
         self.stats = defaultdict(int)
+        self.sequence_names = OrderedDict()
+        self.monitored_activities = OrderedDict()
 
     def __getitem__(self, key):
         return self.stats[key]
@@ -34,6 +36,22 @@ class StatisticManager:
         self.stats[key] += ofs
         if self.parent:
             self.parent.inc(key, ofs)
+
+    def register_sequence(self, name):
+        """Called by compiler."""
+        assert name not in self.sequence_names
+        self.sequence_names[name] = True
+
+    def register_activity(self, activity):
+        """Called by compiler."""
+        name = activity.compile_path
+        assert name not in self.monitored_activities
+        if activity.raw_args.get("monitor"):
+            self.monitored_activities[name] = True
+            # logger.info("REGISTERD", name, self.monitored_activities)
+
+    def register_session(self, session):
+        """Called by run_manager."""
 
     def add_timing(self, key, elap):
         key = self._make_key(key)
@@ -73,8 +91,8 @@ class StatisticManager:
                     s.pop(kbase + ".time_max", None)
         return "{}".format(pformat(s))
 
-    def format_result_ex(self):
-        return "{}".format(pformat(dict(self.stats)))
+    # def format_result_ex(self):
+    #     return "{}".format(pformat(dict(self.stats)))
 
     def get_monitor_info(self):
         stats = self.stats
@@ -86,11 +104,28 @@ class StatisticManager:
             # v = get_dict_attr(stats, key)
             return v
 
-        # TODO: add rows for every sequence name:
+        # Add rows for every sequence name:
         seq_stats = []
+        for seq_name in self.sequence_names:
+            k = "sequence.{}".format(seq_name)
+            seq_stats.append(
+                [
+                    seq_name,
+                    f(k + ".count"),
+                    "n.a",  # activity count
+                    f(k + ".errors"),
+                    f(k + ".time", True),
+                    f(k + ".time_max", True),
+                    f(k + ".time_avg", True),
+                    "n.a.",
+                    "n.a.",
+                    "n.a.",
+                ]
+            )
         seq_stats.append(
             [
-                "Σ",
+                "Summary",
+                "n.a.",  # loop count
                 f("activity.count"),
                 f("errors"),
                 f("session.time", True),
@@ -103,10 +138,8 @@ class StatisticManager:
         )
         # List of all activities that are marked `monitor: true`
         activity_stats = []
-        for k in self.stats:
-            if not k.startswith("/config") or not k.endswith(".count"):
-                continue
-            k = k.rsplit(".", 1)[0]
+        for act_compile_path in self.monitored_activities:
+            k = act_compile_path
             activity_stats.append(
                 [
                     k,

@@ -90,6 +90,9 @@ table.metrics tbody tr:nth-child(odd) {
 table.metrics tbody tr:hover {
   background: #eee;
 }
+table#run-metrics tbody tr:last-of-type {
+font-weight: bolder;
+}
 
 table.metrics th,
 table.metrics td {
@@ -97,8 +100,20 @@ table.metrics td {
   border: 1px solid #eee;
   padding: 1px 4px;
 }
+table.metrics th.num,
 table.metrics td.num {
   text-align: right;
+  width: 5em;
+}
+table.metrics td.warn {
+  color: red;
+}
+table.metrics td.ok {
+  color: green;
+}
+table.metrics td.text {
+  text-align: left;
+  /* width: 100%; */
 }
 table.metrics tr.sum {
   font-weight: bold;

@@ -31,6 +31,16 @@ stressor.config_manager module
     :show-inheritance:
     :inherited-members:
 
+stressor.statistic_manager module
+---------------------------------
+
+.. automodule:: stressor.statistic_manager
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
+    :inherited-members:
+
 stressor.session_manager module
 ------------------------------
 

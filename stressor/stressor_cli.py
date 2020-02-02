@@ -66,7 +66,12 @@ def run():
         # allow_abbrev=False,
     )
 
-    parser.add_argument("-V", "--version", action="store_true")
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="store_true",
+        help="display versin info and exit (combine with -v for more information)",
+    )
 
     subparsers = parser.add_subparsers(help="sub-command help")
 
@@ -84,12 +89,12 @@ def run():
         default="./project.yaml",
         help="path to configuration file (default: %(default)s)",
     )
-    sp.add_argument(
-        "suite",
-        metavar="SUITE",
-        nargs="*",
-        help="name of a suite definition in the project (multiple values allowed, default: all)",
-    )
+    # sp.add_argument(
+    #     "suite",
+    #     metavar="SUITE",
+    #     nargs="*",
+    #     help="name of a suite definition in the project (multiple values allowed, default: all)",
+    # )
     sp.add_argument(
         "-o",
         "--option",
@@ -111,37 +116,37 @@ def run():
 
     # --- Create the parser for the "listen" command ---------------------------
 
-    sp = subparsers.add_parser(
-        "listen",
-        parents=[verbose_parser, common_parser],
-        help="run in 'drone' mode, listening for commands from master",
-    )
+    # sp = subparsers.add_parser(
+    #     "listen",
+    #     parents=[verbose_parser, common_parser],
+    #     help="run in 'drone' mode, listening for commands from master",
+    # )
 
-    sp.add_argument(
-        "--host",
-        default="0.0.0.0",
-        help="local ip address or hostname to bind to (default: %(default)s)",
-    )
-    sp.add_argument(
-        "--port",
-        type=int,
-        default=8082,
-        help="local port number to bind to (default: %(default)s)",
-    )
-    sp.add_argument(
-        "--secret",
-        default=None,
-        help="password that master must use (default: random)",
-    )
-    sp.add_argument(
-        "--collect",
-        metavar="SECS",
-        type=int,
-        default=0,
-        help="report ram, cpu load, and other system metrics every SECS seconds (default: off)",
-    )
+    # sp.add_argument(
+    #     "--host",
+    #     default="0.0.0.0",
+    #     help="local ip address or hostname to bind to (default: %(default)s)",
+    # )
+    # sp.add_argument(
+    #     "--port",
+    #     type=int,
+    #     default=8082,
+    #     help="local port number to bind to (default: %(default)s)",
+    # )
+    # sp.add_argument(
+    #     "--secret",
+    #     default=None,
+    #     help="password that master must use (default: random)",
+    # )
+    # sp.add_argument(
+    #     "--collect",
+    #     metavar="SECS",
+    #     type=int,
+    #     default=0,
+    #     help="report ram, cpu load, and other system metrics every SECS seconds (default: off)",
+    # )
 
-    sp.set_defaults(command=handle_listen_command)
+    # sp.set_defaults(command=handle_listen_command)
 
     # --- Parse command line ---------------------------------------------------
 

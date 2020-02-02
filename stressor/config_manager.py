@@ -82,7 +82,9 @@ class ConfigManager:
     #: (Incremented when incompatible changes are introduced.)
     FILE_VERSION = 0
 
-    def __init__(self, path=None):
+    def __init__(self, stats_manager):
+        #: (dict) The complete parsed YAML file as dict
+        self.stats_manager = stats_manager
         #: (dict) The complete parsed YAML file as dict
         self.config_all = None
         #: (int) The file version, parsed from the `filer_version#VERSION` tag
@@ -107,8 +109,8 @@ class ConfigManager:
             "warning": [],
         }
 
-        if path is not None:
-            self.read(path)
+        # if path is not None:
+        #     self.read(path)
         return
 
     def resolve_path(self, path, must_exist=True, check_root=True, default_ext=None):
@@ -291,21 +293,30 @@ class ConfigManager:
         **Note:** Some makros, especially `$(CONTEXT.VAR)` are *not* resolved here,
         because this needs to be done at run-time.
         """
+        stats = self.stats_manager
         if stack is None:
             self.stack = PathStack("config")
             stack = self.stack
+            # Register sequence names
+            for seq_name in value.get("sequences", {}).keys():
+                stats.register_sequence(seq_name)
 
         with stack.enter(parent_key, ignore=parent is None):
             # logger.debug("compile {}".format(stack))
+
+            # Resolve lists and dicts recursively:
             if isinstance(value, dict):
                 # Macros may change the dictionary size, so iterate over a copy
                 for key, sub_val in tuple(value.items()):
                     self._compile(sub_val, value, key, stack)
+                return
             elif isinstance(value, (list, tuple)):
                 # Macros may change the list size, so iterate over a copy
                 for idx, elem in tuple(enumerate(value)):
                     self._compile(elem, value, idx, stack)
-            elif isinstance(value, str) and "$" in value:
+                return
+
+            if isinstance(value, str) and "$" in value:
                 has_match = False
                 for macro_cls in macro_plugin_map.values():
                     try:
@@ -342,6 +353,8 @@ class ConfigManager:
                     # print(parent)
                     activity_inst = activity_cls(self, **parent)
                     parent[parent_key] = activity_inst
+                    if stats:
+                        stats.register_activity(activity_inst)
                 except Exception as e:
                     msg = "Could not evaluate activity {!r}".format(value)
                     self.report_error(msg, exc=e)

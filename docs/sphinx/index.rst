@@ -1,10 +1,10 @@
 .. _main-index:
 
-########
-stressor
-########
+##########
+|stressor|
+##########
 
-*Synchronize local directories with FTP servers.*
+*Stress-test your web app.*
 
 :Project:   https://github.com/mar10/stressor/
 :Version:   |version|, Date: |today|
@@ -28,6 +28,9 @@ stressor
 
 
 .. warning::
+  Stressor is currently Work In Progress and **not** fit for production!
+
+..
   Major version updates (1.0 => 2.0, 2.0 => 3.0, ...) introduce
   *breaking changes* to the previous versions.
   Make sure to adjust your scripts accordingly after update.
@@ -87,3 +90,7 @@ be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_ ::
 .. |rtd_badge| image:: https://readthedocs.org/projects/stressor/badge/?version=latest
    :target: https://stressor.readthedocs.io/
    :alt: Documentation Status
+
+.. |stressor| raw:: html
+
+   <a href="https://en.wikipedia.org/wiki/Stressor"><abbr title="A stressor is a chemical or biological agent, environmental condition, external stimulus or an event that causes stress to an organism.">stressor</abbr></a>

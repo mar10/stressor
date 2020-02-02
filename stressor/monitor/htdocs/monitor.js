@@ -1,5 +1,7 @@
 (function() {
-  var interval = 2000,
+  var interval = 3000,
+    pollTimer = null,
+    pollMap = {0: 0, 1: 60000, 2:30000, 3: 10000, 4: 3000, 5: 1000},
     status = null;
 
   function poll() {
@@ -11,12 +13,14 @@
       .done(function(result) {
         console.timeEnd("Poll status from stressor");
         update(result);
-        setTimeout(poll, interval);
+        pollTimer = setTimeout(poll, interval);
       })
       .fail(function(err) {
         status = "error";
         console.error("ERROR: " + JSON.stringify(err), arguments);
-        $("#statusContainer").text(JSON.stringify(err)).addClass("error");
+        $("#statusContainer")
+          .text(JSON.stringify(err))
+          .addClass("error");
         // alert("ERROR\n" + JSON.stringify(err));
       });
   }
@@ -41,9 +45,10 @@
         var cell = tr.insertCell(j);
         cell.innerHTML = val;
         // Copy class from related <col> element
-        var type = colgroup[j].classList[0];
-        if (type) {
-          cell.classList.add(type);
+        var cl = colgroup[j].classList;
+        cell.classList = cl;
+        if (cl.contains("err-num")) {
+          cell.classList.add(val === 0 ? "ok" : "warn");
         }
       });
       tbody.appendChild(tr);
@@ -88,8 +93,19 @@
     $("#btnStop").on("click", function() {
       $(this).prop("disabled", true);
       $.ajax({ url: "stopManager" }).done(function(result) {
+        clearTimeout(pollTimer);
         $("#btnStop").text("Cancelled.");
       });
+    });
+    $("#pollFreq").on("change", function(){
+      interval = parseInt($(this).val(), 10);
+      interval = pollMap[interval];
+      // console.info(interval, pollMap[interval])
+      clearTimeout(pollTimer);
+      if(interval){
+        poll();
+        // pollTimer = setTimeout(poll, interval);
+      }
     });
     poll();
   });

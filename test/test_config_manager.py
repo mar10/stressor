@@ -12,6 +12,7 @@ from stressor.config_manager import (
     ConfigurationError,
     replace_var_macros,
 )
+from stressor.statistic_manager import StatisticManager
 
 
 class TestConfigReader:
@@ -20,7 +21,8 @@ class TestConfigReader:
 
     def test_path_check(self):
         path = os.path.join(self.fixtures_path, "INVALID")
-        cr = ConfigManager()
+        stats = StatisticManager()
+        cr = ConfigManager(stats)
         with pytest.raises(ConfigurationError, match=r".*not found.*"):
             cr.read(path)
 
@@ -41,7 +43,8 @@ class TestConfigReader:
 
     def test_read_scenario(self):
         path = os.path.join(self.fixtures_path, "test_dry_run")
-        cr = ConfigManager()
+        stats = StatisticManager()
+        cr = ConfigManager(stats)
         res = cr.read(path)
         assert res is cr.config_all
         assert cr.root_folder == self.fixtures_path
@@ -65,7 +68,7 @@ class TestConfigReader:
 
     # def test_read_scenario_2(self):
     #     path = os.path.join(self.fixtures_path, "test_mock_server")
-    #     cr = ConfigManager()
+    #     cr = ConfigManager(None)
     #     res = cr.read(path)
     #     assert res is cr.config_all
     #     assert cr.root_folder == self.fixtures_path
