@@ -56,53 +56,76 @@ class RunScriptActivity(ActivityBase):
 
     def execute(self, session, **expanded_args):
         """"""
-        # script = self.script
-        export = self.export
         global_vars = {
             # "foo": 41,
             # "__builtins__": {},
         }
-        local_vars = session.context
-        # local_vars = session.context.copy()
+        # local_vars = session.context
+        local_vars = session.context.copy()
+        assert "result" not in local_vars
+        assert "session" not in local_vars
+        local_vars["session"] = session.make_helper()
 
-        prev_local_keys = set(locals())
+        # prev_local_keys = set(locals())
         prev_global_keys = set(globals())
         prev_context_keys = set(local_vars.keys())
 
         try:
             exec(self.script, global_vars, local_vars)
+        except ConnectionError as e:
+            # TODO: more requests-exceptions?
+            msg = "Script failed: {!r}: {}".format(e, e)
+            raise ScriptActivityError(msg)
         except Exception as e:
             msg = "Script failed: {!r}: {}".format(e, e)
-            logger.exception(msg)
-            raise ScriptActivityError(msg) from e
+            if session.verbose >= 4:
+                logger.exception(msg)
+                raise ScriptActivityError(msg) from e
+            raise ScriptActivityError(msg)
+        finally:
+            local_vars.pop("session")
+
+        result = local_vars.pop("result", None)
 
         context_keys = set(local_vars.keys())
-        if self.export is None:
-            pass
-        else:
-            new_keys = context_keys.difference(prev_context_keys)
-            store_keys = new_keys.intersection(self.export)
+        new_keys = context_keys.difference(prev_context_keys)
 
-        logger.info(
-            "Script defined context-keys: {}".format(
-                context_keys.difference(prev_context_keys)
-            )
-        )
-        logger.info(
-            "Script defined globals: {}".format(
-                set(globals().keys()).difference(prev_global_keys)
-            )
-        )
-        logger.info(
-            "Script defined locals: {}".format(
-                set(locals().keys()).difference(prev_local_keys)
-            )
-        )
+        if new_keys:
+            if self.export is None:
+                logger.info(
+                    "Skript activity has no `export` defined. Ignoring new variables: '{}'".format(
+                        "', '".join(new_keys)
+                    )
+                )
+            else:
+                for k in self.export:
+                    v = local_vars.get(k)
+                    assert type(v) in (int, float, str, list, dict)
+                    session.context[k] = v
+                    logger.debug("Set context.{} = {!r}".format(k, v))
+                # store_keys = new_keys.intersection(self.export)
+
+        # TODO: this cannot happen?
+        new_globals = set(globals().keys()).difference(prev_global_keys)
+        if new_globals:
+            logger.warning("Script-defined globals: {}".format(new_globals))
+            raise ScriptActivityError("Script introduced globals")
+
+        # new_context = context_keys.difference(prev_context_keys)
+        # logger.info("Script-defined context-keys: {}".format(new_context))
+
+        # new_locals = set(locals().keys()).difference(prev_local_keys)
+        # if new_locals:
+        #     logger.info("Script-defined locals: {}".format(new_locals))
+
         # logger.info("Script locals:\n{}".format(pformat(local_vars)))
-        if session.verbose >= 5:
-            logger.debug(
-                "{} {} context after exectute:\n{}".format(
-                    session.context_stack, self, pformat(locals())
+        if expanded_args.get("debug") or session.verbose >= 5:
+            logger.info(
+                "{} {}\n  Ccontext after execute:\n    {}\n  return value: {!r}".format(
+                    session.context_stack,
+                    self,
+                    pformat(session.context, indent=4),
+                    result,
                 )
             )
-        return local_vars.get("last_result")
+        return result

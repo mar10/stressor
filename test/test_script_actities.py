@@ -20,26 +20,30 @@ class TestScripts:
         # res = rm.run()
         # assert res is True
         script = """
-        print("SCRIPT: globals()", globals())
-        print("SCRIPT: globals()", globals()["foo"])
-        print("SCRIPT:", globals()["foo"])
-        # print("Hello world!", locals()[42])
-        print("Hello world!", local)
+        print("SCRIPT: globals()", globals().keys())
+        # print("SCRIPT: globals()", globals()["foo"])
+        # print("SCRIPT:", globals()["foo"])
+        # # print("Hello world!", locals()[42])
+        # print("Hello world!", local)
         # print("Script globsals()!", globals())
         b = 18
+        my_global += "script"
+        my_local += "script"
         17
+        result = 42
         """
 
         # TODO: Compile?
 
         # local_vars = locals()
         global_vars = {
-            "foo": 41,
+            "my_global": "org",
             # "__builtins__": {},
         }
         local_vars = {
-            "local": 42,
+            "my_local": "org",
         }
+        prev_builtins = set(__builtins__.keys())
         res = exec(
             dedent(script),
             global_vars,
@@ -47,9 +51,11 @@ class TestScripts:
             #     # "__builtins__": None,
             #     "foo": "bar",
             # },
-            {"local": 42},
+            local_vars,
         )
+        assert res is None
+        print("New built-ins:", set(__builtins__.keys()).difference(prev_builtins))
         print("Result: {}".format(res))
-        # print("Globals: {}".format(global_vars))
+        print("Globals: {}".format(global_vars.keys()))
         print("Locals: {}".format(local_vars))
         # assert 0

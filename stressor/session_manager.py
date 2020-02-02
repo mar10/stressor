@@ -30,6 +30,17 @@ class User:
         return (self.name, self.password)
 
 
+class SessionHelper:
+    """Passed to script activities."""
+
+    def __init__(self, session):
+        self.__session = session
+
+    @property
+    def browser(self):
+        return self.__session.browser_session
+
+
 class SessionManager:
     """
     Run a scenario in a single session.
@@ -90,6 +101,11 @@ class SessionManager:
     def _evaluate_macros(self, kwargs, context):
         replace_var_macros(kwargs, context)
         return kwargs
+
+    def make_helper(self):
+        """Return a :class:`SessionHelper` instance for this session."""
+        res = SessionHelper(self)
+        return res
 
     @property
     def browser_session(self):
@@ -321,7 +337,7 @@ class SessionManager:
                 if loop_idx > 1 and run_config.get("force_single"):
                     logger.warning(
                         "force_single: sequence '{}' skipping remaining {} loops.".format(
-                            seq_name, loop_repeat - 1
+                            seq_name, loop_repeat - 1 if loop_repeat else ""
                         )
                     )
                     break

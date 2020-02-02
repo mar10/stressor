@@ -9,6 +9,7 @@ body {
 
 span.logo {
   display: inline-block;
+  border: 1px solid gray;
   border-radius: 4px;
   vertical-align: text-bottom;
   background-position: 0 0;
@@ -20,15 +21,19 @@ span.logo {
 }
 body.stage-running span.logo {
   background-image: url(stage_running_ok.png);
+  background-color: #dfd;
 }
 body.stage-running.has-errors span.logo {
   background-image: url(stage_running_ok.png);
+  background-color: #fdd;
 }
 body.stage-waiting span.logo {
   background-image: url(stage_done_ok.png);
+  background-color: #dfd;
 }
 body.stage-waiting.has-errors span.logo {
   background-image: url(stage_done_error.png);
+  background-color: #fdd;
 }
 
 /* Stage Badge  */
@@ -49,6 +54,7 @@ body.stage-waiting span.stage {
 body.has-errors span.logo,
 body.has-errors span.stage {
   border-color: red;
+  background-color: #fdd;
   box-shadow: 2px 2px 4px #900;
 }
 

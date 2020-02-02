@@ -42,6 +42,10 @@ def replace_var_macros(value, context):
                     repl(elem, context, value, idx)
             elif isinstance(value, str):
                 org_value = value
+                if "$" in value and str(stack) == "/?/script":
+                    # Don't replace macros inside RunActivity scripts
+                    logger.debug("Not replacing macros inside `script`s.")
+                    return value
                 while "$" in value:
                     found_one = False
                     temp_val = value

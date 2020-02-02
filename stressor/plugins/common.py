@@ -54,7 +54,8 @@ class DebugMacro(MacroBase):
 
     def apply(self, config_manager, parent, parent_key, var_name):
         parent[parent_key] = "RunScript"
-        parent["name"] = "debug"
+        parent["name"] = "$debug"
+        parent["export"] = []
         parent["script"] = dedent(
             r"""
             from pprint import pprint
