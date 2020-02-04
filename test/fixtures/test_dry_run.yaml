@@ -5,13 +5,9 @@ file_version: stressor#0
 run_config:
   name: Test scenario 1
   details: Some details...
-  # Initial context value definitions.
-  # All used parameters must be listed here in the form:
-  #   parameter_name: default_value
-  # Set `null` value to make it mandatory, i.e. must be passed by caller.
+
   context:
     base_url: http://127.0.0.1:8082
-    # base_url: http://example.com
     user: {name: "joe", password: "secret", guid: "{1234}"}
     new_title: "Test title"
     timeout: 5
@@ -26,8 +22,6 @@ run_config:
     - sequence: init
     - sequence: main
     - sequence: end
-
-  until: null
 
 # List of named action sequences. Used as building blocks for scenarios
 sequences:
@@ -67,13 +61,6 @@ sequences:
 
     - activity: RunScript
       path: script_1.py
-
-    # - activity: RunScript
-    #   script: |
-    #     from fabulist import Fabulist
-
-    #     fab = Fabulist()
-    #     temp = fab.quote("${verb}")
 
   # 'end' is the reserved name for the tear-down sequence
   end:

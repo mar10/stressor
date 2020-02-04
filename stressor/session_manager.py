@@ -13,7 +13,11 @@ from stressor.context_stack import ContextStack
 from stressor.deep_dict import get_dict_attr
 from stressor.plugins.base import ActivityAssertionError
 from stressor.statistic_manager import StatisticManager
-from stressor.util import NO_DEFAULT, check_arg, logger, shorten_string
+from stressor.util import NO_DEFAULT, check_arg, logger, shorten_string, StressorError
+
+
+class StoppedError(StressorError):
+    """"""
 
 
 class User:
@@ -75,16 +79,8 @@ class SessionManager:
         self.session_id = session_id
         #: (User) Unique ID string for this session
         self.user = user or User("anonymous", "")
-        # #: (int) Counter of current activity
-        # self.act_idx = 0
         #: The :class:`RunManager` object that holds global settings and definitions
         self.run_manager = run_manager
-        # cr = self.run_manager.config_manager
-        # self.context = cr.context
-        # self.sequences = cr.sequences
-        # self.root_folder = cr.root_folder
-        # Create a new context stack, with initial values from run-configuration
-        # initial_context = run_manager.run_config["context"]
         #: The :class:`~stressor.context_stack.ContextStack` object that reflects the current execution path
         self.context_stack = ContextStack(run_manager.host_id, context)
         self.context_stack.push(run_manager.process_id)
@@ -242,9 +238,9 @@ class SessionManager:
                 # if activity_cls is None:
                 #     self._raise_error("Unknow activity '{}'".format(activity_name))
 
-                if self.stop_request.is_set():
-                    logger.warning("Sequence interrupted: {}".format(seq_name))
-                    break
+                # if self.stop_request.is_set():
+                #     logger.warning("Sequence interrupted: {}".format(seq_name))
+                #     break
 
                 expanded_args = self._evaluate_macros(activity_args, context)
 
@@ -264,6 +260,9 @@ class SessionManager:
                 self.report_activity_start(activity)
 
                 try:
+                    if self.stop_request.is_set():
+                        raise StoppedError
+
                     result = activity.execute(self, **expanded_args)
                     context["last_result"] = result
                     # Evaluate standard `assert_...` and `store_...` clauses:
@@ -333,7 +332,7 @@ class SessionManager:
             loop_duration = float(seq_def.get("duration", 0))
             start_seq_loop = time.time()
             loop_idx = 0
-            while not self.stop_request.is_set():
+            while True:
                 loop_idx += 1
                 # One single pass by default
                 if not loop_repeat and not loop_duration and loop_idx > 1:
@@ -380,6 +379,11 @@ class SessionManager:
                             "Stopping scenario due to an error in the 'init' sequence."
                         )
                         skip_all = True
+                        break
+                    elif self.stop_request.is_set():
+                        logger.error("Stopping scenario due to a stop request.")
+                        # TODO: a second 'ctrl-c' should not be so graceful
+                        skip_all_but_end = True
                         break
 
         elap = time.time() - start_session

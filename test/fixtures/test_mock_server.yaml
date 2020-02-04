@@ -4,13 +4,14 @@ file_version: stressor#0
 # sessions.
 run_config:
   name: Test WebDAV
+  tag: Not set (pass `-o tag:TAG_NAME` to override)
   details: |
     This scenario runs some tests against a WebDAV server.
     We use it to test stressor against a locally running WsgiDAV server:
     - Open a terminal and run
       $ wsgidav --root test/fixtures/ --port 8082 --auth anonymous
     - Open a second terminal and run
-    $ stressor run test/fixtures/test_mock_server
+      $ stressor run test/fixtures/test_mock_server
 
   # Initial context value definitions.
   # All used parameters must be listed here in the form:
