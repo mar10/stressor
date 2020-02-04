@@ -14,18 +14,9 @@
   <body class="stage-ready">
     <h1>
       <span class="logo"></span>
-      Stressor Monitor `
-      <span class="name">???</span>
-      `
-      <span class="stage">ready</span>
+      Stressor Monitor
+      <span class="value stage" data-value="stage">ready</span>
     </h1>
-
-    <div id="details" class="info">???</div>
-    <div id="statusContainer" class="info"></div>
-    <!-- Scenario: '<span class="name">???</span>'<br />
-    Details: '...'<br />
-    base_url: '...'<br />
-    Start: xxx, End: yyy -->
 
     <button type="button" id="btnStop" disabled>Stop Run Manager</button>
     <button type="button" id="btnRestart" disabled>Restart</button>
@@ -42,18 +33,30 @@
       step="1"
     />
     <label for="pollFreq">fast</label>
-    <!--
-    <input
-      type="checkbox"
-      name="ignoreSleep"
-      checked="checked"
-      id="cbIgnoreSleep"
-    />
-    <label for="cbIgnoreSleep">Ignore sleep times</label>
-     -->
+
     <hr />
 
-    <h2>Run Status (<span id="sessionCount">3 / 3</span> sessions)</h2>
+    <div id="details" class="info">
+      <span class="label">Scenario:</span>
+      <span class="value" data-value="name">n.a.</span>
+      <span class="label">Stage:</span>
+      <span class="value" data-value="stage">n.a.</span>
+      <span class="label">Started:</span>
+      <span class="value" data-value="startTime">n.a.</span>
+      <span class="label">Ended:</span>
+      <span class="value" data-value="endTime">n.a.</span>
+      <span class="label">Base URL:</span>
+      <span class="value" data-value="baseUrl">n.a.</span>
+      <br />
+      <span class="label">Details:</span>
+      <span class="value" data-value="scenarioDetails">n.a.</span>
+    </div>
+    <div id="statusContainer" class="info"></div>
+
+    <h2>
+      Run Status (<span class="value" data-value="sessionCount">0</span>
+      sessions)
+    </h2>
 
     <table id="run-metrics" class="metrics">
       <!-- The colgroup is used by our JS code to copy class names to TDs -->
@@ -72,7 +75,7 @@
       <thead>
         <tr>
           <th rowspan="2" class="text">Sequence</th>
-          <th rowspan="2" class="num">Loops</th>
+          <th rowspan="2" class="num">Iterations</th>
           <th rowspan="2" class="num">Activities</th>
           <th rowspan="2" class="num">Errors</th>
           <th colspan="3">Sequence Time</th>
@@ -128,7 +131,9 @@
       </tbody>
     </table>
 
-    <h2><span id="sessionCount">3 / 3</span> Running Sessions</h2>
+    <h2>
+      <span class="value" data-value="sessionCount">0</span> Running Sessions
+    </h2>
 
     <table id="session-metrics" class="metrics">
       <!-- The colgroup is used by our JS code to copy class names to TDs -->

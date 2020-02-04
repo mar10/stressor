@@ -54,7 +54,11 @@ class SessionManager:
         check_arg(session_id, str)
         check_arg(user, User, or_none=True)
 
+        # Do not share contexts between sessins:
+        context = context.copy()
+
         context.setdefault("timeout", self.DEFAULT_TIMEOUT)
+        context.setdefault("session_id", session_id)
 
         #: The :class:`User` object that is assigned to this session
         self.user = user or User("anonymous", "")
@@ -71,8 +75,8 @@ class SessionManager:
         self.session_id = session_id
         #: (User) Unique ID string for this session
         self.user = user or User("anonymous", "")
-        #: (int) Counter of current activity
-        self.act_idx = 0
+        # #: (int) Counter of current activity
+        # self.act_idx = 0
         #: The :class:`RunManager` object that holds global settings and definitions
         self.run_manager = run_manager
         # cr = self.run_manager.config_manager

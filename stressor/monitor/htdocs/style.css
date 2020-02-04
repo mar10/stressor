@@ -70,6 +70,26 @@ div.info {
   overflow: auto;
   padding: 2px 4px;
 }
+
+/* Header table */
+
+div.info span.label {
+  display: inline-block;
+  /* min-width: 4em; */
+  margin-right: 4px;
+  /* padding: 2px 4px; */
+  font-weight: bold;
+}
+div.info span.value {
+  display: inline-block;
+  min-width: 4em;
+  margin-right: 4px;
+}
+div.info div.value {
+  color: gray;
+}
+
+
 #statusBar {
   width: 100%;
   text-align: right;
@@ -90,6 +110,8 @@ table.metrics {
   background-color: white;
   border-collapse: collapse;
 }
+
+/* Metrics tables */
 table.metrics tbody tr:nth-child(odd) {
   background: #f8f8f8;
 }

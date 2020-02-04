@@ -34,7 +34,7 @@ run_config:
     - sequence: init
     - sequence: main
       # repeat: 3
-      duration: 30
+      duration: 40
     - sequence: end
 
 
@@ -69,7 +69,7 @@ sequences:
     # - activity: $debug()
 
     - activity: PutRequest
-      url: $(base_url)/wsgidav_test_file.txt
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt
       data: "Test"
       assert_max_time: 0.5
       # debug: true
@@ -93,7 +93,7 @@ sequences:
     - activity: $sleep(0.3)
 
     - activity: GetRequest
-      url: $(base_url)/wsgidav_test_file.txt
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt
       assert_match: "Test"
 
     - activity: $sleep(0.3)
@@ -110,5 +110,6 @@ sequences:
   # 'end' is the reserved name for the tear-down sequence
   end:
     - activity: $sleep(0.1)
-    # - activity: DeleteRequest
-    #   url: $(base_url)/wsgidav_test_file.txt
+
+    - activity: DeleteRequest
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt

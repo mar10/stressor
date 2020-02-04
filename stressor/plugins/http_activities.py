@@ -142,8 +142,11 @@ class HTTPRequestActivity(ActivityBase):
         user = session.user
         if user:
             r_args.setdefault("auth", (user.name, user.password))
-        headers = r_args.get("headers", {})
-        headers.setdefault("User-Agent", "Stressor/{}".format(__version__))
+        headers = r_args.setdefault("headers", {})
+        headers.setdefault(
+            "User-Agent",
+            "session/{} Stressor/{}".format(session.session_id, __version__),
+        )
 
         resp = bs.request(method, url, **r_args)
 

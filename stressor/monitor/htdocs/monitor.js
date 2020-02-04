@@ -1,17 +1,19 @@
 (function() {
   var interval = 3000,
     pollTimer = null,
-    pollMap = {0: 0, 1: 60000, 2:30000, 3: 10000, 4: 3000, 5: 1000},
+    pollMap = { 0: 0, 1: 60000, 2: 30000, 3: 10000, 4: 3000, 5: 1000 },
     status = null;
 
   function poll() {
-    console.time("Poll status from stressor");
+    const tag = "Poll status from stressor";
+
+    console.time(tag);
     $.ajax({
       url: "getStats",
       data: { arg1: "bar" }
     })
       .done(function(result) {
-        console.timeEnd("Poll status from stressor");
+        console.timeEnd(tag);
         update(result);
         pollTimer = setTimeout(poll, interval);
       })
@@ -21,7 +23,6 @@
         $("#statusContainer")
           .text(JSON.stringify(err))
           .addClass("error");
-        // alert("ERROR\n" + JSON.stringify(err));
       });
   }
 
@@ -43,7 +44,11 @@
       var tr = table.insertRow(i);
       row.forEach((val, j) => {
         var cell = tr.insertCell(j);
-        cell.innerHTML = val;
+        if (typeof val === "number") {
+          cell.innerHTML = val.toLocaleString();
+        } else {
+          cell.innerHTML = val;
+        }
         // Copy class from related <col> element
         var cl = colgroup[j].classList;
         cell.classList = cl;
@@ -59,21 +64,21 @@
     var table,
       stage = result.stage;
 
-    $("span.stage").text(stage);
-    $("span.name").text(result.name);
     $("#btnStop").attr(
       "disabled",
       !(stage === "running" || stage === "waiting")
     );
 
+    $("span.value").each(function() {
+      var $this = $(this);
+      $this.text(result[$this.data("value")]);
+    });
     $("body")
       .removeClass(function(index, className) {
         return (className.match(/(^|\s)stage-\S+/g) || []).join(" ");
       })
       .addClass("stage-" + result.stage)
       .toggleClass("has-errors", !!result.hasErrors);
-
-    // $("#statusContainer").text(JSON.stringify(result));
 
     table = document.getElementById("run-metrics");
     updateTable(table, result.stats.seq_stats, result.sessions);
@@ -97,14 +102,12 @@
         $("#btnStop").text("Cancelled.");
       });
     });
-    $("#pollFreq").on("change", function(){
+    $("#pollFreq").on("change", function() {
       interval = parseInt($(this).val(), 10);
       interval = pollMap[interval];
-      // console.info(interval, pollMap[interval])
       clearTimeout(pollTimer);
-      if(interval){
+      if (interval) {
         poll();
-        // pollTimer = setTimeout(poll, interval);
       }
     });
     poll();
