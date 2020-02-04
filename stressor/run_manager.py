@@ -4,6 +4,7 @@
 """
 """
 import itertools
+import sys
 import threading
 import time
 import webbrowser
@@ -14,13 +15,16 @@ from stressor.monitor.server import Monitor
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
 from stressor.statistic_manager import StatisticManager
-from stressor.util import check_arg, logger
+from stressor.util import check_arg, logger, set_console_ctrl_handler
 
 
 class RunManager:
     """
     Executes a run-configuration in parallel sessions.
     """
+
+    CTRL_HANDLER_SET = None
+    CURRENT_RUN_MANAGER = None
 
     DEFAULT_OPTS = {
         "monitor": False,
@@ -64,11 +68,47 @@ class RunManager:
         self.stage = "ready"
 
         register_plugins()
+        self.CURRENT_RUN_MANAGER = self
+        self.set_console_ctrl_handler()
 
     def __str__(self):
         # name = self.config_manager.path if self.config_manager else "?"
         # name = self.run_config.get("name") if self.run_config else "?"
         return "RunManager<{}>".format(self.stage.upper())
+
+    @staticmethod
+    def set_console_ctrl_handler():
+        if RunManager.CTRL_HANDLER_SET is None:
+            RunManager.CTRL_HANDLER_SET = set_console_ctrl_handler(
+                RunManager._console_ctrl_handler
+            )
+            logger.info("set_console_ctrl_handler()")
+
+    @staticmethod
+    def _console_ctrl_handler(ctrl):
+        # NOTE: seems that print/logger do not work here?
+        # print("_console_ctrl_handler()")
+        return RunManager.CURRENT_RUN_MANAGER.console_ctrl_handler(ctrl)
+
+    def console_ctrl_handler(self, ctrl):
+        """
+        Args:
+            ctrl (int): 0: CTRL_C_EVENT, 1: CTRL_BREAK_EVENT, 2: CTRL_CLOSE_EVENT
+        Returns:
+            True if handled
+            False if not handled, i.e. next registered handler will be called
+        """
+        # if self.stop_request.is_set():
+        #     print("Got Ctrl-C 2nd time: terminating...")
+        #     logger.warning("Got Ctrl-C a 2nd time: terminating...")
+        #     time.sleep(0.1)
+        #     # sys.exit(2)
+        print("Got Ctrl-C (windows handler), terminating...", file=sys.stderr)
+        logger.warning("Got Ctrl-C (windows handler), terminating...")
+        # self.stop_request.set()
+        self.stop()
+        # return False
+        return True
 
     def set_stage(self, stage):
         check_arg(stage, str, stage in self.STAGES)

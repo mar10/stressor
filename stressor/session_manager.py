@@ -238,6 +238,10 @@ class SessionManager:
                 # if activity_cls is None:
                 #     self._raise_error("Unknow activity '{}'".format(activity_name))
 
+                if self.stop_request.is_set():
+                    logger.warning("Sequence interrupted: {}".format(seq_name))
+                    break
+
                 expanded_args = self._evaluate_macros(activity_args, context)
 
                 error = None
@@ -325,7 +329,7 @@ class SessionManager:
             loop_duration = float(seq_def.get("duration", 0))
             start_seq_loop = time.time()
             loop_idx = 0
-            while True:
+            while not self.stop_request.is_set():
                 loop_idx += 1
                 # One single pass by default
                 if not loop_repeat and not loop_duration and loop_idx > 1:

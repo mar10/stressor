@@ -4,6 +4,7 @@
 """
 """
 import logging
+import os
 import sys
 import types
 import warnings
@@ -113,6 +114,58 @@ def init_logging(verbose=3):
         warnings.filterwarnings("once", message="Unverified HTTPS request")
 
     return logger
+
+
+def set_console_ctrl_handler(
+    ctrl_handler, do_ctrl_c=True, do_ctrl_break=False, do_ctrl_close=False
+):
+    """
+
+    The do_ctrl_* functions could simply be sys.exit(1), which will ensure that
+    atexit handlers get called.
+    See https://bugs.python.org/issue35935
+
+    Raises:
+        ctypes.WinError
+    Returns:
+        False if not on Windows or could not register the handler.
+    """
+    if os.name != "nt":
+        return False
+
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        logger.info("Loaded kernel32 DLL on Windows.")
+    except Exception as e:
+        logger.warning("Could not load kernel32 DLL on Windows: {}".format(e))
+        return False
+
+    CTRL_C_EVENT = 0
+    CTRL_BREAK_EVENT = 1
+    CTRL_CLOSE_EVENT = 2
+
+    HANDLER_ROUTINE = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.DWORD)
+    kernel32.SetConsoleCtrlHandler.argtypes = (HANDLER_ROUTINE, wintypes.BOOL)
+
+    @HANDLER_ROUTINE
+    def handler(ctrl):
+        if ctrl == CTRL_C_EVENT and do_ctrl_c:
+            handled = ctrl_handler(ctrl)
+        elif ctrl == CTRL_BREAK_EVENT and do_ctrl_break:
+            handled = ctrl_handler(ctrl)
+        elif ctrl == CTRL_CLOSE_EVENT and do_ctrl_close:
+            handled = ctrl_handler(ctrl)
+        else:
+            handled = False
+        # If not handled, call the next handler.
+        return handled
+
+    if not kernel32.SetConsoleCtrlHandler(handler, True):
+        raise ctypes.WinError(ctypes.get_last_error())
+    return True
 
 
 def assert_always(condition, msg=None):
