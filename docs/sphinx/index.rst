@@ -1,8 +1,8 @@
 .. _main-index:
 
-##########
-|stressor|
-##########
+########
+stressor
+########
 
 *Stress-test your web app.*
 
@@ -21,6 +21,11 @@
    development
    changes
 
+
+.. image:: stressor_48x48.png
+   :height: 48px
+   :width: 48px
+   :alt: stressor
 
 .. image:: ../../teaser.png
   :target: https://github.com/mar10/stressor
@@ -90,6 +95,11 @@ be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_ ::
 .. |rtd_badge| image:: https://readthedocs.org/projects/stressor/badge/?version=latest
    :target: https://stressor.readthedocs.io/
    :alt: Documentation Status
+
+.. |logo| image:: stressor_48x48.png
+   :height: 48px
+   :width: 48px
+   :alt: stressor
 
 .. |stressor| raw:: html
 

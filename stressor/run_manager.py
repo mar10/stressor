@@ -184,7 +184,7 @@ class RunManager:
 
         self.config_manager = cr
         self.run_config = cr.run_config
-        logger.info("Read and compiled configuration {}.".format(cr.path))
+        logger.info("Successfully compiled configuration {}.".format(cr.path))
 
     def _run_one(self, session_manager):
         try:

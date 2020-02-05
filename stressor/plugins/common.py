@@ -13,7 +13,7 @@ from stressor.util import assert_always, check_arg
 
 
 class LoadMacro(MacroBase):
-    """Implment `$load(path)` macro."""
+    """Implement `$load(path)` macro."""
 
     def apply(self, config_manager, parent, parent_key, path):
         path = config_manager.resolve_path(path, must_exist=True)
@@ -38,7 +38,7 @@ class LoadMacro(MacroBase):
 
 
 class EnvMacro(MacroBase):
-    """Implment `$env(var_name)` macro, which resolves an environment variable at load-time."""
+    """Implement `$env(var_name)` macro, which resolves an environment variable at load-time."""
 
     def apply(self, config_manager, parent, parent_key, var_name):
         # TODO:
@@ -50,7 +50,7 @@ class EnvMacro(MacroBase):
 
 
 class DebugMacro(MacroBase):
-    """Implment `$debug()` macro, which dumps information at run-time."""
+    """Implement `$debug()` macro, which dumps information at run-time."""
 
     def apply(self, config_manager, parent, parent_key, var_name):
         parent[parent_key] = "RunScript"
@@ -65,7 +65,7 @@ class DebugMacro(MacroBase):
 
 
 # class CrontabMacro(MacroBase):
-#     """Implment `$cron()` macro, which inserts the current UTC time stamp.
+#     """Implement `$cron()` macro, which inserts the current UTC time stamp.
 
 #     https://github.com/josiahcarlson/parse-crontab
 #     """
@@ -75,7 +75,7 @@ class DebugMacro(MacroBase):
 
 
 # class StampMacro(MacroBase):
-#     """Implment `$stamp()` macro, which inserts the current UTC time stamp."""
+#     """Implement `$stamp()` macro, which inserts the current UTC time stamp."""
 
 #     run_time_eval = True
 
@@ -84,14 +84,14 @@ class DebugMacro(MacroBase):
 
 
 # class StopMacro(MacroBase):
-#     """Implment `$stop()` macro, which dumps information at run-time and ends execution."""
+#     """Implement `$stop()` macro, which dumps information at run-time and ends execution."""
 
 #     def apply(self, config_manager, parent, parent_key, var_name):
 #         raise NotImplementedError
 
 
 # class BreakMacro(MacroBase):
-#     """Implment `$break()` macro, which halts and enters single-step mode."""
+#     """Implement `$break()` macro, which halts and enters single-step mode."""
 
 #     def apply(self, config_manager, parent, parent_key, var_name):
 #         # dump info
@@ -101,7 +101,7 @@ class DebugMacro(MacroBase):
 
 
 class SleepMacro(MacroBase):
-    """Implment `$sleep(duration)` macro, which is a shortcut to :class`SleepActivity`."""
+    """Implement `$sleep(duration)` macro, which is a shortcut to :class`SleepActivity`."""
 
     #: Sleep activities are ignorable by default
     _default_ignore_timing = True
@@ -125,14 +125,12 @@ class SleepActivity(ActivityBase):
     Args:
         duration (float): sleep duration in seconds
 
-    Examples:
+    Examples::
 
-        ```yaml
         sequences:
           main
             - activity: Sleep
               duration: 0.5
-        ```
     """
 
     def __init__(self, config_manager, **activity_args):

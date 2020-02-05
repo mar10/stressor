@@ -22,7 +22,7 @@ stressor.context_stack module
     :inherited-members:
 
 stressor.config_manager module
------------------------------
+------------------------------
 
 .. automodule:: stressor.config_manager
     :members:
@@ -42,7 +42,7 @@ stressor.statistic_manager module
     :inherited-members:
 
 stressor.session_manager module
-------------------------------
+-------------------------------
 
 .. automodule:: stressor.session_manager
     :members:

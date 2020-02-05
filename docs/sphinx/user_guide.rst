@@ -112,8 +112,8 @@ The CLI returns those exit codes::
 
 ..
 
-    Script Examples
-    ===============
+    .. Script Examples
+    .. ===============
 
     .. All options that are available for command line, can also be passed to
     .. the synchronizers. For example ``--delete-unmatched`` becomes

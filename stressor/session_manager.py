@@ -177,7 +177,6 @@ class SessionManager:
             ActivityAssertionError
         """
         context = self.context_stack.context
-        # print("ctx", context)
         errors = []
         # warnings = []
 
@@ -192,7 +191,6 @@ class SessionManager:
         arg = activity_args.get("assert_match")
         if arg:
             text = str(result)
-            # logger.fatal("{} {}".format(arg, re.match(arg, text, re.MULTILINE)))
             # Note: use re.search (not .match)!
             if not re.search(arg, text, re.MULTILINE):
                 errors.append(
@@ -220,7 +218,6 @@ class SessionManager:
 
     def run_sequence(self, seq_name, sequence):
         stack = self.context_stack
-        # activity_map = activity_plugin_map
 
         self.publish(
             "start_sequence", session=self, sequence=sequence, path=stack,
@@ -233,14 +230,6 @@ class SessionManager:
             with stack.enter("#{:02}-{}".format(act_idx, activity.get_script_name())):
                 # with stack.enter("#{:02} {}".format(act_idx, activity_name)):
                 context = stack.context
-                # context["last_result"] = None
-                # activity_cls = activity_map.get(activity_name)
-                # if activity_cls is None:
-                #     self._raise_error("Unknow activity '{}'".format(activity_name))
-
-                # if self.stop_request.is_set():
-                #     logger.warning("Sequence interrupted: {}".format(seq_name))
-                #     break
 
                 expanded_args = self._evaluate_macros(activity_args, context)
 
