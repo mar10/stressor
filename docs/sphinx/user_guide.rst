@@ -7,8 +7,7 @@ User Guide
 
     tutorial
     writing_scripts
-    sample_pyftpsync_yaml
-
+    sample_stressor_yaml
 
 .. warning::
   Stressor is currently Work In Progress and **not** fit for production!

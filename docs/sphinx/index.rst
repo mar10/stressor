@@ -27,7 +27,7 @@ stressor
    :width: 48px
    :alt: stressor
 
-.. image:: ../../teaser.png
+.. image:: ../teaser.png
   :target: https://github.com/mar10/stressor
   :name: Live demo
 

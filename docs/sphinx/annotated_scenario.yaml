@@ -1,0 +1,125 @@
+# Stressor Project Definition
+# See https://github.com/mar10/stressor
+# The project name is derived from the filename without `.yaml` extension.
+
+# System Settings.
+# This values override the system default, but can be overriden by command line args or run configuration
+file_version: stressor#0
+
+# The run configuration defines how the `sequences` are executed in parallel
+# sessions.
+run_config:
+  # Default: name of this config file without '.yaml' extension
+  name: Test WebDAV
+  tag: Not set (pass `-o tag:TAG_NAME` to override)
+  # tag: Test-Run STAGING nightly $(datetime_iso)
+
+  details: |
+    This scenario runs some tests against a WebDAV server.
+    We use it to test stressor against a locally running WsgiDAV server:
+    - Open a terminal and run
+      $ wsgidav --root test/fixtures/ --port 8082 --auth anonymous
+    - Open a second terminal and run
+      $ stressor run test/fixtures/test_mock_server
+
+  # Initial context value definitions.
+  # All used parameters must be listed here in the form:
+  #   parameter_name: default_value
+  # Set `null` value to make it mandatory, i.e. must be passed by caller.
+  context:
+    verbose: 4
+    base_url: http://127.0.0.1:8082
+    user: { name: "joe", password: "secret", guid: "{1234}" }
+    new_title: "Test title"
+    timeout: 1
+
+  sessions:
+    users: $load(users.yaml)
+    count: 3
+    threads_per_process: 5
+    duration: 5
+
+  # Define what actions should be performed by every session
+  scenario:
+    - sequence: init
+    - sequence: main
+      # repeat: 3
+      duration: 40
+    - sequence: end
+
+
+# List of named action sequences. Used as building blocks for scenarios
+sequences:
+  # 'init' is the reserved name for the set-up sequence.
+  init:
+    # Log-in
+    - activity: HTTPRequest
+      url: $(base_url)
+      method: OPTIONS
+      assert_match_headers: ".*'DAV'.*"
+
+    - activity: GetRequest
+      # Use `base_url` by default:
+      url: mock_login_response.json
+      assert_json:
+        result.user_guid: "{abc123}"
+      store_json:
+        user_guid: "result.user_guid"
+
+    # - activity: $debug()
+
+  # Other sections can have arbitrary names and are excuted in order of appearance
+  main:
+    - activity: GetRequest
+      url: $(base_url)/
+      assert_match: ".*Index of /.*"
+      assert_html:
+        "//*[@class='logo']": true
+
+    # - activity: $debug()
+
+    - activity: PutRequest
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt
+      data: "Test"
+      assert_max_time: 0.5
+      # debug: true
+      monitor: true
+
+    - activity: RunScript
+      script: |
+        new_val = "New URL:" + base_url
+
+    - activity: RunScript
+      name: "Print context"
+      script: |
+        from pprint import pprint
+        pprint(locals())
+
+    - activity: RunScript
+      name: "Print context 2"
+      script: |
+        print(locals())
+
+    - activity: $sleep(0.3)
+
+    - activity: GetRequest
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt
+      assert_match: "Test"
+
+    - activity: $sleep(0.3)
+
+    # - activity: $debug()
+
+      # - activity: RunScript
+    #   path: script_1.py
+    # - activity: RunScript
+    #   script: |
+    #     temp = Fabulist.quote("${verb}")
+    #     PutRequest(url="hurz")
+
+  # 'end' is the reserved name for the tear-down sequence
+  end:
+    - activity: $sleep(0.1)
+
+    - activity: DeleteRequest
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt

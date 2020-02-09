@@ -28,6 +28,13 @@ A simple confuguration script may look like this: |br|
     :linenos:
     :language: yaml
 
+The above example assumes the virtual users to be defined in a separate file,
+for example: |br|
+``users.yaml``:
+
+.. literalinclude:: users.yaml
+    :linenos:
+    :language: yaml
 
 
 Debugging

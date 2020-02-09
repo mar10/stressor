@@ -60,8 +60,7 @@ body.has-errors span.stage {
 
 .flash {
   opacity: 1;
-  /* -webkit-animation: flash 1s; */
-  animation: flash 1s;
+  animation: flash 0.9s;
 }
 @keyframes flash {
   0% { opacity: 0.5; }

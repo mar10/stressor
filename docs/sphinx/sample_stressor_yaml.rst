@@ -1,13 +1,18 @@
-===============
-.stressor.yaml
-===============
+=============
+stressor.yaml
+=============
 
-Users can define sets of command line options as named *tasks* and store them
-in the project folder. It can then be executed like so::
+Scenarios are defined in YAML-formatted configuration files.
+It can then be executed like so::
 
-    $ stressor run SCENARIO
+    $ stressor run SCENARIO.yaml --monitor
 
-(TODO)
+Annotated Sample Configuration
+------------------------------
+
+.. literalinclude:: annotated_scenario.yaml
+    :linenos:
+    :language: yaml
 
 .. The file must be named `.stressor.yaml` and located in the root folder of the
 .. project. |br|
@@ -37,12 +42,12 @@ in the project folder. It can then be executed like so::
 
 .. Example:
 
-.. .. literalinclude:: ../sample_project.yaml
+.. .. literalinclude:: ../annotated_scenario.yaml
 ..     :linenos:
 ..     :language: yaml
 
 
 .. For a start, copy
-.. :download:`Annotated Sample Configuration <../sample_project.yaml>`,
+.. :download:`Annotated Sample Configuration <../annotated_scenario.yaml>`,
 .. rename it to `.stressor.yaml` (note the leading dot),
 .. and edit it to your needs.

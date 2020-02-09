@@ -9,8 +9,10 @@ import threading
 import time
 import webbrowser
 from collections import defaultdict
+from datetime import datetime
 
 from stressor.config_manager import ConfigManager
+from stressor.deep_dict import get_dict_attr
 from stressor.monitor.server import Monitor
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
@@ -66,6 +68,8 @@ class RunManager:
         self.stats = StatisticManager()
         self.options = self.DEFAULT_OPTS.copy()
         self.stage = "ready"
+        self.start_dt = None
+        self.end_dt = None
 
         register_plugins()
         self.CURRENT_RUN_MANAGER = self
@@ -165,10 +169,16 @@ class RunManager:
                     str(sess.context_stack),
                 ]
             )
+        rc = self.run_config
         res = {
             "name": self.config_manager.name,
+            "scenarioDetails": rc.get("details", "n.a."),
+            "tag": rc.get("tag", "n.a."),
             "stage": self.stage,
             "hasErrors": self.has_errors(),
+            "startTimeStr": "{}".format(self.start_dt),
+            "endTimeStr": "{}".format(self.end_dt),
+            "baseUrl": get_dict_attr(rc, "context.base_url"),
             "stats": stats_info,
             "sessions": sessions,
         }
@@ -281,6 +291,8 @@ class RunManager:
             monitor.start()
             webbrowser.open_new_tab("http://127.0.0.1:8081/")
 
+        self.start_dt = datetime.now()
+        self.end_dt = None
         try:
             try:
                 res = False
@@ -289,6 +301,8 @@ class RunManager:
                 # if not self.stop_request.is_set():
                 logger.warning("Caught Ctrl-C: terminating...")
                 self.stop()
+            finally:
+                self.end_dt = datetime.now()
 
             if monitor:
                 self.set_stage("waiting")

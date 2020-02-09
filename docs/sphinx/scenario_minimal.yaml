@@ -1,52 +1,40 @@
 file_version: stressor#0
 
+# The run configuration defines how the `sequences` are executed in parallel
+# sessions.
 run_config:
-  name: Test Scenario 1
+  name: Simple Example Scenario
 
-  # Initial context value definitions.
   context:
-    verbose: 4
     base_url: http://127.0.0.1:8082
-    timeout: 1
 
-  # Define how long
   sessions:
-    users: $load(users.yaml)
-    count: 3
+    count: 3  # Run 3 parallel sessions
 
   # Define what actions should be performed by every session
   scenario:
     - sequence: init
     - sequence: main
-      repeat: 3
+      duration: 60  # Loop 'main' for one minute
     - sequence: end
-
 
 # List of named action sequences. Used as building blocks for scenarios
 sequences:
   # 'init' is the reserved name for the set-up sequence.
   init:
-    # Log-in
     - activity: GetRequest
-      url: login
-      params:
-        auth: [user.name, user.password]
+      url: $(base_url)/
+      assert_match: ".*Index of /.*"
 
   # Other sections can have arbitrary names and are excuted in order of appearance
   main:
-    - activity: PutRequest
-      url: $(base_url)/test_file.txt
-      data: "Test"
-      assert_max_time: 0.5
-
-    - activity: $sleep(0.3)
-
     - activity: GetRequest
-      url: $(base_url)/wsgidav_test_file.txt
-      assert_match: "Test"
+      url: $(base_url)/my_page
+      assert_match: ".*Index of /.*"
 
+    - activity: $sleep(0.3, 2.0)
 
   # 'end' is the reserved name for the tear-down sequence
   end:
-    - activity: GetRequest
-      url: $(base_url)/log_out
+    - activity: DeleteRequest
+      url: $(base_url)/wsgidav_test_file~$(session_id).txt
