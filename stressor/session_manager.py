@@ -262,8 +262,9 @@ class SessionManager:
                     self.report_activity_result(
                         activity, activity_args, result, elap,
                     )
-
-                except Exception as e:
+                except (Exception, KeyboardInterrupt) as e:
+                    if isinstance(e, KeyboardInterrupt):
+                        self.stop_request.set()
                     error = e
                     self.report_activity_error(activity, activity_args, e)
                     if expanded_args.get("monitor"):

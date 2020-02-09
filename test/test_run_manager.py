@@ -51,6 +51,11 @@ class TestRunManager:
         res = rm.run(options, extra_config)
         assert res is True
         assert errors == []
+
+        si = rm.get_status_info()
+        assert si["name"] == "test_dry_run"
+        assert si["hasErrors"] == 0
+
         # assert activities == []
         # assert 0
 

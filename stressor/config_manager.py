@@ -17,7 +17,6 @@ from stressor.plugins.base import (
 )
 from stressor.util import PathStack, StressorError, assert_always, check_arg, logger
 
-# DEFAULT_RUN_FILE = "project.yaml"
 VAR_MACRO_REX = re.compile(r"\$\(\s*(\w[\w.:]*)\s*\)")
 GENERIC_MACRO_REX = re.compile(r"\$\w+.*\(.*\).*")
 
@@ -57,14 +56,20 @@ def replace_var_macros(value, context):
                         # var_value = context[var_name]
                         try:
                             var_value = get_dict_attr(context, var_name)
-                            value = value.replace(macro, var_value)
+                            if value.strip() == macro:
+                                # Replace macro string with resolved int, float, or str
+                                value = var_value
+                                break
+                            # value contains a macro but also prefix or suffix.
+                            # Cast macro-result to string and check for more macros
+                            value = value.replace(macro, str(var_value))
                         except (KeyError, TypeError):
                             raise RuntimeError(
                                 "Error evaluating {}: '{}': '{}' not found in context or None.".format(
                                     stack, org_value, var_name
                                 )
                             )
-                    if not found_one:
+                    if not found_one or not isinstance(value, str):
                         break
                 parent[parent_key] = value
         return value
@@ -97,7 +102,7 @@ class ConfigManager:
         self.path = None
         #: (str) Absolute root folder of the YAML file
         self.root_folder = None
-        #: (str) Shortcut to self.run_config["name"] (defsaults to filename without extension)
+        #: (str) Shortcut to self.run_config["name"] (defaults to filename without extension)
         self.name = None
         # #: (dict) shortcut to config_all["run_config"]
         # self.run_config = None

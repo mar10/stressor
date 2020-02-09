@@ -187,6 +187,7 @@ class RunManager:
         logger.info("Successfully compiled configuration {}.".format(cr.path))
 
     def _run_one(self, session_manager):
+        """Run inside a separate thread."""
         try:
             session_manager.run()
             # We don't need to print results if only one session was run, since
@@ -198,10 +199,15 @@ class RunManager:
                         session_manager, session_manager.stats.format_result()
                     )
                 )
+        except KeyboardInterrupt:
+            logger.exception("Session thread received Ctrl-C")
+            self.stop_request.set()
+            self.stats.inc("errors")
         except Exception:
             logger.exception("Session thread raised exception")
             self.stats.inc("errors")
-            raise
+            # raise
+        return
 
     def run_in_threads(self, user_list, context):
         self.publish("start_run", run_manager=self)

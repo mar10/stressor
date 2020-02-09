@@ -58,12 +58,24 @@ class TestConfigReader:
         # SleepActivity
         activity_dict = cr.sequences["init"][1]
         assert activity_dict["activity"].__class__.__name__ == "SleepActivity"
-        assert activity_dict["duration"] == 0.1
+        assert activity_dict["duration"] == 0.01
 
-        # $sleep():
+        # $sleep(.01):
         activity_dict = cr.sequences["init"][2]
         assert activity_dict["activity"].__class__.__name__ == "SleepActivity"
-        assert activity_dict["duration"] == ".1"
+        assert activity_dict["duration"] == 0.02
+
+        # $sleep($(default_sleep))
+        activity_dict = cr.sequences["init"][3]
+        assert activity_dict["activity"].__class__.__name__ == "SleepActivity"
+        assert activity_dict["duration"] == "$(default_sleep)"
+
+        # $sleep(0.01, .02):
+        activity_dict = cr.sequences["init"][4]
+        assert activity_dict["activity"].__class__.__name__ == "SleepActivity"
+        assert activity_dict["duration"] == 0.01
+        assert activity_dict["duration_2"] == 0.02
+
         return
 
     # def test_read_scenario_2(self):

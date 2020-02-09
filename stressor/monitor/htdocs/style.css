@@ -58,6 +58,16 @@ body.has-errors span.stage {
   box-shadow: 2px 2px 4px #900;
 }
 
+.flash {
+  opacity: 1;
+  /* -webkit-animation: flash 1s; */
+  animation: flash 1s;
+}
+@keyframes flash {
+  0% { opacity: 0.5; }
+  100% { opacity: 1.0; }
+}
+
 /* Info panes, etc. */
 
 body.has-errors #statusContainer,
@@ -89,7 +99,6 @@ div.info div.value {
   color: gray;
 }
 
-
 #statusBar {
   width: 100%;
   text-align: right;
@@ -119,7 +128,7 @@ table.metrics tbody tr:hover {
   background: #eee;
 }
 table#run-metrics tbody tr:last-of-type {
-font-weight: bolder;
+  font-weight: bolder;
 }
 
 table.metrics th,

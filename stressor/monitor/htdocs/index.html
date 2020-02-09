@@ -14,7 +14,7 @@
   </head>
   <body class="stage-ready">
     <h1>
-      <span class="logo"></span>
+      <span class="logo flash-on-update"></span>
       Stressor Monitor
       <span class="value stage" data-value="stage">ready</span>
     </h1>
@@ -23,7 +23,8 @@
     <button type="button" id="btnRestart" disabled>Restart</button>
     <button type="button" id="btnSave" disabled>Save Results</button>
 
-    <label for="pollFreq">Auto-refresh: off</label>
+    <label for="pollFreq" class="flash-on-update">Auto-refresh:</label>
+    off
     <input
       type="range"
       id="pollFreq"

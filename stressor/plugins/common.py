@@ -4,12 +4,14 @@
 """
 """
 import os
+import random
 from textwrap import dedent
 
 import yaml
 
 from stressor.plugins.base import ActivityBase, MacroBase
-from stressor.util import assert_always, check_arg
+
+# from stressor.util import assert_always, check_arg
 
 
 class LoadMacro(MacroBase):
@@ -103,20 +105,27 @@ class DebugMacro(MacroBase):
 class SleepMacro(MacroBase):
     """Implement `$sleep(duration)` macro, which is a shortcut to :class`SleepActivity`."""
 
+    _args_def = (
+        ("min", float),  # mandatory
+        ("max", float, None),  # optional
+    )
     #: Sleep activities are ignorable by default
     _default_ignore_timing = True
 
-    def apply(self, config_manager, parent, parent_key, duration):
+    def apply(self, config_manager, parent, parent_key, min, max):
         # duration is always a  string, it may even be $(context.var) macro.
         # We still do some checking here, to get early load-time errors.
-        check_arg(duration, str)
+        # check_arg(min, str)
 
         assert parent_key == "activity"
-        if "$" not in duration:
-            assert_always(float(duration) >= 0)
+        # if "$" not in min:
+        #     assert_always(float(min) >= 0)
 
         parent[parent_key] = "Sleep"
-        parent["duration"] = duration
+        parent["duration"] = min
+        if max is not None:
+            parent["duration_2"] = max
+
         return True
 
 
@@ -150,8 +159,12 @@ class SleepActivity(ActivityBase):
     def execute(self, session, **expanded_args):
         # session.report_activity(self, True, "Sleep({:.3} sec)".format(self.duration))
         duration = float(expanded_args["duration"])
+        duration_2 = expanded_args.get("duration_2")
+        if duration_2 is not None:
+            duration = random.uniform(duration, float(duration_2))
         if not session.dry_run:
             session.stop_request.wait(timeout=duration)
+        return
 
 
 # class MemoryActivity(ActivityBase):

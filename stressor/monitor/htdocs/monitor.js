@@ -8,12 +8,14 @@
     const tag = "Poll status from stressor";
 
     console.time(tag);
+    $(".flash-on-update").removeClass("flash");
     $.ajax({
       url: "getStats",
       data: { arg1: "bar" }
     })
-      .done(function(result) {
-        console.timeEnd(tag);
+    .done(function(result) {
+      console.timeEnd(tag);
+        $(".flash-on-update").addClass("flash");
         update(result);
         pollTimer = setTimeout(poll, interval);
       })

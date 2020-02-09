@@ -9,6 +9,8 @@ import sys
 import types
 import warnings
 
+# from collections import OrderedDict, defaultdict
+
 logger = logging.getLogger("stressor")
 
 
@@ -231,7 +233,7 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
         None
     Raises:
         TypeError: if `argument` is of an unexpected type
-        ValueError: if `argument` does not fulfil the optional condition
+        ValueError: if `argument` does not fulfill the optional condition
         AssertionError:
             if `check_arg` was called with a wrong syntax, i.e. `allowed_types`
             does not contain types, e.g. if `1` was passed instead of `int`.
@@ -259,6 +261,101 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
             tb_lineno=back_frame.f_lineno,
         )
         raise e.with_traceback(back_tb)
+
+
+def parse_args_from_str(arg_str, arg_defs):  # , context=None):
+    """
+    Args:
+        args_str (str): argument string, optionally comma-separated
+        arg_defs (tuple): list of argument definitions
+        context (dict, optional):
+            When passed, the arguments  are parsed for ``$(var_name)`` macros,
+            to lookup values from that dict.
+    Returns:
+        (dict) keyword args
+    Raises:
+        TypeError: if `argument` is of an unexpected type
+        ValueError: if `argument` does not fulfill the optional condition
+        AssertionError:
+            if `parse_args_from_str` was called with a wrong syntax, i.e.
+            `arg_defs` is not well-formed.
+
+    Examples::
+
+        arg_defs = (
+            ("name", str),
+            ("amount", float),
+            ("options", dict, {}),
+        )
+        def order(raw_arg_string):
+            kwargs = parse_args_from_str(arg_defs)
+            assert isisnstance(kwargs["name"], str)
+            assert type(kwargs["amount"]) is float
+            assert isisnstance(kwargs["options"], dict)
+    """
+    check_arg(arg_str, str)
+    check_arg(arg_defs, (list, tuple))
+
+    res = {}
+
+    # Special case: '$name()' should not be interpreted as having one "" arg
+    # if arg_defs defines a default for the first arg
+    if arg_str.strip() == "" and len(arg_defs[0]) == 3:
+        arg_str = str(arg_defs[0][2])
+
+    arg_list = [a.strip() for a in arg_str.split(",")]
+    optional_mode = False
+    for arg_def in arg_defs:
+        check_arg(arg_def, (list, tuple))
+        if len(arg_def) == 2:
+            arg_name, arg_type = arg_def
+            arg_default = NO_DEFAULT
+            if optional_mode:
+                raise AssertionError(
+                    "Mandatory arg definition must not follow optional args: `{}`".format(
+                        arg_def
+                    )
+                )
+        elif len(arg_def) == 3:
+            arg_name, arg_type, arg_default = arg_def
+            optional_mode = True
+        else:
+            raise AssertionError("Expected 2- or 3-tuple: {}".format(arg_def))
+
+        if arg_type not in (float, int, str):
+            raise AssertionError(
+                "Unsupported argument definition type: {}".format(arg_def)
+            )
+
+        try:
+            # Get next arg
+            arg_val = arg_list.pop(0)
+            # Allow quotes
+            is_quoted = (arg_val.startswith('"') and arg_val.endswith('"')) or (
+                arg_val.startswith("'") and arg_val.endswith("'")
+            )
+            if is_quoted:
+                # Strip quotes and return as string (don't cast to other types)
+                arg_val = arg_val[1:-1]
+            elif "$(" in arg_val:
+                # The arg seems to be a macro: don't try to cast.
+                pass
+            else:
+                # Raises ValueError:
+                arg_val = arg_type(arg_val)
+        except IndexError:
+            if arg_default is NO_DEFAULT:
+                raise ValueError(
+                    "Missing mandatory arg `{}` in '{}'.".format(arg_name, arg_str)
+                )
+            arg_val = arg_default
+
+        res[arg_name] = arg_val
+
+    if arg_list:
+        raise ValueError("Extra args `{}`.".format(", ".join(arg_list)))
+
+    return res
 
 
 def shorten_string(long_string, max_chars, min_tail_chars=0, place_holder="[...]"):

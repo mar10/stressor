@@ -6,7 +6,13 @@
 import re
 from abc import ABC, abstractmethod
 
-from stressor.util import StressorError, assert_always, check_arg, logger
+from stressor.util import (
+    StressorError,
+    assert_always,
+    check_arg,
+    logger,
+    parse_args_from_str,
+)
 
 #: (dict) Currently known activity classes by their script name,
 #: e.g. {'GetRequest': GetRequestActivity, ...}
@@ -139,7 +145,7 @@ class ActivityBase(ABC):
         The constructor is called by the :class:`SessionManager`, after
         `$(context.var)` macros have been resolved if any.
 
-        The defaulat implementation stores `activity_args` as `self.raw_args`,
+        The default implementation stores `activity_args` as `self.raw_args`,
         however derived classes may choose to add named args explicitly for
         better readability and checking.
         A derived class MUST implement this method and
@@ -221,6 +227,11 @@ class MacroBase(ABC):
     #: Regular expression that extracts '$NAME(ARGS)'
     #: Defaults to ...
     _regex = None
+    #: List of tuples that define the supported positional arguments and
+    #: optional default values.
+    #: See :func:`stressor.util.parse_args_from_str` for syntax.
+    #: If `None`, the raw cotent inside the brackets is passed as single string .
+    _args_def = None
 
     #: Allow late evaluation (e.g. $stamp)
     #: TODO: Not yet implemented
@@ -246,7 +257,7 @@ class MacroBase(ABC):
         return cls._regex
 
     def match_apply(self, context_reader, parent, parent_key):
-        """Parse current value and call self.apply() if thw macro matches.
+        """Parse current value and call self.apply() if the macro matches.
 
         This default implementation supports
         Returns:
@@ -258,13 +269,24 @@ class MacroBase(ABC):
         if not match:
             return (False, None)
         args = match.groups()
-        res = self.apply(context_reader, parent, parent_key, *args)
+        assert len(args) == 1
+        arg_str = args[0]
+        if self._args_def:
+            kwargs = parse_args_from_str(arg_str, self._args_def)
+            res = self.apply(context_reader, parent, parent_key, **kwargs)
+        else:
+            res = self.apply(context_reader, parent, parent_key, arg_str)
         # logger.debug("Eval {}: {} => {}".format(stack, value, res))
         return (True, res)
 
     @abstractmethod
-    def apply(self, context_reader, parent, parent_key, *args):
+    def apply(self, context_reader, parent, parent_key, args_str):
         """
+        Args:
+            context_reader (:class:`ConfigManager`):
+            parent (dict|list):
+            parent_key (str|int):
+            args_str (str|**kwargs):
         Returns:
             (any) The result that was produced (and stored into `parent[parent_key]`)
         """

@@ -11,6 +11,7 @@ run_config:
     user: {name: "joe", password: "secret", guid: "{1234}"}
     new_title: "Test title"
     timeout: 5
+    default_sleep: .03
 
   sessions:
     users: $load(users.yaml)
@@ -41,9 +42,13 @@ sequences:
       mock_result: {"status": "ok", "result": {"guid": "1234"}}
 
     - activity: Sleep
-      duration: .1
+      duration: .01
 
-    - activity: $sleep(.1)
+    - activity: $sleep(.02)
+
+    - activity: $sleep($(default_sleep))
+
+    - activity: $sleep(0.01, 0.02)
 
     # - activity: $debug()
 

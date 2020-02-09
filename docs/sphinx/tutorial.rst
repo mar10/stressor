@@ -18,8 +18,7 @@ As a result we get metrics about reponse times, failures, resource usage,
 etc.
 
 Stressor can be used for testing, benchmarking, load testing, or to generate
-test data.
-
+test data. |br|
 Stressor comes with prebuilt activities for HTTP-request and more, and can be
 extended by custom activity-plugins.
 
@@ -42,7 +41,7 @@ During a run, the scenario is executed in one or more parallel user *sessions*.
 
 **Sequences** are lists of *activities* that are executed in order.
 Sequences named 'init' and 'end' are typically reserved to set-up and tear-down
-scenarios. Often we have a loopping 'main' sequence in the middle, but we
+scenarios. Often we have a looping 'main' sequence in the middle, but we
 can define more sequences with arbitrary names.
 
 **Activities** are the smallest building blocks of scenarios.
@@ -67,6 +66,9 @@ will read and compile the configuration file, execute the scenario, and display
 results and statistics. |br|
 Alternativly include the **Python `stressor` package** in your project, define,
 configure, and run the scenario programmatically.
+
+The *CLI* can open a **monitor** application that displays the current
+execution statistics in real time.
 
 
 Architecture

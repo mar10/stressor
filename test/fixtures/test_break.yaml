@@ -25,7 +25,7 @@ run_config:
 sequences:
   # 'init' is the reserved name for the set-up sequence.
   init:
-    - activity: $sleep(1)
+    - activity: $sleep(0, 5)
 
   # Other sections can have arbitrary names and are excuted in order of appearance
   main:
