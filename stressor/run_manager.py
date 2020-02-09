@@ -176,12 +176,18 @@ class RunManager:
             "tag": rc.get("tag", "n.a."),
             "stage": self.stage,
             "hasErrors": self.has_errors(),
-            "startTimeStr": "{}".format(self.start_dt),
-            "endTimeStr": "{}".format(self.end_dt),
+            "startTimeStr": "{}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")),
             "baseUrl": get_dict_attr(rc, "context.base_url"),
             "stats": stats_info,
             "sessions": sessions,
         }
+        if self.end_dt:
+            res["endTimeStr"] = "{} ({})".format(
+                self.end_dt.strftime("%Y-%m-%d %H:%M:%S"), self.end_dt - self.start_dt
+            )
+        else:
+            res["endTimeStr"] = "{}...".format(datetime.now() - self.start_dt)
+
         return res
 
     def log_info(self, *args, **kwargs):
