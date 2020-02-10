@@ -59,7 +59,7 @@ See also the help::
                         PROJECT
 
     positional arguments:
-    PROJECT               path to configuration file (default: ./project.yaml)
+    SCENARIO              path to configuration file (default: ./scenario.yaml)
 
     optional arguments:
     -h, --help            show this help message and exit

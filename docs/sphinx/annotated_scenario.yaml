@@ -1,6 +1,5 @@
 # Stressor Project Definition
 # See https://github.com/mar10/stressor
-# The project name is derived from the filename without `.yaml` extension.
 
 # System Settings.
 # This values override the system default, but can be overriden by command line args or run configuration

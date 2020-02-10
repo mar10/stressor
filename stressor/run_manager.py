@@ -12,12 +12,11 @@ from collections import defaultdict
 from datetime import datetime
 
 from stressor.config_manager import ConfigManager
-from stressor.deep_dict import get_dict_attr
 from stressor.monitor.server import Monitor
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
 from stressor.statistic_manager import StatisticManager
-from stressor.util import check_arg, logger, set_console_ctrl_handler
+from stressor.util import check_arg, get_dict_attr, logger, set_console_ctrl_handler
 
 
 class RunManager:

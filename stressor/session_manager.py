@@ -10,10 +10,16 @@ import requests
 
 from stressor.config_manager import replace_var_macros
 from stressor.context_stack import ContextStack
-from stressor.deep_dict import get_dict_attr
 from stressor.plugins.base import ActivityAssertionError
 from stressor.statistic_manager import StatisticManager
-from stressor.util import NO_DEFAULT, check_arg, logger, shorten_string, StressorError
+from stressor.util import (
+    NO_DEFAULT,
+    check_arg,
+    get_dict_attr,
+    logger,
+    shorten_string,
+    StressorError,
+)
 
 
 class StoppedError(StressorError):
@@ -28,7 +34,9 @@ class User:
     def __str__(self):
         return "User<{}>".format(self.name)
 
-    def get_auth(self):
+    @property
+    def auth(self):
+        """Return (name, password) tuple."""
         if self.password is None:
             return None
         return (self.name, self.password)
@@ -58,12 +66,6 @@ class SessionManager:
         check_arg(session_id, str)
         check_arg(user, User, or_none=True)
 
-        # Do not share contexts between sessins:
-        context = context.copy()
-
-        context.setdefault("timeout", self.DEFAULT_TIMEOUT)
-        context.setdefault("session_id", session_id)
-
         #: The :class:`User` object that is assigned to this session
         self.user = user or User("anonymous", "")
         #: (bool)
@@ -81,6 +83,13 @@ class SessionManager:
         self.user = user or User("anonymous", "")
         #: The :class:`RunManager` object that holds global settings and definitions
         self.run_manager = run_manager
+
+        # Do not share contexts between sessins:
+        context = context.copy()
+        context.setdefault("timeout", self.DEFAULT_TIMEOUT)
+        context.setdefault("session_id", self.session_id)
+        context.setdefault("user", self.user)
+
         #: The :class:`~stressor.context_stack.ContextStack` object that reflects the current execution path
         self.context_stack = ContextStack(run_manager.host_id, context)
         self.context_stack.push(run_manager.process_id)

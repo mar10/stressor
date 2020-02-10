@@ -263,6 +263,47 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
         raise e.with_traceback(back_tb)
 
 
+def get_dict_attr(d, key_path):
+    """Return the value of a nested dict using dot-notation path.
+
+    Args:
+        d (dict):
+        key_path (str):
+    Raises:
+        KeyError:
+        ValueError:
+        IndexError:
+
+    Examples::
+
+        ...
+
+    Todo:
+        * k[1] instead of k.[1]
+        * default arg
+    """
+    check_arg(d, dict)
+
+    seg_list = key_path.split(".")
+    value = d[seg_list[0]]
+    for seg in seg_list[1:]:
+        if isinstance(value, dict):
+            value = value[seg]
+        elif isinstance(value, (list, tuple)):
+            if not seg.startswith("[") or not seg.endswith("]"):
+                raise ValueError("Use `[INT]` syntax to address list items")
+            seg = seg[1:-1]
+            value = value[int(seg)]
+        else:
+            # raise ValueError("Segment '{}' cannot be nested".format(seg))
+            try:
+                value = getattr(value, seg)
+            except AttributeError:
+                raise  # ValueError("Segment '{}' cannot be nested".format(seg))
+
+    return value
+
+
 def parse_args_from_str(arg_str, arg_defs):  # , context=None):
     """
     Args:

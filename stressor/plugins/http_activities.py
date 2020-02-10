@@ -10,9 +10,8 @@ from urllib.parse import urlencode, urljoin
 from lxml import html
 
 from stressor import __version__
-from stressor.deep_dict import get_dict_attr
 from stressor.plugins.base import ActivityAssertionError, ActivityBase, ActivityError
-from stressor.util import check_arg, logger, shorten_string
+from stressor.util import check_arg, get_dict_attr, logger, shorten_string
 
 
 def is_abs_url(url):

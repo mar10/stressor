@@ -37,6 +37,65 @@ for example: |br|
     :language: yaml
 
 
+Context Variables
+=================
+
+user
+    The current user that is assigned to this session
+
+base_url
+    Default: null
+
+
+Activities
+==========
+Common Args
+-----------
+
+assert_html
+    ...
+assert_json
+    ...
+assert_match
+    ...
+debug
+    ...
+monitor
+    ...
+store_json
+    ...
+
+HTTP Request Activities
+-----------------------
+
+assert_header
+    ...
+timeout
+    ...
+
+
+Script Activities
+-----------------
+
+assert_header
+    ...
+timeout
+    ...
+
+
+Macros
+======
+
+$(context_var)
+    ...
+
+$sleep(min, max)
+    ...
+
+$debug
+    ...
+
+
 Debugging
 =========
 

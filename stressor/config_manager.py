@@ -8,14 +8,20 @@ import re
 
 import yaml
 
-from stressor.deep_dict import get_dict_attr
 from stressor.plugins.base import (
     ActivityBase,
     activity_plugin_map,
     macro_plugin_map,
     register_plugins,
 )
-from stressor.util import PathStack, StressorError, assert_always, check_arg, logger
+from stressor.util import (
+    PathStack,
+    StressorError,
+    assert_always,
+    check_arg,
+    get_dict_attr,
+    logger,
+)
 
 VAR_MACRO_REX = re.compile(r"\$\(\s*(\w[\w.:]*)\s*\)")
 GENERIC_MACRO_REX = re.compile(r"\$\w+.*\(.*\).*")

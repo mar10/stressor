@@ -21,7 +21,7 @@ from stressor.util import init_logging, logger
 
 def handle_run_command(parser, args):
     # try:
-    #     config = read_config(args.project, verbose=args.verbose)
+    #     config = read_config(args.scenario, verbose=args.verbose)
     # except ConfigurationError as e:
     #     parser.error("{}".format(e))
 
@@ -34,7 +34,7 @@ def handle_run_command(parser, args):
     }
 
     rm = RunManager()
-    rm.load_config(args.project)
+    rm.load_config(args.scenario)
     if args.single:
         # if rm.sessions["count"] > 1:
         #     logger.info("Forcing run_config.sessions.count to 1.")
@@ -84,17 +84,11 @@ def run():
     )
 
     sp.add_argument(
-        "project",
-        metavar="PROJECT",
-        default="./project.yaml",
+        "scenario",
+        metavar="SCENARIO",
+        default="./scenario.yaml",
         help="path to configuration file (default: %(default)s)",
     )
-    # sp.add_argument(
-    #     "suite",
-    #     metavar="SUITE",
-    #     nargs="*",
-    #     help="name of a suite definition in the project (multiple values allowed, default: all)",
-    # )
     sp.add_argument(
         "-o",
         "--option",

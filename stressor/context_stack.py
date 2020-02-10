@@ -5,8 +5,7 @@
 """
 from copy import deepcopy
 
-from stressor.deep_dict import get_dict_attr
-from stressor.util import check_arg
+from stressor.util import check_arg, get_dict_attr
 
 
 class RunContext:

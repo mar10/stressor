@@ -5,12 +5,17 @@
 """
 import os
 
+from stressor.session_manager import User
 from stressor.run_manager import RunManager
 
 
 class TestRunManager:
     def setup_method(self):
         self.fixtures_path = os.path.join(os.path.dirname(__file__), "fixtures")
+
+    def test_user(self):
+        user = User("Joe", "secret")
+        assert user.auth == ("Joe", "secret")
 
     def test_dry_run(self):
         config_path = os.path.join(self.fixtures_path, "test_dry_run.yaml")
