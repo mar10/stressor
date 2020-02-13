@@ -11,6 +11,8 @@ run_config:
   sessions:
     users: $load(users.yaml)
     count: 3
+    basic_auth: false
+    verify_ssl: false
 
   # Define what actions should be performed by every session:
   scenario:

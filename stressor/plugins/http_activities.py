@@ -7,6 +7,7 @@ import re
 from pprint import pformat
 from urllib.parse import urlencode, urljoin
 
+# import http.client as http_client
 from lxml import html
 
 from stressor import __version__
@@ -41,18 +42,20 @@ def match_value(pattern, value, info):
 
 
 class HTTPRequestActivity(ActivityBase):
-    REQUEST_ARGS = frozenset(("timeout", "verify", "data", "params", "headers", "json"))
-    ACTIVITY_ARGS = frozenset(
-        (
-            "assert_status",
-            "assert_match",
-            "assert_match_headers",
-            "assert_max_time",
-            "debug",
-            "store_json",
-            "mock_result",
-        )
+    REQUEST_ARGS = frozenset(
+        ("auth", "data", "json", "headers", "params", "timeout", "verify")
     )
+    # ACTIVITY_ARGS = frozenset(
+    #     (
+    #         "assert_match",
+    #         "assert_match_headers",
+    #         "assert_max_time",
+    #         "assert_status",
+    #         "debug",
+    #         "mock_result",
+    #         "store_json",
+    #     )
+    # )
 
     def __init__(self, config_manager, **activity_args):
         # def __init__(self, compile_path, method, url, params=None, **activity_args):
@@ -124,6 +127,7 @@ class HTTPRequestActivity(ActivityBase):
             )
         expanded_args.setdefault("timeout", session.get_context("timeout"))
         assert "timeout" in expanded_args
+        debug = expanded_args.get("debug")
 
         # print("session.dry_run", session.dry_run)
         if session.dry_run:
@@ -137,16 +141,26 @@ class HTTPRequestActivity(ActivityBase):
 
         r_args = {k: v for k, v in expanded_args.items() if k in self.REQUEST_ARGS}
 
-        r_args.setdefault("verify", False)
-        user = session.user
-        if user:
-            r_args.setdefault("auth", (user.name, user.password))
+        verify_ssl = session.sessions.get("verify_ssl", True)
+        r_args.setdefault("verify", verify_ssl)
+
+        basic_auth = session.sessions.get("basic_auth", False)
+        if basic_auth:
+            r_args.setdefault("auth", session.user.auth)
+        # print("r_args", r_args)
+
         headers = r_args.setdefault("headers", {})
         headers.setdefault(
             "User-Agent",
             "session/{} Stressor/{}".format(session.session_id, __version__),
         )
 
+        # if debug:
+        #     http_client.HTTPConnection.debuglevel = 1
+        # else:
+        #     http_client.HTTPConnection.debuglevel = 0
+
+        # The actual HTTP request:
         resp = bs.request(method, url, **r_args)
 
         is_json = False
@@ -156,22 +170,24 @@ class HTTPRequestActivity(ActivityBase):
         except ValueError:
             result = resp.text
 
-        arg = expanded_args.get("assert_status")
         if not resp.ok:
             s = self._format_response(resp, short=True)
             logger.error(s)
 
-        if expanded_args.get("debug"):
+        if debug:
             # not only with --verbose?
-            print(self._format_response(resp, short=False))
+            logger.info(self._format_response(resp, short=False))
             # logger.debug(self._format_response(resp, short=False))
 
-        if not arg:
+        assert_status = expanded_args.get("assert_status")
+        if not assert_status:
             # requests.exceptions.HTTPError: On 404, 500, etc.
             resp.raise_for_status()
-        elif resp.status_code not in arg:
+        elif resp.status_code not in assert_status:
             raise ActivityAssertionError(
-                "Http status does not match {}: {}".format(arg, resp.status_code)
+                "HTTP status does not match {}: {}".format(
+                    assert_status, resp.status_code
+                )
             )
 
         arg = expanded_args.get("assert_match_headers")

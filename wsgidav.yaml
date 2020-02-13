@@ -7,13 +7,14 @@ port: 8082
 
 provider_mapping:
     "/": "test/fixtures/htdocs"
+    "/private": "test/fixtures/htdocs/private"
 
 # ==============================================================================
 # AUTHENTICATION
 http_authenticator:
     accept_basic: true
-    accept_digest: true
-    default_to_digest: true
+    accept_digest: false
+    default_to_digest: false
     trusted_auth_header: null
     domain_controller: null
 
@@ -24,14 +25,11 @@ simple_dc:
     # NOTE: Provider routes without a matching entry here, are inaccessible.
     user_mapping:
         "*": true # default (used for all shares that are not explicitly listed)
-            # "user1":
-            #     password: "abc123"
-            #     # Optional: passed to downstream middleware as environ["wsgidav.auth.roles"]
-            #     roles: ["editor"]
-            # "user2":
-            #     password: "def456"
-            #     password: "qwerty"
-        # "/pub": true  # Pass true to allow anonymous access
+        "/private":
+            "User_1":
+                password: "secret"
+            "User_2":
+                password: "guessme"
 
 
 # ==============================================================================

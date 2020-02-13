@@ -66,26 +66,24 @@ class SessionManager:
         check_arg(session_id, str)
         check_arg(user, User, or_none=True)
 
+        #: The :class:`RunManager` object that holds global settings and definitions
+        self.run_manager = run_manager
+        #: (dict) Global variables for this session. Initialized from the
+        #: run configuration, but not shared between sessions.
+        context = context.copy()
+        #: (str) Unique ID string for this session
+        self.session_id = session_id
         #: The :class:`User` object that is assigned to this session
         self.user = user or User("anonymous", "")
+        #: (dict) Copy of `run_config.sessions` configuration
+        self.sessions = run_manager.run_config["sessions"].copy()
         #: (bool)
         self.dry_run = bool(context.get("dry_run"))
         #: (int)
         self.verbose = context.get("verbose", 3)
         #: (:class:`threading.Event`)
         self.stop_request = run_manager.stop_request
-        #: (float): TODO: determines if a stop request is graceful or not
-        #: Finalize the current sequence, then do 'end' sequence before stopping?
-        self.stop_request_graceful = None
-        #: (str) Unique ID string for this session
-        self.session_id = session_id
-        #: (User) Unique ID string for this session
-        self.user = user or User("anonymous", "")
-        #: The :class:`RunManager` object that holds global settings and definitions
-        self.run_manager = run_manager
 
-        # Do not share contexts between sessins:
-        context = context.copy()
         context.setdefault("timeout", self.DEFAULT_TIMEOUT)
         context.setdefault("session_id", self.session_id)
         context.setdefault("user", self.user)

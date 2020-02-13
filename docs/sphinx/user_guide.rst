@@ -56,7 +56,7 @@ See also the help::
     $ stressor run --help
     usage: stressor run [-h] [-v | -q] [-n] [-o [OPTION [OPTION ...]]] [--single]
                         [--monitor]
-                        PROJECT
+                        SCENARIO
 
     positional arguments:
     SCENARIO              path to configuration file (default: ./scenario.yaml)

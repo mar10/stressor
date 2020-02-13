@@ -20,15 +20,15 @@ run_config:
   context:
     verbose: 4
     base_url: http://127.0.0.1:8082
-    user: { name: "joe", password: "secret", guid: "{1234}" }
-    new_title: "Test title"
     timeout: 1
 
   sessions:
     users: $load(users.yaml)
     count: 3
-    threads_per_process: 5
-    duration: 5
+    # basic_auth: true
+
+    # threads_per_process: 5
+    # duration: 5
 
   # Define what actions should be performed by every session
   scenario:
@@ -67,6 +67,12 @@ sequences:
       assert_html:
         "//*[@class='logo']": true
 
+    - activity: GetRequest
+      url: $(base_url)/private/test.html
+      auth: $(user.auth)
+      assert_match: ".*Secret text.*"
+      debug: true
+
     # - activity: $debug()
 
     - activity: PutRequest
@@ -86,12 +92,12 @@ sequences:
         from pprint import pprint
         pprint(locals())
 
-    - activity: RunScript
-      name: "Print context 2"
-      script: |
-        print(locals())
+    # - activity: RunScript
+    #   name: "Print context 2"
+    #   script: |
+    #     print(locals())
 
-    - activity: $sleep(0.3)
+    # - activity: $sleep(0.3)
 
     - activity: GetRequest
       url: $(base_url)/wsgidav_test_file~$(session_id).txt

@@ -62,6 +62,9 @@ class RunManager:
         self.has_catch_all_hooks = False
         self._hooks = defaultdict(list)
         self.stop_request = threading.Event()
+        #: (float): TODO: determines if a stop request is graceful or not
+        #: Finalize the current sequence, then do 'end' sequence before stopping?
+        self.stop_request_graceful = None
         self.session_list = []
         self.run_config = None
         self.stats = StatisticManager()
@@ -288,7 +291,6 @@ class RunManager:
         user_list = [User(u["name"], u["password"]) for u in user_list]
         user_list = itertools.islice(itertools.cycle(user_list), 0, count)
         user_list = list(user_list)
-        # print(user_list)
 
         monitor = None
         if self.options.get("monitor"):
