@@ -5,6 +5,7 @@
 """
 import re
 import time
+from copy import deepcopy
 
 import requests
 
@@ -231,7 +232,7 @@ class SessionManager:
         )
         start_sequence = time.time()
         for act_idx, activity_args in enumerate(sequence, 1):
-            activity_args = activity_args.copy()
+            activity_args = deepcopy(activity_args)
             activity = activity_args.pop("activity")
 
             with stack.enter("#{:02}-{}".format(act_idx, activity.get_script_name())):

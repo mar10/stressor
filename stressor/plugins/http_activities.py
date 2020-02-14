@@ -147,7 +147,6 @@ class HTTPRequestActivity(ActivityBase):
         basic_auth = session.sessions.get("basic_auth", False)
         if basic_auth:
             r_args.setdefault("auth", session.user.auth)
-        # print("r_args", r_args)
 
         headers = r_args.setdefault("headers", {})
         headers.setdefault(
@@ -159,6 +158,8 @@ class HTTPRequestActivity(ActivityBase):
         #     http_client.HTTPConnection.debuglevel = 1
         # else:
         #     http_client.HTTPConnection.debuglevel = 0
+        if debug:
+            logger.info("HTTPRequest({}, {}, {})...".format(method, url, r_args))
 
         # The actual HTTP request:
         resp = bs.request(method, url, **r_args)
