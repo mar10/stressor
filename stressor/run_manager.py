@@ -286,9 +286,13 @@ class RunManager:
             logger.info("force_single: restricting sessions count to one.")
             count = 1
 
+        # Construct a `User` with at least 'name', 'password', and optional
+        # custom attributes
+        user_list = []
+        for user_dict in sessions["users"]:
+            user = User(**user_dict)
+            user_list.append(user)
         # We have N users and want `count` sessions: re-use round-robin
-        user_list = sessions["users"]
-        user_list = [User(u["name"], u["password"]) for u in user_list]
         user_list = itertools.islice(itertools.cycle(user_list), 0, count)
         user_list = list(user_list)
 

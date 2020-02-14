@@ -8,15 +8,14 @@ run_config:
 
   context:
     base_url: http://127.0.0.1:8082
-    user: {name: "joe", password: "secret", guid: "{1234}"}
-    new_title: "Test title"
     timeout: 5
     default_sleep: .03
+    new_title: "test"
 
   sessions:
     users: $load(users.yaml)
     count: 2
-    threads_per_process: 5
+    # threads_per_process: 5
 
   # Define what actions should be performed by every session
   scenario:
@@ -34,12 +33,14 @@ sequences:
       params:
         name: $(user.name)
         password: $(user.password)
-        assert_json:
-          status: ok
-          store_json:
-            user_guid: result.guid
+        custom: $(user.custom)
+      assert_json:
+        status: ok
+      store_json:
+        user_guid: result.guid
       # Allow unit-test in dry-run mode:
       mock_result: {"status": "ok", "result": {"guid": "1234"}}
+      debug: true
 
     - activity: Sleep
       duration: .01
@@ -72,4 +73,4 @@ sequences:
     - activity: DeleteRequest
       url: $(base_url)/my-logout
       params:
-        guid: $(user.guid)
+        guid: $(user_guid)

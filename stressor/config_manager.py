@@ -71,7 +71,7 @@ def replace_var_macros(value, context):
                             value = value.replace(macro, str(var_value))
                         except (KeyError, TypeError):
                             raise RuntimeError(
-                                "Error evaluating {}: '{}': '{}' not found in context or None.".format(
+                                "Error evaluating {}: '{}': '{}' not found in context (or is None).".format(
                                     stack, org_value, var_name
                                 )
                             )

@@ -28,9 +28,12 @@ class StoppedError(StressorError):
 
 
 class User:
-    def __init__(self, name, password):
+    def __init__(self, name, password, **kwargs):
         self.name = name
         self.password = password
+        for arg_name, arg_val in kwargs.items():
+            assert type(arg_name) in (int, float, str)
+            setattr(self, arg_name, arg_val)
 
     def __str__(self):
         return "User<{}>".format(self.name)

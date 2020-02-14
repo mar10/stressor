@@ -53,6 +53,7 @@ class TestConfigReader:
         assert cr.run_config["sessions"]["users"][0] == {
             "name": "User_1",
             "password": "secret",
+            "custom": "foo",
         }, "$load() macro"
 
         # SleepActivity

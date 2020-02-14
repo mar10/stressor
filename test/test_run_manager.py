@@ -34,7 +34,7 @@ class TestRunManager:
                         kwargs.get("path"), kwargs.get("activity_args")
                     )
                 )
-                # activities.append("{} {}".format(kwargs.get("path"), kwargs["activity"]))
+
             if kwargs.get("error"):
                 errors.append("{} {error}".format(channel, **kwargs))
 
