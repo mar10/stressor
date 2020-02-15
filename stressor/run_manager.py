@@ -17,6 +17,7 @@ from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
 from stressor.statistic_manager import StatisticManager
 from stressor.util import check_arg, get_dict_attr, logger, set_console_ctrl_handler
+from stressor.log import log
 
 
 class RunManager:
@@ -155,6 +156,41 @@ class RunManager:
 
     def has_errors(self, or_warnings=False):
         return self.stats.has_errors()
+
+    def get_cli_summary(self):
+        rc = self.run_config
+        lines = []
+
+        has_errors = self.has_errors()
+
+        ap = lines.append
+        col = log.red if has_errors else log.green
+
+        ap("Result Summary:")
+        ap(col("=-" * 35))
+        ap("Stressor scenario '{}' finished.".format(self.config_manager.name))
+        ap("  Tag:      '{}'".format(rc.get("tag", "n.a.")))
+        ap("  Base URL: {}".format(get_dict_attr(rc, "context.base_url")))
+        ap("  Start:    {}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")))
+        ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
+        ap("Run time {}, netto: n.a.".format(self.end_dt - self.start_dt))
+        ap(
+            "Executed {:,} activities in {:,} sequences, using {:,} parallel sessions.".format(
+                self.stats["activity.count"], -1, len(self.session_list)
+            )
+        )
+        if has_errors:
+            ap(
+                log.red(
+                    "Result: ERROR, found {:,} errors and {:,} warnings.".format(
+                        self.stats["errors"], self.stats["warnings"],
+                    )
+                )
+            )
+        else:
+            ap(log.green("Result: Ok."))
+        ap(col("=-" * 35))
+        return "\n".join(lines)
 
     def get_status_info(self):
         stats_info = self.stats.get_monitor_info()

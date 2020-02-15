@@ -176,3 +176,15 @@ class TestBasics:
         # ctx = {"base_url": "http://example.com", "def_amount": 7}
         # res = parse_args_from_str("$(base_url)/foo, $(def_amount)", arg_def, ctx)
         # assert res == {"name": "http://example.com/foo", "amount": 8, "hint": "test"}
+
+    def test_log(self):
+        from stressor.log import Log
+
+        log = Log("stressor", False)
+        assert log.red("error") == "error"
+        assert log.green("ok") == "ok"
+
+        log = Log("stressor", True)
+        print(log.red("error"))
+        assert log.red("error") == "\x1b[91merror\x1b[39m"
+        assert log.green("ok") == "\x1b[32mok\x1b[39m"

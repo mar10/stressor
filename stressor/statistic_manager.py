@@ -69,7 +69,7 @@ class StatisticManager:
         if self.parent:
             self.parent.add_timing(key, elap)
 
-    def add_error(self, key, error):
+    def add_error(self, session, sequence, key, error):
         key = self._make_key(key)
         self.stats[key + ".errors"] += 1
         self.stats[key + ".last_error"] = "{}".format(error)
@@ -78,7 +78,7 @@ class StatisticManager:
 
     def has_errors(self, or_warnings=False):
         error_count = self.stats["errors"]
-        return error_count
+        return error_count > 0
 
     def format_result(self, simplify=True):
         s = dict(self.stats)

@@ -28,6 +28,7 @@ fabulist = "*"
 PyYAML = "~=5.2"
 lxml = "~=4.4"
 requests = "*"
+sty = "*"
 
 [requires]
 python_version = "3.7"

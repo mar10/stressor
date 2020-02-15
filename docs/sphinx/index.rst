@@ -4,13 +4,16 @@
 stressor
 ########
 
+|travis_badge| |nbsp| |pypi_badge| |nbsp| |lic_badge| |nbsp| |rtd_badge| |nbsp|
+|coverage_badge| |nbsp| |black_badge| |nbsp| |so_badge|
+
 *Stress-test your web app.*
 
 :Project:   https://github.com/mar10/stressor/
 :Version:   |version|, Date: |today|
 
-|travis_badge| |nbsp| |pypi_badge| |nbsp| |lic_badge| |nbsp| |rtd_badge| |nbsp|
-|coverage_badge| |nbsp| |black_badge| |nbsp| |so_badge|
+.. warning::
+  Stressor is currently Work In Progress and **not** fit for production!
 
 .. toctree::
    :hidden:
@@ -27,9 +30,6 @@ stressor
   :target: https://github.com/mar10/stressor
   :name: Live demo
 
-
-.. warning::
-  Stressor is currently Work In Progress and **not** fit for production!
 
 ..
   Major version updates (1.0 => 2.0, 2.0 => 3.0, ...) introduce

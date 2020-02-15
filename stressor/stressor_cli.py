@@ -42,6 +42,8 @@ def handle_run_command(parser, args):
 
     res = rm.run(options, extra_context)
 
+    logger.info(rm.get_cli_summary())
+
     if not res:
         logger.error("Finished with errors.")
         return 1
