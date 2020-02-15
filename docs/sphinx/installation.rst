@@ -38,9 +38,10 @@ your system Python clean, but requires to activate the virtual environment::
   (stressor) $ stressor --help
   ...
 
-.. note::
-   MS Windows users that only need the command line interface may prefer the
-   `MSI installer <https://github.com/mar10/stressor/releases>`_.
+..
+  .. note::
+    MS Windows users that only need the command line interface may prefer the
+    `MSI installer <https://github.com/mar10/stressor/releases>`_.
 
 .. seealso::
    See :doc:`development` for directions for contributors.

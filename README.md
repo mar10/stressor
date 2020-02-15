@@ -10,3 +10,5 @@
 > Stress-test your web app.
 
 **NOTE:** This is work-in-progress and currently pre-alpha!
+
+[Read The Docs](https://stressor.readthedocs.io/en/latest/ug_tutorial.html)

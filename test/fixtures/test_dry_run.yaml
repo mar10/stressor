@@ -40,7 +40,7 @@ sequences:
         user_guid: result.guid
       # Allow unit-test in dry-run mode:
       mock_result: {"status": "ok", "result": {"guid": "1234"}}
-      debug: true
+      # debug: true
 
     - activity: Sleep
       duration: .01

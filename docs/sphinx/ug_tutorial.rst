@@ -71,21 +71,6 @@ The *CLI* can open a **monitor** application that displays the current
 execution statistics in real time.
 
 
-Architecture
-============
-
-  - Run manager
-  - Session manager
-  - Config manager
-
-
-..
-    .. note::
-
-        The CLI calls ``set_pyftpsync_logger(None)`` on startup, so it logs to stdout
-        (and stderr).
-
-
 .. |stressor| raw:: html
 
    <a href="https://en.wikipedia.org/wiki/Stressor"><abbr title="A stressor is a chemical or biological agent, environmental condition, external stimulus or an event that causes stress to an organism.">stressor</abbr></a>

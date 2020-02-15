@@ -9,7 +9,8 @@ stressor
 :Project:   https://github.com/mar10/stressor/
 :Version:   |version|, Date: |today|
 
-|travis_badge| |nbsp| |pypi_badge| |nbsp| |lic_badge| |nbsp| |rtd_badge|
+|travis_badge| |nbsp| |pypi_badge| |nbsp| |lic_badge| |nbsp| |rtd_badge| |nbsp|
+|coverage_badge| |nbsp| |black_badge| |nbsp| |so_badge|
 
 .. toctree::
    :hidden:
@@ -21,11 +22,6 @@ stressor
    development
    changes
 
-
-.. image:: stressor_48x48.png
-   :height: 48px
-   :width: 48px
-   :alt: stressor
 
 .. image:: ../teaser.png
   :target: https://github.com/mar10/stressor
@@ -53,10 +49,10 @@ Features
   * Runs on Linux, macOS, and Windows.
   * TODO
 
+..
+  .. note:: Known Limitations
 
-.. note:: Known Limitations
-
-  * TODO
+    * TODO
 
 
 Quickstart
@@ -95,6 +91,18 @@ be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_ ::
 .. |rtd_badge| image:: https://readthedocs.org/projects/stressor/badge/?version=latest
    :target: https://stressor.readthedocs.io/
    :alt: Documentation Status
+
+.. |coverage_badge| image:: https://coveralls.io/repos/github/mar10/stressor/badge.svg?branch=master
+   :target: https://coveralls.io/github/mar10/stressor?branch=master
+   :alt: Coverage Status
+
+.. |black_badge| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/ambv/black
+   :alt: Code style: black
+
+.. |so_badge| image:: https://img.shields.io/badge/StackOverflow-stressor-blue.svg
+   :target: https://stackoverflow.com/questions/tagged/stressor
+   :alt: StackOverflow: stressor
 
 .. |logo| image:: stressor_48x48.png
    :height: 48px
