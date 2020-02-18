@@ -19,7 +19,7 @@ class Log:
 
     _initialized = False
 
-    def __init__(self, logger_name, enable_color=True):
+    def __init__(self, logger_name, enable_color=False):
         self.logger_name = logger_name
         self.enable_color(enable_color)
 
@@ -69,7 +69,7 @@ class Log:
         return self.color(msg, "green")
 
 
-log = Log("stressor", True)
+log = Log("stressor", False)
 
 
 def red(msg):

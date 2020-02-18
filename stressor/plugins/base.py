@@ -75,8 +75,8 @@ class ActivityBase(ABC):
     #: if any of those args is not defined
     _mandatory_args = None
 
-    # #: (bool)
-    # _default_monitor = False
+    #: (bool)
+    _default_monitor = False
 
     #: (bool)
     _default_ignore_timing = False
@@ -115,6 +115,8 @@ class ActivityBase(ABC):
         Attributes:
             compile_path (str):
             raw_args (dict):
+            monitor (bool):
+            ignore_timing (bool):
         Args:
             compile_path (:class:`PathStack`):
                 The location breadcrumb path of this activity in the configration
@@ -126,6 +128,10 @@ class ActivityBase(ABC):
         """
         self.compile_path = str(config_manager.stack)
         self.raw_args = activity_args
+        self.monitor = activity_args.get("monitor", self._default_monitor)
+        self.ignore_timing = activity_args.get(
+            "ignore_timing", self._default_ignore_timing
+        )
 
     def __str__(self):
         """Return a descriptive string."""

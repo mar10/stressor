@@ -58,12 +58,13 @@ class HTTPRequestActivity(ActivityBase):
     # )
 
     def __init__(self, config_manager, **activity_args):
-        # def __init__(self, compile_path, method, url, params=None, **activity_args):
+        super().__init__(config_manager, **activity_args)
+
         self.compile_path = str(config_manager.stack)
         check_arg(activity_args.get("method"), str)
         check_arg(activity_args.get("url"), str)
         check_arg(activity_args.get("params"), dict, or_none=True)
-        self.raw_args = activity_args
+        # self.raw_args = activity_args
         # self.r_args = {k: v for k, v in self.raw_args.items() if k in self.REQUEST_ARGS}
         # self.a_args = {
         #     k: v for k, v in self.raw_args.items() if k not in self.REQUEST_ARGS

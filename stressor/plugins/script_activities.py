@@ -19,12 +19,19 @@ class RunScriptActivity(ActivityBase):
         self, config_manager, path=None, script=None, export=None, **activity_args
     ):
         """"""
-        self.compile_path = config_manager.stack
         # check_arg(path, str, or_none=True)
         check_arg(
             script, str, or_none=True, condition=path is not None or script is not None
         )
         check_arg(export, (str, list, tuple), or_none=True)
+
+        # TODO: use super.__init__ instead:
+        self.compile_path = str(config_manager.stack)
+        self.raw_args = activity_args
+        self.ignore_timing = activity_args.get(
+            "ignore_timing", self._default_ignore_timing
+        )
+
         if path:
             if script:
                 raise ActivityCompileError(
@@ -53,6 +60,10 @@ class RunScriptActivity(ActivityBase):
             self.export = set(export)
 
         self.raw_args = activity_args
+        self.monitor = activity_args.get("monitor", self._default_monitor)
+        self.ignore_timing = activity_args.get(
+            "ignore_timing", self._default_ignore_timing
+        )
 
     def execute(self, session, **expanded_args):
         """"""

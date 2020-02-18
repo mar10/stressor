@@ -263,7 +263,7 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
         raise e.with_traceback(back_tb)
 
 
-def get_dict_attr(d, key_path):
+def get_dict_attr(d, key_path, default=NO_DEFAULT):
     """Return the value of a nested dict using dot-notation path.
 
     Args:
@@ -282,6 +282,12 @@ def get_dict_attr(d, key_path):
         * k[1] instead of k.[1]
         * default arg
     """
+    if default is not NO_DEFAULT:
+        try:
+            return get_dict_attr(d, key_path)
+        except (AttributeError, KeyError, ValueError, IndexError):
+            return default
+
     check_arg(d, dict)
 
     seg_list = key_path.split(".")
@@ -459,8 +465,10 @@ def format_elap(seconds, count=None, unit="items", high_prec=False):
     else:
         if high_prec:
             res = "{:.3f} sec".format(seconds)
-        else:
+        elif seconds > 5:
             res = "{:.1f} sec".format(seconds)
+        else:
+            res = "{:.2f} sec".format(seconds)
 
     if days == 1:
         res = "{} day {}".format(int(days), res)

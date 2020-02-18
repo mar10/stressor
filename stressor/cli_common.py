@@ -48,6 +48,6 @@ common_parser.add_argument(
 #     help="show progress info, even if redirected or verbose < 3",
 # )
 
-# common_parser.add_argument(
-#     "--no-color", action="store_true", help="prevent use of ansi terminal color codes"
-# )
+common_parser.add_argument(
+    "--no-color", action="store_true", help="prevent use of ansi terminal color codes"
+)

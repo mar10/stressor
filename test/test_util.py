@@ -78,6 +78,14 @@ class TestBasics:
         with pytest.raises(KeyError):
             get_dict_attr(d, "d1.foobar")
 
+        # Defaults:
+        assert get_dict_attr(d, "foobar", "def") == "def"
+        assert get_dict_attr(d, "s1.foobar", "def") == "def"
+        assert get_dict_attr(d, "l2.foobar", "def") == "def"
+        assert get_dict_attr(d, "l2.[99]", "def") == "def"
+        assert get_dict_attr(d, "foobar", "def") == "def"
+        assert get_dict_attr(d, "d1.foobar", "def") == "def"
+
     def test_pathstack(self):
         path = PathStack()
         assert str(path) == "/"
@@ -102,7 +110,7 @@ class TestBasics:
         assert shorten_string(s, 20, min_tail_chars=7) == "Do you s[...] on it?"
 
     def test_format_elap(self):
-        assert format_elap(1.23456) == "1.2 sec"
+        assert format_elap(1.23456) == "1.23 sec"
         assert format_elap(1.23456, high_prec=True) == "1.235 sec"
         assert format_elap(3677) == "1:01:17 hrs"
         assert format_elap(367) == "6:07 min"

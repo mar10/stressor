@@ -83,10 +83,10 @@
       .toggleClass("has-errors", !!result.hasErrors);
 
     table = document.getElementById("run-metrics");
-    updateTable(table, result.stats.seq_stats, result.sessions);
+    updateTable(table, result.stats.seq_stats); //, result.sessions);
 
     table = document.getElementById("session-metrics");
-    updateTable(table, result.sessions);
+    updateTable(table, result.stats.sess_stats);
 
     table = document.getElementById("special-metrics");
     updateTable(

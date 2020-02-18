@@ -109,8 +109,6 @@ class SleepMacro(MacroBase):
         ("min", float),  # mandatory
         ("max", float, None),  # optional
     )
-    #: Sleep activities are ignorable by default
-    _default_ignore_timing = True
 
     def apply(self, config_manager, parent, parent_key, min, max):
         # duration is always a  string, it may even be $(context.var) macro.
@@ -141,6 +139,9 @@ class SleepActivity(ActivityBase):
             - activity: Sleep
               duration: 0.5
     """
+
+    #: Sleep activities are ignorable by default
+    _default_ignore_timing = True
 
     def __init__(self, config_manager, **activity_args):
         super().__init__(config_manager, **activity_args)

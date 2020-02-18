@@ -15,6 +15,7 @@ import sys
 
 from stressor import __version__
 from stressor.cli_common import common_parser, verbose_parser
+from stressor.log import log
 from stressor.run_manager import RunManager
 from stressor.util import init_logging, logger
 
@@ -153,6 +154,9 @@ def run():
 
     # print("verbose", args.verbose)
     init_logging(args.verbose)
+
+    if not args.no_color and sys.stdout.isatty():
+        log.enable_color(True)
 
     if getattr(args, "version", None):
         if args.verbose >= 4:

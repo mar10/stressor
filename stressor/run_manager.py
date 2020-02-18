@@ -12,12 +12,18 @@ from collections import defaultdict
 from datetime import datetime
 
 from stressor.config_manager import ConfigManager
+from stressor.log import log
 from stressor.monitor.server import Monitor
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
 from stressor.statistic_manager import StatisticManager
-from stressor.util import check_arg, get_dict_attr, logger, set_console_ctrl_handler
-from stressor.log import log
+from stressor.util import (
+    check_arg,
+    format_elap,
+    get_dict_attr,
+    logger,
+    set_console_ctrl_handler,
+)
 
 
 class RunManager:
@@ -68,6 +74,7 @@ class RunManager:
         self.stop_request_graceful = None
         self.session_list = []
         self.run_config = None
+        #: :class:`~stressor.statistic_manager.StatisticManager` object that containscurrent execution path
         self.stats = StatisticManager()
         self.options = self.DEFAULT_OPTS.copy()
         self.stage = "ready"
@@ -173,10 +180,17 @@ class RunManager:
         ap("  Base URL: {}".format(get_dict_attr(rc, "context.base_url")))
         ap("  Start:    {}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
-        ap("Run time {}, netto: n.a.".format(self.end_dt - self.start_dt))
+        ap(
+            "Run time {}, net: {}.".format(
+                self.end_dt - self.start_dt,
+                format_elap(self.stats["net_act_time"], high_prec=True),
+            )
+        )
         ap(
             "Executed {:,} activities in {:,} sequences, using {:,} parallel sessions.".format(
-                self.stats["activity.count"], -1, len(self.session_list)
+                self.stats["act_count"],
+                self.stats["seq_count"],
+                len(self.session_list),
             )
         )
         if has_errors:
@@ -194,19 +208,19 @@ class RunManager:
 
     def get_status_info(self):
         stats_info = self.stats.get_monitor_info()
-        sessions = []
-        for idx, sess in enumerate(self.session_list, 1):
-            sessions.append(
-                [
-                    idx,
-                    sess.session_id,
-                    sess.user.name,
-                    "n.a.",
-                    sess.stats["activity.count"],
-                    sess.stats["errors"],
-                    str(sess.context_stack),
-                ]
-            )
+        # sessions = []
+        # for idx, sess in enumerate(self.session_list, 1):
+        #     sessions.append(
+        #         [
+        #             idx,
+        #             sess.session_id,
+        #             sess.user.name,
+        #             "n.a.",
+        #             sess.stats["activities"],
+        #             sess.stats["errors"],
+        #             str(sess.context_stack),
+        #         ]
+        #     )
         rc = self.run_config
         res = {
             "name": self.config_manager.name,
@@ -217,7 +231,7 @@ class RunManager:
             "startTimeStr": "{}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")),
             "baseUrl": get_dict_attr(rc, "context.base_url"),
             "stats": stats_info,
-            "sessions": sessions,
+            # "sessions": sessions,
         }
         if self.end_dt:
             res["endTimeStr"] = "{} ({})".format(
@@ -255,11 +269,13 @@ class RunManager:
                 )
         except KeyboardInterrupt:
             logger.exception("Session thread received Ctrl-C")
+            self.stats.report_error(None, None, None, "KeyboardInterrupt")
             self.stop_request.set()
-            self.stats.inc("errors")
-        except Exception:
+            # self.stats.inc("errors")
+        except Exception as e:
             logger.exception("Session thread raised exception")
-            self.stats.inc("errors")
+            self.stats.report_error(None, None, None, e)
+            # self.stats.inc("errors")
             # raise
         return
 
@@ -278,6 +294,8 @@ class RunManager:
 
         logger.info("Starting session workers...")
         self.set_stage("running")
+        self.stats.report_start(None, None, None)
+
         start_run = time.time()
         for t in thread_list:
             t.start()
@@ -289,14 +307,14 @@ class RunManager:
         self.set_stage("done")
         elap = time.time() - start_run
 
-        self.stats.add_timing("run", elap)
+        # self.stats.add_timing("run", elap)
+        self.stats.report_end(None, None, None)
 
         self.publish("end_run", run_manager=self, elap=elap)
 
         logger.info("Results for {}:\n{}".format(self, self.stats.format_result()))
 
-        error_count = self.has_errors()
-        return error_count == 0
+        return not self.has_errors()
 
     def run(self, options, extra_context=None):
         """Run the current
@@ -365,6 +383,7 @@ class RunManager:
     def stop(self, graceful=2):
         """"""
         # logger.info("Stop request received")
+        # TODO: set errors += 1 if we interrupt a running stage
         self.set_stage("stopping")
         self.stop_request.set()
         return True
