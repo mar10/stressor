@@ -28,6 +28,7 @@ def handle_run_command(parser, args):
 
     options = {
         "monitor": args.monitor,
+        "log_summary": True,
         "dry_run": args.dry_run,
     }
     extra_context = {
@@ -42,8 +43,6 @@ def handle_run_command(parser, args):
         rm.run_config["force_single"] = True
 
     res = rm.run(options, extra_context)
-
-    logger.info(rm.get_cli_summary())
 
     if not res:
         logger.error("Finished with errors.")
@@ -65,20 +64,20 @@ def run():
     parser = argparse.ArgumentParser(
         description="Stress-test your web app.",
         epilog="See also https://github.com/mar10/stressor",
-        parents=[verbose_parser],
+        parents=[verbose_parser, common_parser],
         # allow_abbrev=False,
     )
     parser.add_argument(
         "-V",
         "--version",
         action="store_true",
-        help="display versin info and exit (combine with -v for more information)",
+        help="display version info and exit (combine with -v for more information)",
     )
-    parser.add_argument(
-        "--no-color",
-        action="store_true",
-        help="prevent use of ansi terminal color codes",
-    )
+    # parser.add_argument(
+    #     "--no-color",
+    #     action="store_true",
+    #     help="prevent use of ansi terminal color codes",
+    # )
     subparsers = parser.add_subparsers(help="sub-command help")
 
     # --- Create the parser for the "run" command ------------------------------

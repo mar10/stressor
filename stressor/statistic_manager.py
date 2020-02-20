@@ -323,8 +323,8 @@ class StatisticManager:
                     idx,
                     session_id,
                     info["user"],
-                    f(info, "sequences"),
-                    f(info, "activities"),
+                    f(info, "seq_count"),
+                    f(info, "act_count"),
                     f(info, "errors"),
                     info["path"],
                 ]

@@ -208,19 +208,6 @@ class RunManager:
 
     def get_status_info(self):
         stats_info = self.stats.get_monitor_info()
-        # sessions = []
-        # for idx, sess in enumerate(self.session_list, 1):
-        #     sessions.append(
-        #         [
-        #             idx,
-        #             sess.session_id,
-        #             sess.user.name,
-        #             "n.a.",
-        #             sess.stats["activities"],
-        #             sess.stats["errors"],
-        #             str(sess.context_stack),
-        #         ]
-        #     )
         rc = self.run_config
         res = {
             "name": self.config_manager.name,
@@ -231,7 +218,6 @@ class RunManager:
             "startTimeStr": "{}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")),
             "baseUrl": get_dict_attr(rc, "context.base_url"),
             "stats": stats_info,
-            # "sessions": sessions,
         }
         if self.end_dt:
             res["endTimeStr"] = "{} ({})".format(
@@ -368,6 +354,9 @@ class RunManager:
                 self.stop()
             finally:
                 self.end_dt = datetime.now()
+
+            if self.options.get("log_summary", True):
+                logger.info(self.get_cli_summary())
 
             if monitor:
                 self.set_stage("waiting")

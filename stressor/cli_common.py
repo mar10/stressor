@@ -41,13 +41,6 @@ common_parser.add_argument(
     help="just simulate and log results, but don't change anything",
 )
 
-# common_parser.add_argument(
-#     "--progress",
-#     action="store_true",
-#     default=False,
-#     help="show progress info, even if redirected or verbose < 3",
-# )
-
 common_parser.add_argument(
     "--no-color", action="store_true", help="prevent use of ansi terminal color codes"
 )
