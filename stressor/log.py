@@ -6,8 +6,13 @@
 import logging
 import os
 import sys
+import warnings
 
-import sty
+try:
+    import sty
+except SyntaxError:
+    # sty reuqires Python >= 3.6
+    sty = None
 
 
 logger = logging.getLogger("stressor")
@@ -32,6 +37,9 @@ class Log:
         self._initialized = True
 
     def enable_color(self, flag):
+        if flag and sty is None:
+            warnings.warn("Colored output requires Python 3.6+")
+            flag = False
         if flag:
             self._initialize()
         self.use_colors = flag
