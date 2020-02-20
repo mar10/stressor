@@ -68,14 +68,17 @@ def run():
         parents=[verbose_parser],
         # allow_abbrev=False,
     )
-
     parser.add_argument(
         "-V",
         "--version",
         action="store_true",
         help="display versin info and exit (combine with -v for more information)",
     )
-
+    parser.add_argument(
+        "--no-color",
+        action="store_true",
+        help="prevent use of ansi terminal color codes",
+    )
     subparsers = parser.add_subparsers(help="sub-command help")
 
     # --- Create the parser for the "run" command ------------------------------
