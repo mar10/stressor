@@ -3,15 +3,17 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
+import sys
+
 import pytest
 
 from stressor.util import (
+    PathStack,
     assert_always,
     check_arg,
     format_elap,
     get_dict_attr,
     parse_args_from_str,
-    PathStack,
     shorten_string,
 )
 
@@ -193,6 +195,9 @@ class TestBasics:
         assert log.green("ok") == "ok"
 
         log = Log("stressor", True)
-        print(log.red("error"))
-        assert log.red("error") == "\x1b[91merror\x1b[39m"
-        assert log.green("ok") == "\x1b[32mok\x1b[39m"
+        if sys.version_info < (3, 6):
+            assert log.red("error") == "error", "Python 3.5 must disable colors"
+            assert log.green("ok") == "ok"
+        else:
+            assert log.red("error") == "\x1b[91merror\x1b[39m"
+            assert log.green("ok") == "\x1b[32mok\x1b[39m"

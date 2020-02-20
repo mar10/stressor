@@ -35,7 +35,7 @@ run_config:
     - sequence: init
     - sequence: main
       # repeat: 3
-      duration: 40
+      # duration: 40
     - sequence: end
 
 

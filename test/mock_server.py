@@ -37,6 +37,7 @@ the test whole session::
 
 import multiprocessing
 import os
+import time
 from tempfile import gettempdir
 
 from wsgidav import util
@@ -193,6 +194,7 @@ class WsgiDavTestServer:
         self.proc = multiprocessing.Process(target=run_wsgidav_server, kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
+        start = time.time()
 
         print("Starting WsgiDavTestServer... waiting for request loop...")
 
@@ -202,7 +204,11 @@ class WsgiDavTestServer:
                     self.startup_timeout
                 )
             )
-        print("Starting WsgiDavTestServer... running.")
+        print(
+            "Starting WsgiDavTestServer... running (startup took {:.2f} sec).".format(
+                time.time() - start
+            )
+        )
         return self
 
     def stop(self):
