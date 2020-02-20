@@ -37,7 +37,12 @@ debug
 monitor
     ...
 assert_match
-    ...
+    Check if the result matches a regular expression. |br|
+    Tip: Prepend ``(?i)`` to the expression to enable case insensitive match::
+
+        assert_match: "(?i).*foobar.*"
+
+
 assert_max_time
     ...
 store_json

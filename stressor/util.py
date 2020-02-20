@@ -55,14 +55,15 @@ class PathStack:
     """
 
     def __init__(self, root_name=None, delimiter="/"):
-        self.stack = []  # parent.stack if parent else []
+        self.stack = []
         self.delimiter = delimiter
         if root_name:
             self.push(root_name)
 
     def __str__(self):
-        stack = (str(s) for s in self.stack if s is not _VOID_SEGMENT)
-        return self.delimiter + self.delimiter.join(stack)
+        return self.get_path()
+        # stack = (str(s) for s in self.stack if s is not _VOID_SEGMENT)
+        # return self.delimiter + self.delimiter.join(stack)
 
     def __enter__(self):
         return self
@@ -85,6 +86,13 @@ class PathStack:
 
     def pop(self):
         return self.stack.pop()
+
+    def get_path(self, last_seg=None):
+        stack = [str(s) for s in self.stack if s is not _VOID_SEGMENT]
+        if last_seg is not None:
+            stack = stack[:-1]
+            stack.append(last_seg)
+        return self.delimiter + self.delimiter.join(stack)
 
 
 def init_logging(verbose=3):

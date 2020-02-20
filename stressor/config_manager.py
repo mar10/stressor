@@ -116,7 +116,7 @@ class ConfigManager:
         # self.context = None
         # #: (dict) shortcut to config_all["sequences"]
         # self.sequences = None
-        #: (PathStack) Current compile location
+        #: (:class:`stressor.util.PathStack`) Current compile location
         self.stack = None
         #: (dict) lists of compile errors and warnings
         self.results = {
@@ -178,17 +178,6 @@ class ConfigManager:
 
     def has_errors(self, or_warnings=False):
         return bool(self.results["error"] or (or_warnings and self.results["warning"]))
-
-    # def format_result(self):
-    #     res = []
-    #     if self.results["error"]:
-    #         res.append("Compile errors:")
-    #         for m in self.results["error"]:
-    #             res.append(m)
-    #     if self.results["warning"]:
-    #         re.append("Compile errors:")
-    #     return ("\n  - {}".format(res)).join(res)
-    #     # return pformat(self.results)
 
     def validate_config(self, cfg=None):
         """
@@ -327,7 +316,7 @@ class ConfigManager:
                 return
             elif isinstance(value, (list, tuple)):
                 # Macros may change the list size, so iterate over a copy
-                for idx, elem in tuple(enumerate(value)):
+                for idx, elem in enumerate(tuple(value)):
                     self._compile(elem, value, idx, stack)
                 return
 

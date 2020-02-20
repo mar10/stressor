@@ -126,7 +126,10 @@ class ActivityBase(ABC):
                 Note that the arguments are read at load-time and are not yet
                 expanded (i.e. may contain `$(context_var)` macros).
         """
-        self.compile_path = str(config_manager.stack)
+        self.compile_path = config_manager.stack.get_path(
+            last_seg=self.get_script_name()
+        )
+        # self.compile_path = str(config_manager.stack)
         self.raw_args = activity_args
         self.monitor = activity_args.get("monitor", self._default_monitor)
         self.ignore_timing = activity_args.get(

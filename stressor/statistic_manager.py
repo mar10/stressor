@@ -64,87 +64,68 @@ class StatisticManager:
         self.stats["sessions"][session.session_id] = d
 
     """
-    Stats:
-        activities: int
-        net_activities: int
-        sequences: int
-        errors: int
-        warnings: int
-        started: stamp
-        ended: stamp
-        time: float
-        net_time: float
-        last_error: str
-        last_warning: str
-        stage: str
-        sessions:
-            sid1:
-                activities: int
-                net_activities: int
-                sequences: int
-                errors: int
-                warnings: int
-                started: stamp
-                ended: stamp
-                time: float
-                net_time: float
-                activities_per_sec_60: float
-                activities_per_sec_300: float
-                errors_per_sec_60: float
-                errors_per_sec_300: float
-                cur_activity: str
-                last_error: str
-                last_warning: str
-                stage: str
-            sid2:
-                ...
-        sequence_stats:
-            seq_1:
-                activities: int
-                net_activities: int
-                count: int
-                errors: int
-                warnings: int
-                time: float
-                time_avg: float
-                time_min: float
-                time_max: float
-                net_time: float
-                net_time_avg: float
-                net_time_min: float
-                net_time_max: float
-                activities_per_sec_60: float
-                activities_per_sec_300: float
-                errors_per_sec_60: float
-                errors_per_sec_300: float
-                last_error: str
-                last_warning: str
-            seq_2:
-                ...
-        monitored:
-            act_path_1:
-                count: int
-                errors: int
-                warnings: int
-                time: float
-                time_avg: float
-                time_min: float
-                time_max: float
-                last_error: str
-                last_warning: str
-            act_path_2:
-                ...
-    Snapshot:
-        activities: int
-        sessions: int
-        sessions_active: int
-        sessions_done: int
-        errors: int
-        warnings: int
-        activities_per_sec_60: float
-        activities_per_sec_300: float
-        errors_per_sec_60: float
-        errors_per_sec_300: float
+    {'act_count': 4485,
+    'act_time': 404.5604224205017,
+    'act_time_avg': 0.09020299273589781,
+    'act_time_max': 0.3416469097137451,
+    'act_time_min': 0.00455021858215332,
+    'errors': 0,
+    'monitored': {'/config/sequences/main/2/activity': {'act_count': 889,
+                                                        'act_time': 37.441248655319214,
+                                                        'act_time_avg': 0.04211614021970665,
+                                                        'act_time_max': 0.1545419692993164,
+                                                        'act_time_min': 0.006118059158325195}},
+    'net_act_count': 3586,
+    'net_act_time': 132.06326842308044,
+    'net_act_time_avg': 0.03682745912523158,
+    'net_act_time_max': 0.1629331111907959,
+    'net_act_time_min': 0.00455021858215332,
+    'seq_count': 909,
+    'seq_time': 405.6781575679779,
+    'seq_time_avg': 0.4462906023850142,
+    'seq_time_max': 0.6640150547027588,
+    'seq_time_min': 0.04558515548706055,
+    'sequence_stats': {'end': {'act_count': 20,
+                                'act_time': 1.2047512531280518,
+                                'act_time_avg': 0.060237562656402587,
+                                'act_time_max': 0.10723018646240234,
+                                'act_time_min': 0.0059051513671875,
+                                'errors': 0,
+                                'net_act_count': 10,
+                                'net_act_time': 0.17910146713256836,
+                                'net_act_time_avg': 0.017910146713256837,
+                                'net_act_time_max': 0.042352914810180664,
+                                'net_act_time_min': 0.0059051513671875,
+                                'seq_count': 10,
+                                'seq_time': 1.2114121913909912,
+                                'seq_time_avg': 0.12114121913909912,
+                                'seq_time_max': 0.14590692520141602,
+                                'seq_time_min': 0.1082160472869873,
+                                'warnings': 0},
+                        'init': ...
+    'sessions': {'t1': {'act_count': 454,
+                        'act_time': 40.14628767967224,
+                        'act_time_avg': 0.08842794643099612,
+                        'act_time_max': 0.3342282772064209,
+                        'act_time_min': 0.00455021858215332,
+                        'errors': 0,
+                        'net_act_count': 363,
+                        'net_act_time': 12.54139757156372,
+                        'net_act_time_avg': 0.034549304604858735,
+                        'net_act_time_max': 0.11727690696716309,
+                        'net_act_time_min': 0.00455021858215332,
+                        'path': '/h1/p1/t1',
+                        'seq_count': 92,
+                        'seq_time': 40.26065945625305,
+                        'seq_time_avg': 0.4376158636549245,
+                        'seq_time_max': 0.6443750858306885,
+                        'seq_time_min': 0.05200076103210449,
+                        'user': 'User_1',
+                        'warnings': 0},
+                 't2': {'act_count': 449,
+                 ...
+    'stage': None,
+    'warnings': 0}
     """
 
     def _report(self, mode, session, sequence, activity, error=None):
@@ -168,6 +149,7 @@ class StatisticManager:
                     assert session.pending_activity is None
                     session.pending_activity = activity
                     session.activity_start = now
+                    sess_stats["path"] = activity.compile_path
                 else:
                     # 'end' or 'error'
                     assert session.pending_activity is activity
@@ -198,6 +180,7 @@ class StatisticManager:
                     assert session.pending_sequence is None
                     session.pending_sequence = sequence
                     session.sequence_start = now
+                    sess_stats["path"] = sequence
                 else:
                     # 'end' or 'error'
                     assert session.pending_sequence == sequence
@@ -208,6 +191,7 @@ class StatisticManager:
                         self._add_timing(global_stats, "seq_", elap, is_net=False)
                         self._add_timing(seq_stats, "seq_", elap, is_net=False)
                         self._add_timing(sess_stats, "seq_", elap, is_net=False)
+                        sess_stats["path"] = None
                     else:  # 'error'
                         self._add_error(seq_stats, error)
 
