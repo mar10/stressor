@@ -46,6 +46,8 @@ if_session
     ...
 if_session_not
     ...
+mock_result:
+    ...
 
 
 HTTP Request Activities
@@ -75,10 +77,13 @@ assert_html
 assert_json
     ...
 assert_match_headers
-    ...
+    Check if the headers match a regular expression, for example::
+
+        assert_match_headers: ".*'DAV'.*"
+
+    Note: Prepend ``(?i)`` to the expression to enable case insensitive match:
+    ``"(?i).*'DAV'.*"``
 assert_status
-    ...
-mock_result:
     ...
 
 

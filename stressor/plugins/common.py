@@ -10,8 +10,7 @@ from textwrap import dedent
 import yaml
 
 from stressor.plugins.base import ActivityBase, MacroBase
-
-# from stressor.util import assert_always, check_arg
+from stressor.util import check_arg
 
 
 class LoadMacro(MacroBase):
@@ -145,6 +144,9 @@ class SleepActivity(ActivityBase):
 
     def __init__(self, config_manager, **activity_args):
         super().__init__(config_manager, **activity_args)
+
+        check_arg(activity_args.get("duration"), (str, int, float))
+        check_arg(activity_args.get("duration_2"), (str, int, float), or_none=True)
 
         # TODO: allow random range tuple: (min, max)
 

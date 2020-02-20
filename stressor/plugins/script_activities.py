@@ -15,22 +15,17 @@ from stressor.util import check_arg, logger, shorten_string
 
 
 class RunScriptActivity(ActivityBase):
-    def __init__(
-        self, config_manager, path=None, script=None, export=None, **activity_args
-    ):
+    def __init__(self, config_manager, **activity_args):
         """"""
-        # check_arg(path, str, or_none=True)
-        check_arg(
-            script, str, or_none=True, condition=path is not None or script is not None
-        )
-        check_arg(export, (str, list, tuple), or_none=True)
+        super().__init__(config_manager, **activity_args)
 
-        # TODO: use super.__init__ instead:
-        self.compile_path = str(config_manager.stack)
-        self.raw_args = activity_args
-        self.ignore_timing = activity_args.get(
-            "ignore_timing", self._default_ignore_timing
-        )
+        path = activity_args.get("path")
+        script = activity_args.get("script")
+        export = activity_args.get("export")
+
+        check_arg(path, str, or_none=True)
+        check_arg(script, str, or_none=True)
+        check_arg(export, (str, list, tuple), or_none=True)
 
         if path:
             if script:
@@ -58,12 +53,7 @@ class RunScriptActivity(ActivityBase):
             self.export = set((export,))
         else:
             self.export = set(export)
-
-        self.raw_args = activity_args
-        self.monitor = activity_args.get("monitor", self._default_monitor)
-        self.ignore_timing = activity_args.get(
-            "ignore_timing", self._default_ignore_timing
-        )
+        return
 
     def execute(self, session, **expanded_args):
         """"""
