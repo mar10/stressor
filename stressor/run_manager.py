@@ -214,9 +214,12 @@ class RunManager:
             "scenarioDetails": rc.get("details", "n.a."),
             "tag": rc.get("tag", "n.a."),
             "stage": self.stage,
+            "stageDisplay": "done" if self.stage == "waiting" else self.stage,
             "hasErrors": self.has_errors(),
             "startTimeStr": "{}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")),
             "baseUrl": get_dict_attr(rc, "context.base_url"),
+            "sessionCount": self.stats["sess_count"],
+            "sessionsRunning": self.stats["sess_running"],
             "stats": stats_info,
         }
         if self.end_dt:
@@ -246,13 +249,13 @@ class RunManager:
             session_manager.run()
             # We don't need to print results if only one session was run, since
             # it is also part of the global stats:
-            rc = self.run_config
-            if not rc.get("force_single") and rc["sessions"]["count"] > 1:
-                logger.info(
-                    "Results for {}:\n{}".format(
-                        session_manager, session_manager.stats.format_result()
-                    )
-                )
+            # rc = self.run_config
+            # if not rc.get("force_single") and rc["sessions"]["count"] > 1:
+            #     logger.info(
+            #         "Results for {}:\n{}".format(
+            #             session_manager, session_manager.stats.format_result()
+            #         )
+            #     )
         except KeyboardInterrupt:
             logger.exception("Session thread received Ctrl-C")
             self.stats.report_error(None, None, None, "KeyboardInterrupt")

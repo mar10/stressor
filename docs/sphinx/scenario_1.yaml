@@ -1,3 +1,5 @@
+# Stressor Scenario Definition
+# See https://stressor.readthedocs.io/
 file_version: stressor#0
 
 run_config:

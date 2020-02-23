@@ -30,7 +30,7 @@ Activities
 Common Args
 -----------
 All activites share these common arguments
-(see also :class:`stressor.base.ActivityBase`).
+(see also :class:`~stressor.plugins.base.ActivityBase`).
 
 debug
     ...
@@ -94,7 +94,7 @@ assert_status
 
 Script Activities
 -----------------
-(see also :class:`stressor.script_activities.RunScriptActivity`).
+(see also :class:`~stressor.plugins.script_activities.RunScriptActivity`).
 
 export
     ...
@@ -105,7 +105,7 @@ script
 
 Sleep Activities
 ----------------
-:class:`stressor.common.SleepActivity`
+:class:`~stressor.plugins.common.SleepActivity`
 
 duration
     ...

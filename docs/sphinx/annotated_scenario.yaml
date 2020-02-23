@@ -1,5 +1,5 @@
 # Stressor Scenario Definition
-# See https://github.com/mar10/stressor
+# See https://stressor.readthedocs.io/
 
 # File identifier, must be 'stressor#0'
 file_version: stressor#0

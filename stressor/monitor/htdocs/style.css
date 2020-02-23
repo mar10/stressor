@@ -117,6 +117,7 @@ table.metrics {
   width: 100%;
   background-color: white;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 /* Metrics tables */
@@ -151,9 +152,22 @@ table.metrics td.warn {
 table.metrics td.ok {
   color: green;
 }
+table.metrics th.text,
 table.metrics td.text {
   text-align: left;
-  /* width: 100%; */
+  width: 1;
+}
+table.metrics th.w-xs,
+table.metrics td.w-xs {
+  width: 2em;
+}
+table.metrics th.w-s,
+table.metrics td.w-s {
+  width: 5em;
+}
+table.metrics th.w-m,
+table.metrics td.w-m {
+  width: 15em;
 }
 table.metrics tr.sum {
   font-weight: bold;
@@ -165,3 +179,8 @@ table.metrics tr.no-data td {
 }
 
 /* */
+.col-num {
+  width: 50px;
+  color: blue;
+  text-decoration: underline;
+}

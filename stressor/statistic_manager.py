@@ -15,6 +15,73 @@ logger = logging.getLogger("stressor")
 
 
 class StatisticManager:
+    """
+
+    Example::
+
+        {'act_count': 4485,
+        'act_time': 404.5604224205017,
+        'act_time_avg': 0.09020299273589781,
+        'act_time_max': 0.3416469097137451,
+        'act_time_min': 0.00455021858215332,
+        'errors': 0,
+        'monitored': {'/config/sequences/main/2/activity': {'act_count': 889,
+                                                            'act_time': 37.441248655319214,
+                                                            'act_time_avg': 0.04211614021970665,
+                                                            'act_time_max': 0.1545419692993164,
+                                                            'act_time_min': 0.006118059158325195}},
+        'net_act_count': 3586,
+        'net_act_time': 132.06326842308044,
+        'net_act_time_avg': 0.03682745912523158,
+        'net_act_time_max': 0.1629331111907959,
+        'net_act_time_min': 0.00455021858215332,
+        'seq_count': 909,
+        'seq_time': 405.6781575679779,
+        'seq_time_avg': 0.4462906023850142,
+        'seq_time_max': 0.6640150547027588,
+        'seq_time_min': 0.04558515548706055,
+        'sequence_stats': {'end': {'act_count': 20,
+                                    'act_time': 1.2047512531280518,
+                                    'act_time_avg': 0.060237562656402587,
+                                    'act_time_max': 0.10723018646240234,
+                                    'act_time_min': 0.0059051513671875,
+                                    'errors': 0,
+                                    'net_act_count': 10,
+                                    'net_act_time': 0.17910146713256836,
+                                    'net_act_time_avg': 0.017910146713256837,
+                                    'net_act_time_max': 0.042352914810180664,
+                                    'net_act_time_min': 0.0059051513671875,
+                                    'seq_count': 10,
+                                    'seq_time': 1.2114121913909912,
+                                    'seq_time_avg': 0.12114121913909912,
+                                    'seq_time_max': 0.14590692520141602,
+                                    'seq_time_min': 0.1082160472869873,
+                                    'warnings': 0},
+                            'init': ...
+        'sessions': {'t1': {'act_count': 454,
+                            'act_time': 40.14628767967224,
+                            'act_time_avg': 0.08842794643099612,
+                            'act_time_max': 0.3342282772064209,
+                            'act_time_min': 0.00455021858215332,
+                            'errors': 0,
+                            'net_act_count': 363,
+                            'net_act_time': 12.54139757156372,
+                            'net_act_time_avg': 0.034549304604858735,
+                            'net_act_time_max': 0.11727690696716309,
+                            'net_act_time_min': 0.00455021858215332,
+                            'path': '/h1/p1/t1',
+                            'seq_count': 92,
+                            'seq_time': 40.26065945625305,
+                            'seq_time_avg': 0.4376158636549245,
+                            'seq_time_max': 0.6443750858306885,
+                            'seq_time_min': 0.05200076103210449,
+                            'user': 'User_1',
+                            'warnings': 0},
+                    't2': {'act_count': 449,
+                    ...
+        'stage': None,
+        'warnings': 0}
+    """
     def __init__(self):
         self._lock = threading.RLock()
         self.stats = {
@@ -22,6 +89,8 @@ class StatisticManager:
             "act_time": 0.0,
             "net_act_count": 0,
             "net_act_time": 0.0,
+            "sess_count": 0,
+            "sess_running": 0,
             "errors": 0,
             "warnings": 0,
             "stage": None,
@@ -60,73 +129,10 @@ class StatisticManager:
             "warnings": 0,
             "user": session.user.name,
             "path": str(session.context_stack),
+            "active": False,
         }
         self.stats["sessions"][session.session_id] = d
-
-    """
-    {'act_count': 4485,
-    'act_time': 404.5604224205017,
-    'act_time_avg': 0.09020299273589781,
-    'act_time_max': 0.3416469097137451,
-    'act_time_min': 0.00455021858215332,
-    'errors': 0,
-    'monitored': {'/config/sequences/main/2/activity': {'act_count': 889,
-                                                        'act_time': 37.441248655319214,
-                                                        'act_time_avg': 0.04211614021970665,
-                                                        'act_time_max': 0.1545419692993164,
-                                                        'act_time_min': 0.006118059158325195}},
-    'net_act_count': 3586,
-    'net_act_time': 132.06326842308044,
-    'net_act_time_avg': 0.03682745912523158,
-    'net_act_time_max': 0.1629331111907959,
-    'net_act_time_min': 0.00455021858215332,
-    'seq_count': 909,
-    'seq_time': 405.6781575679779,
-    'seq_time_avg': 0.4462906023850142,
-    'seq_time_max': 0.6640150547027588,
-    'seq_time_min': 0.04558515548706055,
-    'sequence_stats': {'end': {'act_count': 20,
-                                'act_time': 1.2047512531280518,
-                                'act_time_avg': 0.060237562656402587,
-                                'act_time_max': 0.10723018646240234,
-                                'act_time_min': 0.0059051513671875,
-                                'errors': 0,
-                                'net_act_count': 10,
-                                'net_act_time': 0.17910146713256836,
-                                'net_act_time_avg': 0.017910146713256837,
-                                'net_act_time_max': 0.042352914810180664,
-                                'net_act_time_min': 0.0059051513671875,
-                                'seq_count': 10,
-                                'seq_time': 1.2114121913909912,
-                                'seq_time_avg': 0.12114121913909912,
-                                'seq_time_max': 0.14590692520141602,
-                                'seq_time_min': 0.1082160472869873,
-                                'warnings': 0},
-                        'init': ...
-    'sessions': {'t1': {'act_count': 454,
-                        'act_time': 40.14628767967224,
-                        'act_time_avg': 0.08842794643099612,
-                        'act_time_max': 0.3342282772064209,
-                        'act_time_min': 0.00455021858215332,
-                        'errors': 0,
-                        'net_act_count': 363,
-                        'net_act_time': 12.54139757156372,
-                        'net_act_time_avg': 0.034549304604858735,
-                        'net_act_time_max': 0.11727690696716309,
-                        'net_act_time_min': 0.00455021858215332,
-                        'path': '/h1/p1/t1',
-                        'seq_count': 92,
-                        'seq_time': 40.26065945625305,
-                        'seq_time_avg': 0.4376158636549245,
-                        'seq_time_max': 0.6443750858306885,
-                        'seq_time_min': 0.05200076103210449,
-                        'user': 'User_1',
-                        'warnings': 0},
-                 't2': {'act_count': 449,
-                 ...
-    'stage': None,
-    'warnings': 0}
-    """
+        self.stats["sess_count"] += 1
 
     def _report(self, mode, session, sequence, activity, error=None):
         assert mode in ("start", "end", "error")
@@ -197,9 +203,9 @@ class StatisticManager:
 
             elif session:
                 if mode == "start":
-                    pass
+                    global_stats["sess_running"] += 1
                 else:
-                    pass
+                    global_stats["sess_running"] -= 1
             else:
                 if mode == "error":
                     global_stats["errors"] += 1

@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -16,7 +17,7 @@
     <h1>
       <span class="logo flash-on-update"></span>
       Stressor Monitor
-      <span class="value stage" data-value="stage">ready</span>
+      <span class="value stage" data-value="stageDisplay">ready</span>
     </h1>
 
     <button type="button" id="btnStop" disabled>Stop Run Manager</button>
@@ -43,8 +44,6 @@
       <span class="value" data-value="name">n.a.</span>
       <span class="label">Tag:</span>
       <span class="value" data-value="tag">n.a.</span>
-      <!-- <span class="label">Stage:</span>
-      <span class="value" data-value="stage">n.a.</span> -->
       <span class="label">Started:</span>
       <span class="value" data-value="startTimeStr">n.a.</span>
       <span class="label">Ended:</span>
@@ -58,8 +57,10 @@
     <div id="statusContainer" class="info"></div>
 
     <h2>
-      Run Status (<span class="value" data-value="sessionCount">0</span>
-      sessions)
+      Run Status (
+      <span class="value" data-value="sessionCount">0</span>
+      sessions
+      )
     </h2>
 
     <table id="run-metrics" class="metrics">
@@ -92,7 +93,7 @@
           <th class="num">Max.</th>
 
           <th class="num">Count</th>
-          <th class="num">Errors</th>
+          <th class="num err-num">Errors</th>
 
           <th class="num">Count</th>
           <th class="num">Σ</th>
@@ -101,9 +102,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="no-data">
+        <!-- <tr class="no-data">
           <td colspan="10">Nothing to display.</td>
-        </tr>
+        </tr> -->
+        <!-- <tr>
+          <td class="text"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+
+          <td class="num"></td>
+          <td class="num err-num"></td>
+
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+        </tr> -->
       </tbody>
     </table>
 
@@ -134,22 +150,35 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="no-data">
+        <!-- <tr>
+          <td class="text"></td>
+          <td class="num"></td>
+          <td class="num err-num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="text">n.a.</td>
+        </tr> -->
+        <!-- <tr class="no-data">
           <td colspan="7">Use `monitor` option to mark activities.</td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
 
     <h2>
-      <span class="value" data-value="sessionCount">0</span> Running Sessions
+      <span class="value" data-value="sessionCount">0</span>
+      Sessions (
+      <span class="value" data-value="sessionsRunning">0</span>
+      running )
     </h2>
 
     <table id="session-metrics" class="metrics">
       <!-- The colgroup is used by our JS code to copy class names to TDs -->
       <colgroup>
-        <col class="num" />
-        <col class="text" />
-        <col class="text" />
+        <col class="num w-xs" />
+        <col class="text w-s" />
+        <col class="text w-m" />
         <col class="num" />
         <col class="num" />
         <col class="num err-num" />
@@ -157,17 +186,26 @@
       </colgroup>
       <thead>
         <tr>
-          <th class="num">#</th>
-          <th class="text">ID</th>
-          <th class="text">User</th>
+          <th class="num w-xs">#</th>
+          <th class="text w-s">ID</th>
+          <th class="text w-m">User</th>
           <th class="num">Sequences</th>
           <th class="num">Activities</th>
           <th class="num">Errors</th>
-          <th class="num">Current Path</th>
-          <!-- <th>Last Error</th> -->
+          <th class="text">Current Path</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <!-- <tr>
+          <td class="num w-xs"></td>
+          <td class="text w-s"></td>
+          <td class="text w-m"></td>
+          <td class="num"></td>
+          <td class="num"></td>
+          <td class="num err-num"></td>
+          <td class="text">n.a.</td>
+        </tr> -->
+      </tbody>
     </table>
 
     <div id="statusBar">

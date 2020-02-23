@@ -1,8 +1,7 @@
 (function() {
   var interval = 3000,
     pollTimer = null,
-    pollMap = { 0: 0, 1: 60000, 2: 30000, 3: 10000, 4: 3000, 5: 1000 },
-    status = null;
+    pollMap = { 0: 0, 1: 60000, 2: 30000, 3: 10000, 4: 3000, 5: 1000 };
 
   function poll() {
     const tag = "Poll status from stressor";
