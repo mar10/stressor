@@ -82,6 +82,7 @@ class StatisticManager:
         'stage': None,
         'warnings': 0}
     """
+
     def __init__(self):
         self._lock = threading.RLock()
         self.stats = {
