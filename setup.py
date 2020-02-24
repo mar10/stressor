@@ -76,7 +76,7 @@ for cmd in ["bdist_msi"]:
 #   2. users may prefer another server
 #   3. there may already cherrypy versions installed
 
-install_requires = ["lxml", "PyYAML", "requests"]
+install_requires = ["lxml", "PyYAML", "requests", "sty"]
 setup_requires = install_requires
 tests_require = []
 
@@ -144,7 +144,6 @@ build_exe_options = {
     "includes": install_requires,
     "include_files": [],
     "packages": [
-        # "asyncio",  # https://stackoverflow.com/a/41881598/19166
         # "wsgidav.dir_browser",
         # "wsgidav.dc.nt_dc",
     ],
@@ -155,25 +154,25 @@ build_exe_options = {
 }
 
 bdist_msi_options = {
-    "upgrade_code": "{92F74137-38D1-48F6-9730-D5128C8B611E}",
+    "upgrade_code": "{3DA14E9B-1D2A-4D90-92D0-2375CF66AC3D}",
     "add_to_path": True,
 }
 
 packages = find_packages(exclude=["test"])
 print("setup.py: find_packages() -> {}".format(packages))
 
-setup(
-    name="stressor",
-    version=version,
-    author="Martin Wendt",
-    author_email="stressor@wwwendt.de",
-    maintainer="Martin Wendt",
-    maintainer_email="stressor@wwwendt.de",
-    url="https://github.com/mar10/stressor/",
-    description="Stress-test your web app",
-    long_description=readme,
-    long_description_content_type="text/markdown",
-    classifiers=[
+setup_opts = {
+    "name": "stressor",
+    "version": version,
+    "author": "Martin Wendt",
+    "author_email": "stressor@wwwendt.de",
+    "maintainer": "Martin Wendt",
+    "maintainer_email": "stressor@wwwendt.de",
+    "url": "https://github.com/mar10/stressor/",
+    "description": "Stress-test your web app",
+    "long_description": readme,
+    "long_description_content_type": "text/markdown",
+    "classifiers": [
         "Development Status :: 3 - Alpha",
         # "Development Status :: 4 - Beta",
         # "Development Status :: 5 - Production/Stable",
@@ -197,23 +196,26 @@ setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Software Development :: Testing :: Traffic Generation",
     ],
-    keywords="web server load test stress",
-    license="MIT",
-    packages=packages,
-    package_data={
+    "keywords": "web server load test stress",
+    "license": "MIT",
+    "packages": packages,
+    "package_data": {
         # If any package contains *.txt files, include them:
         # "": ["*.css", "*.html", "*.ico", "*.js"],
         # "wsgidav.dir_browser": ["htdocs/*.*"]
     },
-    install_requires=install_requires,
-    setup_requires=setup_requires,
-    tests_require=tests_require,
-    py_modules=[],
-    zip_safe=False,
-    extras_require={},
-    cmdclass={"test": ToxCommand, "sphinx": SphinxCommand},
-    entry_points={"console_scripts": ["stressor = stressor.stressor_cli:run"]},
-    options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
-    # Used by cx_Freeze:
-    executables=executables,
-)
+    "install_requires": install_requires,
+    "setup_requires": setup_requires,
+    "tests_require": tests_require,
+    "py_modules": [],
+    "zip_safe": False,
+    "extras_require": {},
+    "cmdclass": {"test": ToxCommand, "sphinx": SphinxCommand},
+    "entry_points": {"console_scripts": ["stressor = stressor.stressor_cli:run"]},
+    "options": {"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
+}
+
+if use_cx_freeze:
+    setup_opts.update({"executables": executables})
+
+setup(**setup_opts)
