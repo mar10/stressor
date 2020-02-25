@@ -139,6 +139,11 @@ class SessionManager:
     def context(self):
         return self.context_stack.context
 
+    @property
+    def sess_stats(self):
+        sess_stats = self.stats["sessions"][self.session_id]
+        return sess_stats
+
     def get_context(self, dotted_key=None, default=NO_DEFAULT):
         res = self.context_stack.get_attr(dotted_key)
         return res
@@ -148,7 +153,7 @@ class SessionManager:
         # self.publish("log", self.session_id, *args, level="info")
 
     def has_errors(self, or_warnings=False):
-        return self.stats["errors"] > 0
+        return self.sess_stats["errors"] > 0
 
     def report_activity_start(self, sequence, activity):
         """Called by session runner before activities is executed."""
@@ -313,7 +318,7 @@ class SessionManager:
             "end_sequence", session=self, sequence=sequence, path=stack, elap=elap,
         )
         context["last_result"] = None
-        return self.stats["errors"] == 0
+        return not self.has_errors()
 
     def run(self):
         stack = self.context_stack

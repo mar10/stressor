@@ -5,6 +5,7 @@
 """
 import logging
 import os
+import random
 import sys
 import types
 import warnings
@@ -451,6 +452,18 @@ def shorten_string(long_string, max_chars, min_tail_chars=0, place_holder="[...]
     assert len(long_string) == max_chars
 
     return long_string
+
+
+def get_random_number(num_or_tuple):
+    check_arg(num_or_tuple, (int, float, list, tuple), or_none=True)
+
+    if isinstance(num_or_tuple, (tuple, list)):
+        v = random.uniform(*num_or_tuple)
+    elif num_or_tuple:
+        v = float(num_or_tuple)
+    else:
+        v = num_or_tuple
+    return v
 
 
 def format_elap(seconds, count=None, unit="items", high_prec=False):

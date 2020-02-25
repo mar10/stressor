@@ -245,7 +245,7 @@ class StatisticManager:
     def _add_error(self, d, error):
         d.setdefault("errors", 0)
         d["errors"] += 1
-        d["last_error"] = shorten_string("{}".format(error), 50)
+        d["last_error"] = shorten_string("{}".format(error), 150)
 
     def has_errors(self, or_warnings=False):
         error_count = self.stats["errors"]

@@ -7,8 +7,8 @@ import re
 from pprint import pformat
 from urllib.parse import urlencode, urljoin
 
-# import http.client as http_client
 from lxml import html
+import requests
 
 from stressor import __version__
 from stressor.plugins.base import ActivityAssertionError, ActivityBase, ActivityError
@@ -162,7 +162,11 @@ class HTTPRequestActivity(ActivityBase):
             logger.info("HTTPRequest({}, {}, {})...".format(method, url, r_args))
 
         # The actual HTTP request:
+        # try:
         resp = bs.request(method, url, **r_args)
+        # except requests.exceptions.Timeout as e:
+        #     raise
+        # except ReadTimeoutError:
 
         is_json = False
         try:

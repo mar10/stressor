@@ -13,6 +13,7 @@ from stressor.util import (
     check_arg,
     format_elap,
     get_dict_attr,
+    get_random_number,
     parse_args_from_str,
     shorten_string,
 )
@@ -41,6 +42,13 @@ class TestBasics:
         with pytest.raises(ValueError, match=".*Invalid argument value.*"):
             foo("x", -10)
         return
+
+    def test_get_random_number(self):
+        assert get_random_number(None) is None
+        assert get_random_number(1) == 1.0
+        assert 0.1 <= get_random_number((0.1, 2.0)) <= 2.0
+        with pytest.raises(TypeError):
+            get_random_number("1")
 
     def test_get_attr(self):
 

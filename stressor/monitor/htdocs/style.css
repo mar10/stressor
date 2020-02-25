@@ -163,11 +163,11 @@ table.metrics td.w-xs {
 }
 table.metrics th.w-s,
 table.metrics td.w-s {
-  width: 5em;
+  width: 4em;
 }
 table.metrics th.w-m,
 table.metrics td.w-m {
-  width: 15em;
+  width: 10em;
 }
 table.metrics tr.sum {
   font-weight: bold;

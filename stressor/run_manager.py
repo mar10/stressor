@@ -21,6 +21,7 @@ from stressor.util import (
     check_arg,
     format_elap,
     get_dict_attr,
+    get_random_number,
     logger,
     set_console_ctrl_handler,
 )
@@ -223,11 +224,14 @@ class RunManager:
             "stats": stats_info,
         }
         if self.end_dt:
+            elap = self.end_dt - self.start_dt
             res["endTimeStr"] = "{} ({})".format(
-                self.end_dt.strftime("%Y-%m-%d %H:%M:%S"), self.end_dt - self.start_dt
+                self.end_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                format_elap(elap.total_seconds()),
             )
         else:
-            res["endTimeStr"] = "{}...".format(datetime.now() - self.start_dt)
+            elap = datetime.now() - self.start_dt
+            res["endTimeStr"] = "(running for {}...)".format(format_elap(elap.total_seconds()))
 
         return res
 
@@ -285,8 +289,16 @@ class RunManager:
         self.set_stage("running")
         self.stats.report_start(None, None, None)
 
+        ramp_up_delay = self.run_config["sessions"].get("ramp_up_delay")
+
         start_run = time.time()
-        for t in thread_list:
+        for i, t in enumerate(thread_list):
+            if ramp_up_delay and i > 1:
+                delay = get_random_number(ramp_up_delay)
+                logger.info(
+                    "Ramp-up delay for t{:02}: {:.2f} seconds ...".format(i, delay)
+                )
+                time.sleep(delay)
             t.start()
 
         logger.info("All session workers running, now waiting for them to terminate...")
