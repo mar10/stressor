@@ -9,6 +9,7 @@ from copy import deepcopy
 
 import requests
 
+from stressor import log
 from stressor.config_manager import replace_var_macros
 from stressor.context_stack import ContextStack
 from stressor.plugins.base import ActivityAssertionError
@@ -174,6 +175,7 @@ class SessionManager:
 
         msg = []
         # msg.append("{} {}: {!r}:".format(self.context_stack, activity, exc))
+        # msg.append("{!r}:".format(exc))
         msg.append("{!r}:".format(exc))
         if isinstance(exc, ActivityAssertionError):
             msg.append("Failed assertions:")
@@ -185,7 +187,7 @@ class SessionManager:
         msg.append("Context: {}".format(context))
 
         msg = "\n    ".join(msg)
-        logger.error(msg)
+        logger.error(log.red(msg))
         self.stats.report_error(self, sequence, activity, error=msg)
 
         if self.fail_on_errors:

@@ -36,6 +36,7 @@ run_config:
     # duration: 5
     basic_auth: false
     verify_ssl: false
+    ramp_up_delay: 0
 
   # Define what actions should be performed by every session
   scenario:

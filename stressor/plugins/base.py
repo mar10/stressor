@@ -36,6 +36,10 @@ class ActivityError(StressorError):
     """Base for all errors that are explicitly raised by activities."""
 
 
+class ActivityTimeoutError(ActivityError):
+    """Activity timed out."""
+
+
 class ActivityCompileError(ActivityError):
     """Raised when activity constructor fails."""
 

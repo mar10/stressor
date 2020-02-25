@@ -9,9 +9,15 @@ from urllib.parse import urlencode, urljoin
 
 from lxml import html
 import requests
+from requests.exceptions import RequestException
 
 from stressor import __version__
-from stressor.plugins.base import ActivityAssertionError, ActivityBase, ActivityError
+from stressor.plugins.base import (
+    ActivityAssertionError,
+    ActivityBase,
+    ActivityError,
+    ActivityTimeoutError,
+)
 from stressor.util import check_arg, get_dict_attr, logger, shorten_string
 
 
@@ -162,11 +168,12 @@ class HTTPRequestActivity(ActivityBase):
             logger.info("HTTPRequest({}, {}, {})...".format(method, url, r_args))
 
         # The actual HTTP request:
-        # try:
-        resp = bs.request(method, url, **r_args)
-        # except requests.exceptions.Timeout as e:
-        #     raise
-        # except ReadTimeoutError:
+        try:
+            resp = bs.request(method, url, **r_args)
+        except requests.exceptions.Timeout as e:
+            raise ActivityTimeoutError("{}".format(e))
+        except RequestException as e:
+            raise ActivityError("{}".format(e))
 
         is_json = False
         try:

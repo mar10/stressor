@@ -8,13 +8,7 @@ import os
 
 import pytest
 
-from stressor.context_stack import ContextStack  # , RunContext
-
-
-# class TestRunContext:
-# def test_1(self):
-#     ctx = RunContext(None, "test", {})
-#     assert ctx
+from stressor.context_stack import ContextStack
 
 
 class TestContextStack:
@@ -64,4 +58,4 @@ class TestContextStack:
 
         with pytest.raises(RuntimeError):
             for i in range(ContextStack.MAX_DEPTH + 1):
-                cm.push("t{}".format(i), {})
+                cm.push("t{:02}".format(i), {})

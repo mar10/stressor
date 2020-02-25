@@ -163,16 +163,19 @@ class StatisticManager:
                     elap = now - session.activity_start
                     session.pending_activity = None
                     session.activity_start = 0
+                    # We add timings even if activity errored
+                    is_net = not activity.ignore_timing
+
+                    self._add_timing(global_stats, "act_", elap, is_net=is_net)
+                    self._add_timing(sess_stats, "act_", elap, is_net=is_net)
+                    self._add_timing(seq_stats, "act_", elap, is_net=is_net)
+
+                    if activity.monitor:
+                        d = global_stats["monitored"][key]
+                        self._add_timing(d, "act_", elap, is_net=False)
+
                     if mode == "end":
-                        is_net = not activity.ignore_timing
-
-                        self._add_timing(global_stats, "act_", elap, is_net=is_net)
-                        self._add_timing(sess_stats, "act_", elap, is_net=is_net)
-                        self._add_timing(seq_stats, "act_", elap, is_net=is_net)
-
-                        if activity.monitor:
-                            d = global_stats["monitored"][key]
-                            self._add_timing(d, "act_", elap, is_net=False)
+                        pass
                     else:  # 'error'
                         self._add_error(global_stats, error)
                         self._add_error(sess_stats, error)
@@ -194,10 +197,11 @@ class StatisticManager:
                     elap = now - session.sequence_start
                     session.pending_sequence = None
                     session.sequence_start = 0
+
+                    self._add_timing(global_stats, "seq_", elap, is_net=False)
+                    self._add_timing(seq_stats, "seq_", elap, is_net=False)
+                    self._add_timing(sess_stats, "seq_", elap, is_net=False)
                     if mode == "end":
-                        self._add_timing(global_stats, "seq_", elap, is_net=False)
-                        self._add_timing(seq_stats, "seq_", elap, is_net=False)
-                        self._add_timing(sess_stats, "seq_", elap, is_net=False)
                         sess_stats["path"] = None
                     else:  # 'error'
                         self._add_error(seq_stats, error)

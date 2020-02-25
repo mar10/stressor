@@ -26,9 +26,10 @@ run_config:
     users: $load(users.yaml)
     count: 10
     # basic_auth: true
-
+    # verify_ssl: false
     # threads_per_process: 5
     # duration: 5
+    ramp_up_delay: 0.5
 
   # Define what actions should be performed by every session
   scenario:
@@ -71,7 +72,7 @@ sequences:
       url: $(base_url)/private/test.html
       auth: $(user.auth)
       assert_match: ".*Secret text.*"
-      debug: true
+      # debug: true
 
     # - activity: $debug()
 
@@ -79,6 +80,7 @@ sequences:
       url: $(base_url)/wsgidav_test_file~$(session_id).txt
       data: "Test"
       assert_max_time: 0.5
+      # timeout: 0.01
       # debug: true
       monitor: true
 

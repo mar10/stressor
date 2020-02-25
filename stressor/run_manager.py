@@ -231,7 +231,9 @@ class RunManager:
             )
         else:
             elap = datetime.now() - self.start_dt
-            res["endTimeStr"] = "(running for {}...)".format(format_elap(elap.total_seconds()))
+            res["endTimeStr"] = "(running for {}...)".format(
+                format_elap(elap.total_seconds())
+            )
 
         return res
 
@@ -278,7 +280,7 @@ class RunManager:
         thread_list = []
         self.session_list = []
         for i, user in enumerate(user_list, 1):
-            name = "t{}".format(i)
+            name = "t{:02}".format(i)
             sess = SessionManager(self, context, name, user)
             self.session_list.append(sess)
             t = threading.Thread(name=name, target=self._run_one, args=[sess])
