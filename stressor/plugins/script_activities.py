@@ -15,6 +15,10 @@ from stressor.util import check_arg, logger, shorten_string
 
 
 class RunScriptActivity(ActivityBase):
+    _mandatory_args = None
+    _known_args = {"export", "path", "script"}
+    _info_args = _known_args
+
     def __init__(self, config_manager, **activity_args):
         """"""
         super().__init__(config_manager, **activity_args)

@@ -10,6 +10,7 @@ import yaml
 
 from stressor.plugins.base import (
     ActivityBase,
+    ActivityCompileError,
     activity_plugin_map,
     macro_plugin_map,
     register_plugins,
@@ -154,10 +155,11 @@ class ConfigManager:
         hint = "{}: {}".format(path, msg)
         if exc:
             logger.exception(hint)
-        elif level == "warning":
-            logger.warning(hint)
-        else:
-            logger.error(hint)
+        # No need to log, since self.results are also summarized later
+        # elif level == "warning":
+        #     logger.warning(hint)
+        # else:
+        #     logger.error(hint)
 
         self.results[level].append({"msg": msg, "path": path})
 
@@ -305,7 +307,12 @@ class ConfigManager:
             for seq_name in value.get("sequences", {}).keys():
                 stats.register_sequence(seq_name)
 
-        with stack.enter(parent_key, ignore=parent is None):
+        if parent_key == "activity":
+            path_info = parent.get(parent_key)
+        else:
+            path_info = parent_key
+
+        with stack.enter(path_info, ignore=parent is None):
             # logger.debug("compile {}".format(stack))
 
             # Resolve lists and dicts recursively:
@@ -349,9 +356,7 @@ class ConfigManager:
             # set it:
             if isinstance(value, str) and value in activity_plugin_map:
                 # Replace the activity definition with an instance of the class.
-                #
                 # Allow activities to do compile-time checking ad processing
-                # static_activity_key =
                 activity_cls = activity_plugin_map[value]
                 try:
                     # print(parent)
@@ -359,6 +364,9 @@ class ConfigManager:
                     parent[parent_key] = activity_inst
                     if stats:
                         stats.register_activity(activity_inst)
+                except ActivityCompileError as e:
+                    # Don't pass exc to supress stack trace
+                    self.report_error("{}".format(e))
                 except Exception as e:
                     msg = "Could not evaluate activity {!r}".format(value)
                     self.report_error(msg, exc=e)
@@ -407,7 +415,4 @@ class ConfigManager:
             raise ConfigurationError("Config file had compile errors.")
 
         self.config_all = res
-        # self.run_config = res["run_config"]
-        # self.context = self.run_config["context"]
-        # self.sequences = res["sequences"]
         return self.config_all

@@ -168,3 +168,6 @@ class ContextStack:
         if context is None:
             context = self.peek()
         return get_dict_attr(self.as_dict(), key_path)
+
+    def set_last_part(self, name):
+        self.ctx_stack[-1].name = name

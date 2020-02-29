@@ -63,6 +63,7 @@ class SessionManager:
     Run a scenario in a single session.
     """
 
+    #: (float)
     DEFAULT_TIMEOUT = 10.0
 
     def __init__(self, run_manager, context, session_id, user):
@@ -158,12 +159,9 @@ class SessionManager:
 
     def report_activity_start(self, sequence, activity):
         """Called by session runner before activities is executed."""
-        self.stats.report_start(self, sequence, activity)
-        logger.info(
-            "{} {}: {}".format(
-                "DRY-RUN" if self.dry_run else "Execute", self.context_stack, activity,
-            )
-        )
+        path = self.context_stack.path()
+        self.stats.report_start(self, sequence, activity, path=path)
+        logger.info("{} {}".format("DRY-RUN" if self.dry_run else "Execute", path))
 
     def report_activity_error(self, sequence, activity, activity_args, exc):
         """Called session runner when activity `execute()` or assertions raise an error."""
@@ -192,7 +190,6 @@ class SessionManager:
 
         if self.fail_on_errors:
             raise exc
-        # self.results[level].append({"msg": msg, "path": path})
         return
 
     def report_activity_result(self, sequence, activity, activity_args, result, elap):
@@ -257,10 +254,12 @@ class SessionManager:
             activity_args = deepcopy(activity_args)
             activity = activity_args.pop("activity")
 
-            with stack.enter("#{:02}-{}".format(act_idx, activity.get_script_name())):
+            # Add activity info to path
+            with stack.enter("#{:02}-{}".format(act_idx, activity.get_info())):
                 context = stack.context
-
                 expanded_args = self._evaluate_macros(activity_args, context)
+                # Enhance the path info with expanded args
+                stack.set_last_part(activity.get_info(expanded_args=expanded_args))
 
                 error = None
                 result = None

@@ -48,20 +48,21 @@ def match_value(pattern, value, info):
 
 
 class HTTPRequestActivity(ActivityBase):
-    REQUEST_ARGS = frozenset(
-        ("auth", "data", "json", "headers", "params", "timeout", "verify")
+    REQUEST_ARGS = {"auth", "data", "json", "headers", "params", "timeout", "verify"}
+    _mandatory_args = {"method", "url"}
+    _known_args = (
+        REQUEST_ARGS
+        | _mandatory_args
+        | {
+            "store_json",
+            "assert_match_headers",
+            "assert_status",
+            "assert_json",
+            "assert_html",
+        }
     )
-    # ACTIVITY_ARGS = frozenset(
-    #     (
-    #         "assert_match",
-    #         "assert_match_headers",
-    #         "assert_max_time",
-    #         "assert_status",
-    #         "debug",
-    #         "mock_result",
-    #         "store_json",
-    #     )
-    # )
+
+    _info_args = ("method", "url")
 
     def __init__(self, config_manager, **activity_args):
         super().__init__(config_manager, **activity_args)
@@ -75,13 +76,14 @@ class HTTPRequestActivity(ActivityBase):
         #     k: v for k, v in self.raw_args.items() if k not in self.REQUEST_ARGS
         # }
 
-    def __str__(self):
-        url = self.raw_args.get("url")
-        params = self.raw_args.get("params") or ""
+    def get_info(self, info_args=True, expanded_args=None):
+        args_dict = expanded_args if expanded_args else self.raw_args
+        url = args_dict.get("url")
+        params = args_dict.get("params") or ""
         if params:
             params = "?" + urlencode(params)
         if self.__class__ is HTTPRequestActivity:
-            method = "{} ".format(self.raw_args["method"])
+            method = "{} ".format(args_dict["method"])
         else:
             method = ""
         return "{}({}{}{})".format(self.get_script_name(), method, url, params)
