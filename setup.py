@@ -154,8 +154,9 @@ build_exe_options = {
 }
 
 bdist_msi_options = {
-    # "upgrade_code": "{3DA14E9B-1D2A-4D90-92D0-2375CF66AC3D}",
+    "upgrade_code": "{3DA14E9B-1D2A-4D90-92D0-2375CF66AC3D}",
     "add_to_path": True,
+    "all_users": True,
 }
 
 packages = find_packages(exclude=["test"])
@@ -212,10 +213,14 @@ setup_opts = {
     "extras_require": {},
     "cmdclass": {"test": ToxCommand, "sphinx": SphinxCommand},
     "entry_points": {"console_scripts": ["stressor = stressor.stressor_cli:run"]},
-    "options": {"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
+    "options": {},
+    # "options": {"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
 }
 
 if use_cx_freeze:
     setup_opts.update({"executables": executables})
+    setup_opts["options"].update(
+        {"build_exe": build_exe_options, "bdist_msi": bdist_msi_options}
+    )
 
 setup(**setup_opts)
