@@ -154,7 +154,7 @@ build_exe_options = {
 }
 
 bdist_msi_options = {
-    "upgrade_code": "{3DA14E9B-1D2A-4D90-92D0-2375CF66AC3D}",
+    # "upgrade_code": "{3DA14E9B-1D2A-4D90-92D0-2375CF66AC3D}",
     "add_to_path": True,
 }
 

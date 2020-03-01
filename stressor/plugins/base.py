@@ -26,6 +26,19 @@ activity_plugin_map = {}
 #: have been imported.)
 macro_plugin_map = {}
 
+#: (set) all activities accept these arguments
+common_args = set(
+    (
+        "activity",
+        "assert_match",
+        "assert_max_time",
+        "debug",
+        "mock_result",
+        "monitor",
+        "name",
+    )
+)
+
 
 def register_plugins():
     register_activity_plugins()
@@ -70,29 +83,31 @@ class ActivityBase(ABC):
     Classes which names that begin with an underscore ('_') are ignored.
     """
 
-    #: Name by which the actvity can be used in YAML configurations.
+    #: (str) Name by which the actvity can be used in YAML configurations.
     #: Defaults to class name without trailing `...Activity`, e.g.
     #: 'SleepActivity' is called as ``activity: Sleep``
     _script_name = None
 
-    #: If defined, the default implementation of `compile()` will raise an error
-    #: if any of those args is not defined
+    #: (set) If defined, the default implementation of `compile()` will raise
+    #: an error if any of those args is not passed.
     _mandatory_args = None
+
+    #: (set) If defined, the default implementation of `compile()` will raise
+    #: an error if other args are passed to the constructor.
+    _known_args = None
+
+    #: (set) Internal use only!
+    _all_known_args = None
+
+    #: (tuple|None) List of argument names that will be displayed in path
+    #: strings
+    _info_args = None
 
     #: (bool)
     _default_monitor = False
 
     #: (bool)
     _default_ignore_timing = False
-
-    @classmethod
-    def get_script_name(cls):
-        # Note: we must check `cls.__dict__` instead of `cls._script_name`,
-        # because we want to test the local class attribute (not a derived one):
-        if cls.__dict__.get("_script_name") is None:
-            assert_always(cls.__name__.endswith("Activity"))
-            cls._script_name = cls.__name__[:-8]
-        return cls._script_name
 
     @abstractmethod
     def __init__(self, config_manager, **activity_args):
@@ -135,6 +150,24 @@ class ActivityBase(ABC):
         )
         # self.compile_path = str(config_manager.stack)
         self.raw_args = activity_args
+        passed = set(activity_args.keys())
+        if self._mandatory_args:
+            missing = self._mandatory_args.difference(passed)
+            if missing:
+                raise ActivityCompileError(
+                    "Missing mandatory arguments: {}".format(missing)
+                )
+
+        if self._all_known_args is None:
+            if self._known_args:
+                self._all_known_args = common_args | self._known_args
+            else:
+                self._all_known_args = common_args
+
+        extra = passed.difference(self._all_known_args)
+        if extra:
+            raise ActivityCompileError("Unsupported arguments: {}".format(extra))
+
         self.monitor = activity_args.get("monitor", self._default_monitor)
         self.ignore_timing = activity_args.get(
             "ignore_timing", self._default_ignore_timing
@@ -144,10 +177,41 @@ class ActivityBase(ABC):
         """Return a descriptive string."""
         return self.get_info()
 
-    def get_info(self, expanded_args=None):
-        """Return a descriptive string (optionally using expanded args)."""
-        args = self.raw_args if expanded_args is None else expanded_args
-        args = ("{}: {!r}".format(*kv) for kv in args.items())
+    @classmethod
+    def get_script_name(cls):
+        # Note: we must check `cls.__dict__` instead of `cls._script_name`,
+        # because we want to test the local class attribute (not a derived one):
+        if cls.__dict__.get("_script_name") is None:
+            assert_always(cls.__name__.endswith("Activity"))
+            cls._script_name = cls.__name__[:-8]
+        return cls._script_name
+
+    def get_info(self, info_args=True, expanded_args=None):
+        """Return a descriptive string (optionally using expanded args).
+
+        Args:
+            info_args (tuple|bool):
+                List of argument names that should be added to display string.
+                True: default to `self._info_args` (see `None` by default)
+                False: don't add arguments
+                None: all arguments
+            expanded_args (dict, optional):
+                optional argment dict (defaults to `self.raw_args`)
+        """
+        if info_args is True:
+            info_args = self._info_args
+        elif info_args is False:
+            info_args = []
+        arg_dict = self.raw_args if expanded_args is None else expanded_args
+        if info_args:
+            # Add selected args
+            args = (
+                "{}={!r}".format(a, arg_dict.get(a)) for a in info_args if a in arg_dict
+            )
+        else:  # add all args
+            args = (
+                "{}={!r}".format(*kv) for kv in arg_dict.items() if kv[0] != "activity"
+            )
         return "{}({})".format(self.get_script_name(), ", ".join(args))
 
     @abstractmethod

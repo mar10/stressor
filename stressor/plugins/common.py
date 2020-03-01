@@ -139,6 +139,10 @@ class SleepActivity(ActivityBase):
               duration: 0.5
     """
 
+    _mandatory_args = {"duration"}
+    _known_args = {"duration", "duration_2"}
+    _info_args = _known_args
+
     #: Sleep activities are ignorable by default
     _default_ignore_timing = True
 
@@ -147,8 +151,6 @@ class SleepActivity(ActivityBase):
 
         check_arg(activity_args.get("duration"), (str, int, float))
         check_arg(activity_args.get("duration_2"), (str, int, float), or_none=True)
-
-        # TODO: allow random range tuple: (min, max)
 
         # TODO: Support CronTab syntax
         #     https://github.com/taichino/croniter

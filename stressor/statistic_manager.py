@@ -135,7 +135,7 @@ class StatisticManager:
         self.stats["sessions"][session.session_id] = d
         self.stats["sess_count"] += 1
 
-    def _report(self, mode, session, sequence, activity, error=None):
+    def _report(self, mode, session, sequence, activity, path=None, error=None):
         assert mode in ("start", "end", "error")
         assert mode == "error" or error is None
 
@@ -156,7 +156,7 @@ class StatisticManager:
                     assert session.pending_activity is None
                     session.pending_activity = activity
                     session.activity_start = now
-                    sess_stats["path"] = activity.compile_path
+                    sess_stats["path"] = path or activity.compile_path
                 else:
                     # 'end' or 'error'
                     assert session.pending_activity is activity
@@ -217,8 +217,8 @@ class StatisticManager:
 
         return
 
-    def report_start(self, session, sequence, activity):
-        self._report("start", session, sequence, activity)
+    def report_start(self, session, sequence, activity, path=None):
+        self._report("start", session, sequence, activity, path=path)
 
     def report_end(self, session, sequence, activity):
         self._report("end", session, sequence, activity)

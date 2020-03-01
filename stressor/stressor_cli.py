@@ -38,8 +38,6 @@ def handle_run_command(parser, args):
     rm = RunManager()
     rm.load_config(args.scenario)
     if args.single:
-        # if rm.sessions["count"] > 1:
-        #     logger.info("Forcing run_config.sessions.count to 1.")
         rm.run_config["force_single"] = True
 
     res = rm.run(options, extra_context)

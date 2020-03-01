@@ -40,6 +40,9 @@ class TestContextStack:
             "root": "http://example.com",
             "url": "page_2",
         }
+        cm.set_last_part("t2_new")
+        assert cm.path() == "/t1/t2_new"
+        cm.set_last_part("t2")
 
         assert cm.peek().name == "t2"
         assert cm.pop().name == "t2"

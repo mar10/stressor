@@ -298,7 +298,7 @@ class RunManager:
             if ramp_up_delay and i > 1:
                 delay = get_random_number(ramp_up_delay)
                 logger.info(
-                    "Ramp-up delay for t{:02}: {:.2f} seconds ...".format(i, delay)
+                    "Ramp-up delay for t{:02}: {:.2f} seconds...".format(i, delay)
                 )
                 time.sleep(delay)
             t.start()
@@ -315,7 +315,7 @@ class RunManager:
 
         self.publish("end_run", run_manager=self, elap=elap)
 
-        logger.info("Results for {}:\n{}".format(self, self.stats.format_result()))
+        logger.debug("Results for {}:\n{}".format(self, self.stats.format_result()))
 
         return not self.has_errors()
 
