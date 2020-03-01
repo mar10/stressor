@@ -174,8 +174,8 @@ setup_opts = {
     "long_description": readme,
     "long_description_content_type": "text/markdown",
     "classifiers": [
-        "Development Status :: 3 - Alpha",
-        # "Development Status :: 4 - Beta",
+        # "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         # "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
@@ -214,7 +214,6 @@ setup_opts = {
     "cmdclass": {"test": ToxCommand, "sphinx": SphinxCommand},
     "entry_points": {"console_scripts": ["stressor = stressor.stressor_cli:run"]},
     "options": {},
-    # "options": {"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
 }
 
 if use_cx_freeze:
