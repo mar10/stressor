@@ -36,11 +36,11 @@ class Timing:
         self.stream = stream or sys.stdout
 
     def __enter__(self):
-        self.start = time.time()
+        self.start = time.monotonic()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        elap = time.time() - self.start
+        elap = time.monotonic() - self.start
         msg = ["Timing {:<20} took {:>6.3f} sec".format(repr(self.name), elap)]
         if self.count:
             fmt = self.fmt or "{:0,.1f} bytes/sec"

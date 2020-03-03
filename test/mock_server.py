@@ -194,7 +194,7 @@ class WsgiDavTestServer:
         self.proc = multiprocessing.Process(target=run_wsgidav_server, kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
-        start = time.time()
+        start = time.monotonic()
 
         print("Starting WsgiDavTestServer... waiting for request loop...")
 
@@ -206,7 +206,7 @@ class WsgiDavTestServer:
             )
         print(
             "Starting WsgiDavTestServer... running (startup took {:.2f} sec).".format(
-                time.time() - start
+                time.monotonic() - start
             )
         )
         return self

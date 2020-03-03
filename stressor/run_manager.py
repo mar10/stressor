@@ -293,7 +293,7 @@ class RunManager:
 
         ramp_up_delay = self.run_config["sessions"].get("ramp_up_delay")
 
-        start_run = time.time()
+        start_run = time.monotonic()
         for i, t in enumerate(thread_list):
             if ramp_up_delay and i > 1:
                 delay = get_random_number(ramp_up_delay)
@@ -308,7 +308,7 @@ class RunManager:
             t.join()
 
         self.set_stage("done")
-        elap = time.time() - start_run
+        elap = time.monotonic() - start_run
 
         # self.stats.add_timing("run", elap)
         self.stats.report_end(None, None, None)

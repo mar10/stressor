@@ -249,7 +249,7 @@ class SessionManager:
             "start_sequence", session=self, sequence=sequence, path=stack,
         )
         self.stats.report_start(self, seq_name, None)
-        start_sequence = time.time()
+        start_sequence = time.monotonic()
         for act_idx, activity_args in enumerate(sequence, 1):
             activity_args = deepcopy(activity_args)
             activity = activity_args.pop("activity")
@@ -272,7 +272,7 @@ class SessionManager:
                     context=context,
                     path=stack,
                 )
-                start_activity = time.time()
+                start_activity = time.monotonic()
 
                 self.report_activity_start(seq_name, activity)
 
@@ -283,7 +283,7 @@ class SessionManager:
                     result = activity.execute(self, **expanded_args)
                     context["last_result"] = result
                     # Evaluate standard `assert_...` and `store_...` clauses:
-                    elap = time.time() - start_activity
+                    elap = time.monotonic() - start_activity
                     self._process_activity_result(
                         activity, activity_args, result, elap,
                     )
@@ -300,7 +300,7 @@ class SessionManager:
                     # return False
 
                 finally:
-                    elap = time.time() - start_activity
+                    elap = time.monotonic() - start_activity
                     self.publish(
                         "end_activity",
                         session=self,
@@ -313,7 +313,7 @@ class SessionManager:
                         context=context,
                     )
 
-        elap = time.time() - start_sequence
+        elap = time.monotonic() - start_sequence
         self.stats.report_end(self, seq_name, None)
         self.publish(
             "end_sequence", session=self, sequence=sequence, path=stack, elap=elap,
@@ -333,7 +333,7 @@ class SessionManager:
         self.publish("start_session", session=self)
         self.stats.report_start(self, None, None)
 
-        start_session = time.time()
+        start_session = time.monotonic()
         skip_all = False
         skip_all_but_end = False
 
@@ -346,7 +346,7 @@ class SessionManager:
             sequence = sequences.get(seq_name)
             loop_repeat = int(seq_def.get("repeat", 0))
             loop_duration = float(seq_def.get("duration", 0))
-            start_seq_loop = time.time()
+            start_seq_loop = time.monotonic()
             loop_idx = 0
             while True:
                 loop_idx += 1
@@ -365,7 +365,7 @@ class SessionManager:
                     )
                     break
 
-                now = time.time()
+                now = time.monotonic()
                 # `Sequence duration: SECS`:
                 if loop_duration > 0 and now > (start_seq_loop + loop_duration):
                     logger.info(
@@ -403,7 +403,7 @@ class SessionManager:
                         break
             # self.stats.report_end(self, seq_name, None)
 
-        elap = time.time() - start_session
+        elap = time.monotonic() - start_session
         self.stats.report_end(self, None, None)
 
         self.publish("end_session", session=self, elap=elap)

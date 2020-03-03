@@ -148,7 +148,7 @@ class StatisticManager:
         elap = 0
 
         with self._lock:
-            now = time.time()
+            now = time.monotonic()
             if activity:
                 assert session and sequence
                 key = activity.compile_path
