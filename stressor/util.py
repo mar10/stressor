@@ -88,8 +88,10 @@ class PathStack:
     def pop(self):
         return self.stack.pop()
 
-    def get_path(self, last_seg=None):
+    def get_path(self, skip_segs=0, last_seg=None):
         stack = [str(s) for s in self.stack if s is not _VOID_SEGMENT]
+        if skip_segs > 0:
+            stack = stack[skip_segs:]
         if last_seg is not None:
             stack = stack[:-1]
             stack.append(last_seg)

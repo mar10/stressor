@@ -224,7 +224,7 @@ class StatisticManager:
         self._report("end", session, sequence, activity)
 
     def report_error(self, session, sequence, activity, error):
-        self._report("error", session, sequence, activity, error)
+        self._report("error", session, sequence, activity, error=error)
 
     def _add_timing(self, d, key_prefix, elap, is_net=None):
         p = key_prefix

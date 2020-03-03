@@ -136,6 +136,8 @@ table.metrics td {
   /* background-color: white; */
   border: 1px solid #eee;
   padding: 1px 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 table.metrics th.num,
 table.metrics td.num {

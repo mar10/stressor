@@ -132,7 +132,13 @@ class ActivityBase(ABC):
             - Optionally call `compiler.add_warning()`
 
         Attributes:
+            compile_path_short (str):
+                Path to location of definition in the configuration, e.g.
+                '/main/2/PutRequest'
             compile_path (str):
+                Path to location of definition in the configuration with
+                added argument infos, e.g.
+                '/main/2/PutRequest($(base_url)/test.html)'
             raw_args (dict):
             monitor (bool):
             ignore_timing (bool):
@@ -145,11 +151,13 @@ class ActivityBase(ABC):
                 Note that the arguments are read at load-time and are not yet
                 expanded (i.e. may contain `$(context_var)` macros).
         """
-        self.compile_path = config_manager.stack.get_path(
-            last_seg=self.get_script_name()
-        )
-        # self.compile_path = str(config_manager.stack)
         self.raw_args = activity_args
+        self.compile_path_short = config_manager.stack.get_path(
+            skip_segs=2, last_seg=self.get_script_name()
+        )
+        self.compile_path = config_manager.stack.get_path(
+            skip_segs=2, last_seg=self.get_info()
+        )
         passed = set(activity_args.keys())
         if self._mandatory_args:
             missing = self._mandatory_args.difference(passed)
