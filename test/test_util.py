@@ -12,6 +12,7 @@ from stressor.util import (
     assert_always,
     check_arg,
     format_elap,
+    format_rate,
     get_dict_attr,
     get_random_number,
     parse_args_from_str,
@@ -126,6 +127,18 @@ class TestBasics:
         assert format_elap(367) == "6:07 min"
         assert format_elap(367, high_prec=True) == "6:07.00 min"
         assert format_elap(12.34, count=10) == "12.3 sec, 0.8 items/sec"
+
+    def test_format_rate(self):
+        assert format_rate(0, 0) == "0"
+        assert format_rate(0, None) == "0"
+        assert format_rate(None, 0) == "0"
+        assert format_rate(12345, 0) == "0"
+        assert format_rate(12345, 10.0) == "1234"
+        assert format_rate(12345, 100.0) == "123.5"
+        assert format_rate(12345, 1000.0) == "12.35"
+        assert format_rate(12345, 10000.0) == "1.234"
+        assert format_rate(12345, 100000.0) == "0.123"
+        assert format_rate(12345, 1000000.0) == "0.012"
 
     def test_parse_args_from_str(self):
         arg_def = (

@@ -37,6 +37,33 @@ for example: |br|
     :language: yaml
 
 
+Script Activities
+-----------------
+
+`RunScript` activities are the swiss army knife for the scenario definitions.
+The follwing example shows inline script definitions.
+
+.. code-block:: yaml
+    :linenos:
+
+    main:
+
+    - activity: RunScript
+        export: ["the_answer"]
+        script: |
+        the_answer = 6 * 7
+        print("The answer is {}".format(the_answer))
+
+    - activity: RunScript
+        name: "GET example.com"
+        # debug: true
+        script: |
+        r = session.browser.get("http://example.com")
+        result = r.status_code
+
+
+
+
 Debugging
 =========
 

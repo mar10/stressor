@@ -34,9 +34,11 @@ Common Args
 All activites share these common arguments
 (see also :class:`~stressor.plugins.base.ActivityBase`).
 
-debug
-    ...
-monitor
+debug (bool, optional)
+    Default: false
+monitor (bool, optional)
+    Default: false
+name (str, optional)
     ...
 assert_match
     Check if the result matches a regular expression. |br|
@@ -47,35 +49,36 @@ assert_match
 
 assert_max_time
     ...
-store_json
-    ...
 if_session
     ...
 if_session_not
     ...
 mock_result:
     ...
+store_json
+    ...
 
 
 HTTP Request Activities
 -----------------------
 
-Passed directly to the `requests` library:
+The following arguments are passed directly to the
+`requests <https://requests.readthedocs.io>`_ library:
 
-auth:
+auth (2-tuple, optional):
     ...
-data:
+data (dict):
+    Used to pass form-encoded data with POST requests.
+json (dict):
+    Used to pass JSON data with POST requests.
+headers (dict):
     ...
-json:
-    ...
-headers
-    ...
-params
-    ...
-timeout
-    ...
-verify
-    ...
+params (dict):
+    Pass URL arguments with GET/POST, ... requests.
+timeout (float, optional):
+    Request timneout in seconds (default: 10).
+verify (bool, optional):
+    False: ignore SSL certificate verification errors (default: True).
 
 Additional arguments:
 
@@ -94,18 +97,41 @@ assert_status
     ...
 
 
-Script Activities
------------------
+'RunScript' Activity
+--------------------
 (see also :class:`~stressor.plugins.script_activities.RunScriptActivity`).
 
-export
-    ...
-path
-    ...
-script
-    ...
+export (bool|null|list, optional)
+    List of local variable names (defined by the script) should be exported
+    into the run context.
+    Pass `null` or `false` to define 'no export wanted'.
+    Omitting this argumet is considered 'undefined' and will emit a warning if
+    the script defines variables.
 
-Sleep Activities
+path (str, optional)
+    Path to a python file.
+
+    .. code-block:: yaml
+
+        - activity: RunScript
+            export: ["the_answer"]
+            path: "my_script.py"
+
+script (str, optional)
+    Python script code, e.g.
+
+    .. code-block:: yaml
+
+        - activity: RunScript
+            export: ["the_answer"]
+            script: |
+            the_answer = 6 * 7
+            print("The answer is {}".format(loclhost))
+
+    Afterwars the context contains the result and can be accessed like
+    ``$(the_answer)``.
+
+'Sleep' Activity
 ----------------
 :class:`~stressor.plugins.common.SleepActivity`
 
@@ -128,11 +154,13 @@ base_url
 Macros
 ======
 
-$(`context_var`)
-    ...
+``$(context_var)``:
+    This macro looks-up and returns a variable of the current run context,
+    for examle ``$(base_url)``. Use dots ('.') to address sub-members, e.g.
+    ``$(user.name)``.
 
-$sleep(min, max)
-    ...
+``$sleep(duration)`` or ``$sleep(min, max)``:
+    A shortcut to the ``Sleep`` activity (see above).
 
-$debug
-    ...
+``$debug``:
+    Dump the current run context (useful when debuggin scripts).

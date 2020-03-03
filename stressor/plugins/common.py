@@ -141,7 +141,7 @@ class SleepActivity(ActivityBase):
 
     _mandatory_args = {"duration"}
     _known_args = {"duration", "duration_2"}
-    _info_args = _known_args
+    _info_args = ("name", "duration", "duration_2")
 
     #: Sleep activities are ignorable by default
     _default_ignore_timing = True

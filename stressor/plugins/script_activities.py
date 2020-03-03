@@ -11,13 +11,13 @@ from stressor.plugins.base import (
     ActivityCompileError,
     ScriptActivityError,
 )
-from stressor.util import check_arg, logger, shorten_string
+from stressor.util import NO_DEFAULT, check_arg, logger, shorten_string
 
 
 class RunScriptActivity(ActivityBase):
     _mandatory_args = None
     _known_args = {"export", "path", "script"}
-    _info_args = _known_args
+    _info_args = ("name", "path")
 
     def __init__(self, config_manager, **activity_args):
         """"""
@@ -25,7 +25,14 @@ class RunScriptActivity(ActivityBase):
 
         path = activity_args.get("path")
         script = activity_args.get("script")
-        export = activity_args.get("export")
+        # Allow to pass `export: null` to define 'no export wanted'
+        # (omitting the argumet is considered 'undefined' and will emit a
+        # warning if the script produces variables)
+        export = activity_args.get("export", NO_DEFAULT)
+        if export in (None, False):
+            export = tuple()
+        elif export is NO_DEFAULT:
+            export = None
 
         check_arg(path, str, or_none=True)
         check_arg(script, str, or_none=True)
@@ -126,11 +133,19 @@ class RunScriptActivity(ActivityBase):
         # logger.info("Script locals:\n{}".format(pformat(local_vars)))
         if expanded_args.get("debug") or session.verbose >= 5:
             logger.info(
-                "{} {}\n  Ccontext after execute:\n    {}\n  return value: {!r}".format(
+                "{} {}\n  Context after execute:\n    {}\n  return value: {!r}".format(
                     session.context_stack,
                     self,
                     pformat(session.context, indent=4),
                     result,
                 )
             )
+        elif session.verbose >= 3 and result is not None:
+            logger.info(
+                "{} returnd: {!r}".format(
+                    session.context_stack,
+                    shorten_string(result, 100) if isinstance(result, str) else result,
+                )
+            )
+
         return result

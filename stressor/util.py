@@ -501,6 +501,23 @@ def format_elap(seconds, count=None, unit="items", high_prec=False):
     return res
 
 
+def format_rate(count, time, unit=None, high_prec=False):
+    """Return count / time with reasonable precision."""
+    if not time or not count:
+        return "0"
+
+    rate = float(count) / float(time)
+    if rate >= 1000:
+        res = "{}".format(int(round(rate)))
+    elif rate >= 100:
+        res = "{}".format(round(rate, 1))
+    elif rate >= 10:
+        res = "{}".format(round(rate, 2))
+    else:
+        res = "{}".format(round(rate, 3))
+    return res
+
+
 # def format_relative_datetime(dt, as_html=False):
 #     """Format a datetime object as relative expression (i.e. '3 minutes ago')."""
 #     try:

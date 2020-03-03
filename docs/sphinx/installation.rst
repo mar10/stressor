@@ -7,6 +7,10 @@ be installed using
 `pip <https://pip.pypa.io/en/stable>`_
 or `pipenv <https://github.com/kennethreitz/pipenv>`_.
 
+.. note::
+  MS Windows users that only need the command line interface may prefer the
+  `MSI installer <https://github.com/mar10/stressor/releases>`_.
+
 Install Into the System Python
 ------------------------------
 
@@ -37,10 +41,6 @@ your system Python clean, but requires to activate the virtual environment::
   stressor/0.0.1 Python/3.6.1 Darwin-17.6.0-x86_64-i386-64bit
   (stressor) $ stressor --help
   ...
-
-.. note::
-  MS Windows users that only need the command line interface may prefer the
-  `MSI installer <https://github.com/mar10/stressor/releases>`_.
 
 .. seealso::
    See :doc:`development` for directions for contributors.

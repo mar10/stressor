@@ -9,7 +9,7 @@ import time
 from collections import OrderedDict
 from pprint import pformat
 
-from stressor.util import format_elap, get_dict_attr, shorten_string
+from stressor.util import format_elap, format_rate, get_dict_attr, shorten_string
 
 logger = logging.getLogger("stressor")
 
@@ -148,7 +148,7 @@ class StatisticManager:
         elap = 0
 
         with self._lock:
-            now = time.monotonic()
+            now = time.time()
             if activity:
                 assert session and sequence
                 key = activity.compile_path
@@ -285,6 +285,7 @@ class StatisticManager:
                     f(info, "net_act_time", True),
                     f(info, "net_act_time_avg", True),
                     f(info, "net_act_time_max", True),
+                    format_rate(info.get("net_act_count"), info.get("net_act_time")),
                 ]
             )
 

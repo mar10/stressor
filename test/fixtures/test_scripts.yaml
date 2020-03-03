@@ -24,7 +24,7 @@ run_config:
     - sequence: init
     - sequence: main
       # repeat: 3
-      duration: 30
+      duration: 5
     - sequence: end
 
 
@@ -45,7 +45,7 @@ sequences:
 
     - activity: RunScript
       name: "GET example.com"
-      debug: true
+      # debug: true
       script: |
         r = session.browser.get("http://example.com")
         result = r.status_code
@@ -53,8 +53,19 @@ sequences:
     - activity: $debug()
 
     - activity: RunScript
+      export: ["the_answer"]
+      script: |
+        the_answer = 6 * 7
+
+    - activity: RunScript
+      export: ["the_answer"]
+      script: |
+        the_answer = 6 * 7
+
+    - activity: RunScript
       name: "Fabulate"
-      debug: true
+      export: null
+      # debug: true
       script: |
         from fabulist import Fabulist
         fab = Fabulist()
@@ -63,8 +74,8 @@ sequences:
     # - activity: $sleep(0.3)
 
 
-      # - activity: RunScript
-    #   path: script_1.py
+    - activity: RunScript
+      path: script_1.py
     # - activity: RunScript
     #   script: |
     #     temp = Fabulist.quote("${verb}")

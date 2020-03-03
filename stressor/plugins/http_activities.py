@@ -62,7 +62,7 @@ class HTTPRequestActivity(ActivityBase):
         }
     )
 
-    _info_args = ("method", "url")
+    _info_args = ("name", "method", "url")
 
     def __init__(self, config_manager, **activity_args):
         super().__init__(config_manager, **activity_args)

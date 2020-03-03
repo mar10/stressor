@@ -24,7 +24,7 @@ run_config:
 
   sessions:
     users: $load(users.yaml)
-    count: 10
+    count: 20
     # basic_auth: true
     # verify_ssl: false
     # threads_per_process: 5
@@ -87,6 +87,7 @@ sequences:
     - activity: GetRequest
       url: $(base_url)/wsgidav_test_file~$(session_id).txt
       assert_match: "Test"
+      monitor: true
 
     - activity: $sleep(0.3)
 
