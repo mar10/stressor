@@ -9,8 +9,7 @@ import random
 import sys
 import types
 import warnings
-
-# from collections import OrderedDict, defaultdict
+from datetime import datetime
 
 logger = logging.getLogger("stressor")
 
@@ -466,6 +465,11 @@ def get_random_number(num_or_tuple):
     else:
         v = num_or_tuple
     return v
+
+
+def iso_datetime():
+    now = datetime.now().replace(microsecond=0)
+    return now.isoformat(sep=" ")
 
 
 def format_elap(seconds, count=None, unit="items", high_prec=False):

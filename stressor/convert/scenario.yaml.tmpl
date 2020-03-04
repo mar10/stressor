@@ -1,0 +1,47 @@
+# Stressor Scenario Definition
+# See https://stressor.readthedocs.io/
+#
+# Auto-generated {date}
+
+file_version: stressor#0
+
+
+run_config:
+  name: "{name}"
+  tag: "{tag}"
+
+  details: |
+    Auto-generated {date}
+
+  context:
+    base_url: "{base_url}"
+
+  sessions:
+    users: $load(users.yaml)
+    count: 3
+    basic_auth: false
+    verify_ssl: false
+    ramp_up_delay: 0
+
+  # Define what actions should be performed by every session
+  scenario:
+    - sequence: init
+    - sequence: main
+      duration: 10
+      # repeat: 3
+    - sequence: end
+
+
+# List of named action sequences. Used as building blocks for scenarios
+sequences:
+  # 'init' is the reserved name for the set-up sequence.
+  init:
+    - activity: Sleep
+      duration: 0.1
+
+  # Other sections can have arbitrary names and are excuted in order of appearance
+  main: $load(main_activities.yaml)
+
+  # 'end' is the reserved name for the tear-down sequence
+  end:
+    - activity: $sleep(0.1)
