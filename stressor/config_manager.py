@@ -240,6 +240,15 @@ class ConfigManager:
             for seq_name, act_list in cfg["sequences"].items():
                 sequence_names.add(seq_name)
                 stack = "sequences/{}".format(seq_name)
+                if act_list is None:
+                    act_list = []
+                    cfg["sequences"][seq_name] = act_list
+                    self.report_error(
+                        "Ignored undefined list of activities",
+                        level="warning",
+                        stack=stack,
+                    )
+
                 if not isinstance(act_list, list):
                     self.report_error(
                         "Expected list of activities", stack=stack,

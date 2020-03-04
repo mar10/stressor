@@ -244,6 +244,7 @@ class SessionManager:
 
     def run_sequence(self, seq_name, sequence):
         stack = self.context_stack
+        context = stack.context
 
         self.publish(
             "start_sequence", session=self, sequence=sequence, path=stack,
@@ -256,7 +257,7 @@ class SessionManager:
 
             # Add activity info to path
             with stack.enter("#{:02}-{}".format(act_idx, activity.get_info())):
-                context = stack.context
+                # context = stack.context
                 expanded_args = self._evaluate_macros(activity_args, context)
                 # Enhance the path info with expanded args
                 stack.set_last_part(activity.get_info(expanded_args=expanded_args))

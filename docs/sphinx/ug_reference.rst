@@ -36,6 +36,8 @@ All activites share these common arguments
 
 debug (bool, optional)
     Default: false
+ignore_timing (bool, optional)
+    Default: false, except for `Sleep` activities
 monitor (bool, optional)
     Default: false
 name (str, optional)

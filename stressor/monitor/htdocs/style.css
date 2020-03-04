@@ -133,7 +133,6 @@ table#run-metrics tbody tr:last-of-type {
 
 table.metrics th,
 table.metrics td {
-  /* background-color: white; */
   border: 1px solid #eee;
   padding: 1px 4px;
   overflow: hidden;
