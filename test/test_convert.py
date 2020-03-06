@@ -29,11 +29,11 @@ class TestConvert:
             conv.run()
             assert len(conv.entries) == 5
             assert conv.har_version == "1.2"
-            act_yaml_path = os.path.join(target_folder, "main_activities.yaml")
+            act_yaml_path = os.path.join(target_folder, "main_sequence.yaml")
             yaml = open(act_yaml_path, "rt").read()
-            assert "activity: GetRequest" in yaml
-            assert 'url: "/test1.json"' in yaml
-            # assert 'url: "http://127.0.0.1:8082/test1.json"' in yaml
+        assert "activity: GetRequest" in yaml
+        assert 'url: "/test1.json"' in yaml
+        # assert 'url: "http://127.0.0.1:8082/test1.json"' in yaml
         # assert 0
 
     def test_2(self):
@@ -45,6 +45,7 @@ class TestConvert:
         opts = {
             "fspec": os.path.join(self.fixtures_path, "har_2.har"),
             "target_folder": target_folder,
+            "force": True,
         }
         conv = HarConverter(opts)
         conv.run()

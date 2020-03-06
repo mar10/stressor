@@ -15,6 +15,7 @@ import sys
 
 from stressor import __version__
 from stressor.cli_common import common_parser, verbose_parser
+from stressor.convert.har_converter import HarConverter
 from stressor.log import log
 from stressor.run_manager import RunManager
 from stressor.util import init_logging, logger
@@ -47,6 +48,18 @@ def handle_run_command(parser, args):
         return 1
     logger.info("Stressor run succesfully completed.")
     return 0
+
+
+def handle_init_command(parser, args):
+    opts = {
+        "fspec": args.har_file,
+        "target_folder": args.target,
+        "force": args.force,
+        "dry_run": args.dry_run,
+    }
+    conv = HarConverter(opts)
+    res = conv.run()
+    return res
 
 
 def handle_listen_command(parser, args):
@@ -110,6 +123,27 @@ def run():
     )
 
     sp.set_defaults(command=handle_run_command)
+
+    # --- Create the parser for the "init" command ---------------------------
+
+    sp = subparsers.add_parser(
+        "init",
+        parents=[verbose_parser, common_parser],
+        help="create new scenario folder and optinally convert HAR files",
+    )
+    sp.add_argument(
+        "--target", required=True, help="target folder",
+    )
+    sp.add_argument(
+        "--import",
+        dest="har_file",
+        # required=True,
+        help="optional HAR file that is converted",
+    )
+    sp.add_argument(
+        "--force", action="store_true", help="override existing files",
+    )
+    sp.set_defaults(command=handle_init_command)
 
     # --- Create the parser for the "listen" command ---------------------------
 

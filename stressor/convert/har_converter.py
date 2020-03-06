@@ -30,6 +30,7 @@ class HarConverter:
     DEFAULT_OPTS = {
         "fspec": None,
         "target_folder": None,
+        "force": False,
         "base_url": True,  # True: automatic
         "collate_statics_max": 10,
         # "add_req_comments": True,
@@ -62,25 +63,41 @@ class HarConverter:
         self.static_resources = []
 
     def run(self):
-        fspec = self.opts.get("fspec")
+        har_path = self.opts.get("fspec")
         target_folder = self.opts.get("target_folder")
-        fspec = os.path.abspath(fspec)
-        if not os.path.isfile(fspec):
-            raise FileNotFoundError(fspec)
+
+        if har_path is not None:
+            har_path = os.path.abspath(har_path)
+            if not os.path.isfile(har_path):
+                raise FileNotFoundError(har_path)
+
+            logger.info("Parsing {}...".format(har_path))
+            self._parse(har_path)
+
+            self._postprocess()
+
         if target_folder is None:
-            target_folder = os.path.dirname(fspec)
-
-        logger.info("Parsing {}...".format(fspec))
-        self._parse(fspec)
-
-        self._postprocess()
+            assert har_path
+            name = os.path.splitext(os.path.basename(har_path))[0].strip(".")
+            target_folder = "./{}".format(name)
+        target_folder = os.path.abspath(target_folder)
+        if not os.path.isdir(target_folder):
+            logger.info("Creating folder {}...".format(target_folder))
+            os.mkdir(target_folder)
 
         self._init_from_templates(target_folder)
 
-        self._write_sequence(target_folder)
-        return
+        if har_path is not None:
+            fspec = os.path.join(target_folder, "main_sequence.yaml")
+            self._write_sequence(fspec)
+        return True
 
     def _copy_template(self, tmpl_name, target_path, kwargs):
+        if not self.opts["force"] and os.path.isfile(target_path):
+            raise RuntimeError(
+                "File exists (use --force to continue): {}".format(target_path)
+            )
+            # raise FileExistsError(target_path)
         tmpl_folder = os.path.dirname(__file__)
         src_path = os.path.join(tmpl_folder, tmpl_name)
         tmpl = open(src_path, "rt", encoding=self.encoding).read()
@@ -91,8 +108,8 @@ class HarConverter:
         # print(tmpl)
         return
 
-    def _init_from_templates(self, dest_folder):
-        kwargs = {
+    def _init_from_templates(self, target_folder):
+        ctx = {
             "date": datetime_to_iso(),
             "name": "NAME",
             "tag": "TAG",
@@ -100,10 +117,13 @@ class HarConverter:
             "details": "",
         }
         self._copy_template(
-            "users.yaml.tmpl", os.path.join(dest_folder, "users.yaml"), kwargs
+            "users.yaml.tmpl", os.path.join(target_folder, "users.yaml"), ctx
         )
         self._copy_template(
-            "scenario.yaml.tmpl", os.path.join(dest_folder, "scenario.yaml"), kwargs
+            "sequence.yaml.tmpl", os.path.join(target_folder, "main_sequence.yaml"), ctx
+        )
+        self._copy_template(
+            "scenario.yaml.tmpl", os.path.join(target_folder, "scenario.yaml"), ctx
         )
 
     def _is_static(self, entry):
@@ -193,7 +213,7 @@ class HarConverter:
         # ("However the reader application should always make sure the array is sorted")
         self.entries.sort(key=itemgetter("start"))
 
-        logger.info("HAR:\n{}".format(pformat(self.entries)))
+        logger.debug("HAR:\n{}".format(pformat(self.entries)))
         # print("HAR:\n{}".format(pformat(self.entries)))
         return
 
@@ -272,8 +292,7 @@ class HarConverter:
         lines.append("\n")
         fp.writelines(lines)
 
-    def _write_sequence(self, dest_folder):
-        fspec = os.path.join(dest_folder, "main_activities.yaml")
+    def _write_sequence(self, fspec):
         with open(fspec, "wt") as fp:
             fp.write("# Stressor Activity Definitions\n")
             fp.write("# Auto-generated {}\n".format(datetime_to_iso()))
