@@ -467,9 +467,24 @@ def get_random_number(num_or_tuple):
     return v
 
 
-def iso_datetime():
-    now = datetime.now().replace(microsecond=0)
-    return now.isoformat(sep=" ")
+def datetime_to_iso(dt=None, microseconds=False):
+    """Return current UTC datetime as ISO formatted string."""
+    if dt is None:
+        dt = datetime.now()
+    if not microseconds:
+        dt.replace(microsecond=0)
+    return dt.isoformat(sep=" ")
+
+
+def iso_to_datetime(iso):
+    """Convert as ISO formatted datetime string to datetime."""
+    dt = datetime.strptime(iso, "%Y-%m-%dT%H:%M:%S.%fZ")
+    return dt
+
+
+def iso_to_stamp(iso):
+    """Convert as ISO formatted datetime string to datetime."""
+    return iso_to_datetime(iso).timestamp()
 
 
 def format_elap(seconds, count=None, unit="items", high_prec=False):
@@ -644,26 +659,26 @@ def format_rate(count, time, unit=None, high_prec=False):
 #     return "%s%s%s" % (snum, magsuffix, bytesuffix)
 
 
-# def lstrip_string(s, prefix, ignore_case=False):
-#     """Remove leading string from s.
+def lstrip_string(s, prefix, ignore_case=False):
+    """Remove leading string from s.
 
-#     Note: This is different than `s.lstrip('bar')` which would remove
-#     leading 'b', 'a', and 'r' chars.
-#     """
-#     if ignore_case:
-#         if s.lower().startswith(prefix.lower()):
-#             return s[len(prefix):]
-#     else:
-#         if s.startswith(prefix):
-#             return s[len(prefix):]
-#     return s
+    Note: This is different than `s.lstrip('bar')` which would remove
+    all leading 'a', 'b', and 'r' chars.
+    """
+    if ignore_case:
+        if s.lower().startswith(prefix.lower()):
+            return s[len(prefix) :]
+    else:
+        if s.startswith(prefix):
+            return s[len(prefix) :]
+    return s
 
 
 # def rstrip_string(s, suffix, ignore_case=False):
 #     """Remove trailing string from s.
 
 #     Note: This is different than `s.rstrip('bar')` which would remove
-#     trailing 'b', 'a', and 'r' chars.
+#     all trailing 'a', 'b', and 'r' chars.
 #     """
 #     if ignore_case:
 #         if s.lower().endswith(suffix.lower()):

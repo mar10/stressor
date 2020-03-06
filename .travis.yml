@@ -1,6 +1,7 @@
-sudo: false
+# sudo: false
 language: python
-matrix:
+os: linux
+jobs:  # matrix:
   include:
       - python: "3.5"
         env: TOXENV=py35
@@ -11,9 +12,11 @@ matrix:
         dist: xenial
       - python: "3.8"
         env: TOXENV=py38
-  # allow_failures:
-  #   - python: "3.8-dev"
-  #     env: TOXENV=py38
+      - python: "3.9-dev"
+        env: TOXENV=py39
+  allow_failures:
+    - python: "3.9-dev"
+      env: TOXENV=py39
 install:
   - pip install tox-travis flake8 coveralls coverage
 script:

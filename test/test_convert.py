@@ -20,16 +20,20 @@ class TestConvert:
         pass
 
     def test_1(self):
-        fspec = os.path.join(self.fixtures_path, "har_1.har")
-        conv = HarConverter()
         with tempfile.TemporaryDirectory() as target_folder:
-            conv.run(fspec, target_folder)
+            opts = {
+                "fspec": os.path.join(self.fixtures_path, "har_1.har"),
+                "target_folder": target_folder,
+            }
+            conv = HarConverter(opts)
+            conv.run()
             assert len(conv.entries) == 5
-            assert conv.version == "1.2"
+            assert conv.har_version == "1.2"
             act_yaml_path = os.path.join(target_folder, "main_activities.yaml")
             yaml = open(act_yaml_path, "rt").read()
             assert "activity: GetRequest" in yaml
-            assert 'url: "http://127.0.0.1:8082/test1.json"' in yaml
+            assert 'url: "/test1.json"' in yaml
+            # assert 'url: "http://127.0.0.1:8082/test1.json"' in yaml
         # assert 0
 
     def test_2(self):
@@ -38,9 +42,17 @@ class TestConvert:
         target_folder = "/Users/martin/temp"
         if not os.path.isdir(target_folder):
             pytest.skip("Local test folder not found")
-        fspec = os.path.join(self.fixtures_path, "har_1.har")
-        conv = HarConverter()
-        conv.run(fspec, target_folder)
-        assert len(conv.entries) == 5
-        assert conv.version == "1.2"
+        opts = {
+            "fspec": os.path.join(self.fixtures_path, "har_2.har"),
+            "target_folder": target_folder,
+        }
+        conv = HarConverter(opts)
+        conv.run()
+        assert len(conv.entries) == 47
+        assert conv.stats["entries"] == 47
+        assert conv.stats["entries_total"] == 51
+        assert conv.stats["external_urls"] == 4
+        assert conv.stats["skipped"] == 4
+
+        assert conv.har_version == "1.2"
         # assert 0
