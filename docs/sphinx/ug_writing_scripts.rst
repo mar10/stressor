@@ -62,10 +62,35 @@ The follwing example shows inline script definitions.
         result = r.status_code
 
 
+Importing HAR Files
+===================
+
+`HAR files <https://en.wikipedia.org/wiki/HAR_(file_format)>`_ contain a list
+of recorded browser requests. |br|
+*stressor* can convert those files into its own format, e.g. a YAML formatted
+sequence of HTTPRequest activities.
+
+We can use the Chrome browser as macro recorder like so:
+
+1. Open a Chrome tab and start the
+   `developer tools <https://developers.google.com/web/tools/chrome-devtools>`_
+   e.g. by hitting ``F12``.
+2.  Activate the `Network` panel.
+3. Clear the current network log if any.
+4. Navigate to the URL that you want to record and perform your activities.
+5. Select `Save all as HAR with content...`
+
+Now convert the HAR file to a new *stressor* project::
+
+    $ stressor init /path/to/scenario_name --convert /path/to/har_file
 
 
 Debugging
 =========
 
-A **run configuration** describes all aspects of a test suite. It defines one
-*scenario* and additional options.
+Use the `--single` option to run all activities once, but only in one single
+session. Also loop counts are ignored.
+
+```bash
+$ stressor run ./scenario_1/scenario.yaml --single
+```

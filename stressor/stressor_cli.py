@@ -132,8 +132,14 @@ def run():
         help="create new scenario folder and optinally convert HAR files",
     )
     sp.add_argument(
-        "--target", required=True, help="target folder",
+        "target",
+        metavar="TARGET",
+        # default="./scenario.yaml",
+        help="target folder (created if not existing)",
     )
+    # sp.add_argument(
+    #     "--target", required=True, help="target folder",
+    # )
     sp.add_argument(
         "--import",
         dest="har_file",

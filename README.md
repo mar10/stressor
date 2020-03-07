@@ -12,3 +12,39 @@
 **NOTE:** This is work-in-progress and has *beta* status.
 
 [Read The Docs](https://stressor.readthedocs.io/en/latest/ug_tutorial.html)
+
+
+## Quickstart
+
+1. Install *stressor* ([details](https://stressor.readthedocs.io/en/latest/installation.html))
+
+2. Create a new scenario folder. For example:
+
+    ```bash
+    $ stressor init ./scenario_1
+    ```
+
+    or alternatively import an existing HAR file as a starting point
+    ([details](https://stressor.readthedocs.io/en/latest/ug_writing_scripts.html#importing-har-files)):
+
+    ```bash
+    $ stressor init ./scenario_1 --convert /path/to/output.har
+    ```
+
+3. Edit the scripts as needed (*users.yaml*, *main_sequence.yaml*, *scenario.yaml*)
+  ([details](https://stressor.readthedocs.io/en/latest/ug_writing_scripts.html))
+
+4. Run the script:
+
+    ```bash
+    $ stressor run ./scenario_1/scenario.yaml
+    ```
+
+    Use the `--monitor` option to view the progress in a separate window:
+
+    ```bash
+    $ stressor run ./scenario_1/scenario.yaml --monitor
+    ```
+    (Hit <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop.)
+
+<img src="https://stressor.readthedocs.io/en/latest/_images/teaser.png">

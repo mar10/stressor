@@ -113,7 +113,7 @@ if use_cx_freeze:
                 icon="docs/logo.ico",
                 shortcutName="stressor",
                 # requires cx_Freeze PR#94:
-                # copyright="(c) 2009-2019 Martin Wendt",
+                # copyright="(c) 2020 Martin Wendt",
                 # trademarks="...",
             )
         ]

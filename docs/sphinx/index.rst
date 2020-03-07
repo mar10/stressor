@@ -13,7 +13,7 @@ stressor
 :Version:   |version|, Date: |today|
 
 .. warning::
-  Stressor is currently Work In Progress and **not** fit for production!
+  Stressor has currently *beta* status and is **not** fit for production!
 
 .. toctree::
    :hidden:
@@ -31,28 +31,12 @@ stressor
   :name: Live demo
 
 
-..
-  Major version updates (1.0 => 2.0, 2.0 => 3.0, ...) introduce
-  *breaking changes* to the previous versions.
-  Make sure to adjust your scripts accordingly after update.
-
-
 Features
 ========
 
   * This is a command line tool...
   * ... and a library for use in custom Python projects.
-  * TODO
-
-**The command line tool adds:**
-
-  * Runs on Linux, macOS, and Windows.
-  * TODO
-
-..
-  .. note:: Known Limitations
-
-    * TODO
+  * The command line tool runs on Linux, macOS, and Windows.
 
 
 Quickstart
@@ -63,7 +47,9 @@ be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_ ::
 
   $ pipenv shell
   (stressor) $ pipenv install stressor --upgrade
+  (stressor) $ stressor --version -v
   (stressor) $ stressor --help
+  (stressor) $ stressor init --target ~/scenario_1
 
 (`Python 3.5+ <https://www.python.org/downloads/>`_ is required.)
 
