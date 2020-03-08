@@ -113,7 +113,7 @@ class HarConverter:
             "date": datetime_to_iso(),
             "name": "NAME",
             "tag": "TAG",
-            "base_url": "URL",
+            "base_url": self.base_url,
             "details": "",
         }
         self._copy_template(

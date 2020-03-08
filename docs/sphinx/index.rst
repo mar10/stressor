@@ -43,15 +43,16 @@ Quickstart
 ==========
 
 Releases are hosted on `PyPI <https://pypi.python.org/pypi/stressor>`_ and can
-be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_ ::
+be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_
+(`Python 3.5+ <https://www.python.org/downloads/>`_ is required) ::
 
   $ pipenv shell
   (stressor) $ pipenv install stressor --upgrade
   (stressor) $ stressor --version -v
   (stressor) $ stressor --help
-  (stressor) $ stressor init --target ~/scenario_1
+  (stressor) $ stressor init --target ./scenario_1
+  (stressor) $ stressor run --target ./scenario_1/scenario.yaml
 
-(`Python 3.5+ <https://www.python.org/downloads/>`_ is required.)
 
 ..
   Indices and tables

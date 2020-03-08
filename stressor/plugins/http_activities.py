@@ -21,13 +21,18 @@ from stressor.plugins.base import (
 from stressor.util import check_arg, get_dict_attr, logger, shorten_string
 
 
-def is_abs_url(url):
-    """Return true if url is already absolute."""
-    return "://" in url or url.startswith("/")
+# def is_abs_url(url):
+#     """Return true if url is already absolute."""
+#     return "://" in url or url.startswith("/")
+
+
+def is_relative_url(url):
+    """Return true if url is relative to the server."""
+    return "://" not in url  # or url.startswith("/")
 
 
 def resolve_url(root, url):
-    """Convert relaative URL to absolute, using `root` as default."""
+    """Convert relative URL to absolute, using `root` as default."""
     return urljoin(root, url)
 
 
@@ -129,7 +134,7 @@ class HTTPRequestActivity(ActivityBase):
         """
         url = expanded_args.get("url")
         base_url = session.get_context("base_url")
-        if not base_url and not is_abs_url(url):
+        if not base_url and is_relative_url(url):
             raise ActivityError(
                 "Missing context variable 'base_url' to resolve relative URLs"
             )

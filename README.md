@@ -11,8 +11,6 @@
 
 **NOTE:** This is work-in-progress and has *beta* status.
 
-[Read The Docs](https://stressor.readthedocs.io/en/latest/ug_tutorial.html)
-
 
 ## Quickstart
 
@@ -46,5 +44,9 @@
     $ stressor run ./scenario_1/scenario.yaml --monitor
     ```
     (Hit <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop.)
+
+5. [Read The Docs](https://stressor.readthedocs.io/en/latest/ug_tutorial.html)
+   for details.
+
 
 <img src="https://stressor.readthedocs.io/en/latest/_images/teaser.png">

@@ -82,7 +82,10 @@ We can use the Chrome browser as macro recorder like so:
 
 Now convert the HAR file to a new *stressor* project::
 
-    $ stressor init /path/to/scenario_name --convert /path/to/har_file
+    $ stressor init /path/to/scenario_name --convert /path/to/har_file.har
+
+You probably want to edit ``scenario.yaml`` and ``main_sequence.yaml`` in
+the ``/path/to/scenario_name/`` folder now.
 
 
 Debugging

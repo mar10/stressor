@@ -229,8 +229,17 @@ class ConfigManager:
                 )
             )
 
-        _check_type("run_config.context", (dict, None))
-        _check_type("run_config.sessions", dict)
+        if _check_type("run_config.context", (dict, None)):
+            base_url = get_dict_attr(cfg, "run_config.context.base_url", None)
+            if base_url and (not base_url.startswith("http") or "://" not in base_url):
+                self.report_error(
+                    "context.base_url must be an absolute URL ('http(s)://...'): {!r}".format(
+                        base_url
+                    ),
+                )
+
+        if _check_type("run_config.sessions", dict):
+            pass
 
         #   - sequences must be a dict of dicts.
         #     All entries must contain 'activity'
@@ -324,18 +333,9 @@ class ConfigManager:
         with stack.enter(path_info, ignore=parent is None):
             # logger.debug("compile {}".format(stack))
 
-            # Resolve lists and dicts recursively:
-            if isinstance(value, dict):
-                # Macros may change the dictionary size, so iterate over a copy
-                for key, sub_val in tuple(value.items()):
-                    self._compile(sub_val, value, key, stack)
-                return
-            elif isinstance(value, (list, tuple)):
-                # Macros may change the list size, so iterate over a copy
-                for idx, elem in enumerate(tuple(value)):
-                    self._compile(elem, value, idx, stack)
-                return
-
+            # Reslove `$name()` macros, which may replace themselves, e.g.
+            #   - "GetRequest" -> `GetRequestActivity()`
+            #   - "$load()" -> list or dict that needs to be compiled as well
             if isinstance(value, str) and "$" in value:
                 has_match = False
                 for macro_cls in macro_plugin_map.values():
@@ -360,6 +360,18 @@ class ConfigManager:
                         value
                     )
                     self.report_error(msg, level="warning")
+
+            # Resolve lists and dicts recursively:
+            if isinstance(value, dict):
+                # Macros may change the dictionary size, so iterate over a copy
+                for key, sub_val in tuple(value.items()):
+                    self._compile(sub_val, value, key, stack)
+                return
+            elif isinstance(value, (list, tuple)):
+                # Macros may change the list size, so iterate over a copy
+                for idx, elem in enumerate(tuple(value)):
+                    self._compile(elem, value, idx, stack)
+                return
 
             # Either 'activity' was already an activity name, or a preceeding macro
             # set it:
