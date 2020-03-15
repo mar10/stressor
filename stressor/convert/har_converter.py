@@ -18,6 +18,7 @@ from stressor.util import datetime_to_iso, iso_to_stamp, lstrip_string, shorten_
 logger = logging.getLogger("stressor.har")
 
 EMPTY_TUPLE = tuple()
+PATTERN_TYPE = type(re.compile("foo"))  # 're.Pattern' requires Python 3.7+
 
 
 class HarConverter:
@@ -68,7 +69,7 @@ class HarConverter:
         for pattern in self.opts["statics_types"]:
             if isinstance(pattern, str):
                 pattern = re.compile(pattern, re.IGNORECASE)
-            assert isinstance(pattern, re.Pattern)
+            assert isinstance(pattern, PATTERN_TYPE)
             pl.append(pattern)
         self.opts["statics_types"] = pl
 
