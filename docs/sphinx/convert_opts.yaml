@@ -1,0 +1,15 @@
+# Stressor HAR conversion options
+# See https://stressor.readthedocs.io/
+
+#force: False,  # Use --force argument instead
+base_url: true  # true: automatic
+collate_max_len: 100  # Put max 100 URL into one StaticRequests activity
+collate_max_duration: 1.0  # Collate burst intervals of max. 1 second
+collate_max_pause: 0.2  # Start a new collation if have a gap of 0.2 seconds
+# add_req_comments: True
+skip_externals: true
+statics_types:  # Regular expressions (case insensitive)
+    - "image/.*"
+    - ".*/css"
+    - ".*/javascript"
+"skip_errors": true

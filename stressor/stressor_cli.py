@@ -10,8 +10,11 @@ Usage examples:
   $ stressor run .
 """
 import argparse
+import os
 import platform
 import sys
+
+import yaml
 
 from stressor import __version__
 from stressor.cli_common import common_parser, verbose_parser
@@ -51,12 +54,21 @@ def handle_run_command(parser, args):
 
 
 def handle_init_command(parser, args):
-    opts = {
-        "fspec": args.har_file,
-        "target_folder": args.target,
-        "force": args.force,
-        "dry_run": args.dry_run,
-    }
+    opts = {}
+    if args.opts:
+        if not os.path.isfile(args.opts):
+            parser.error("File not found: {}".format(args.opts))
+        with open(args.opts, "rt") as f:
+            opts = yaml.safe_load(f)
+
+    opts.update(
+        {
+            "fspec": args.har_file,
+            "target_folder": args.target,
+            "force": args.force,
+            "dry_run": args.dry_run,
+        }
+    )
     conv = HarConverter(opts)
     res = conv.run()
     return res
@@ -148,6 +160,9 @@ def run():
     )
     sp.add_argument(
         "--force", action="store_true", help="override existing files",
+    )
+    sp.add_argument(
+        "--opts", help="YAML file with conversion options",
     )
     sp.set_defaults(command=handle_init_command)
 

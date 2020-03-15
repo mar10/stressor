@@ -32,7 +32,10 @@ class HarConverter:
         "target_folder": None,
         "force": False,
         "base_url": True,  # True: automatic
-        "collate_statics_max": 10,
+        "collate_max_len": 100,  # put max 20 URL into one bucket
+        "collate_max_duration": 1.0,  # a bucket spans max. 5 seconds
+        "collate_max_pause": 0.2,  # 1 second gap will trigger open a new bucket
+        "collate_thread_count": 5,
         # "add_req_comments": True,
         "skip_externals": True,
         "statics_types": (
@@ -61,6 +64,13 @@ class HarConverter:
         self.base_url = None
         self.polling_requests = []
         self.static_resources = []
+        pl = []
+        for pattern in self.opts["statics_types"]:
+            if isinstance(pattern, str):
+                pattern = re.compile(pattern, re.IGNORECASE)
+            assert isinstance(pattern, re.Pattern)
+            pl.append(pattern)
+        self.opts["statics_types"] = pl
 
     def run(self):
         har_path = self.opts.get("fspec")
@@ -155,7 +165,7 @@ class HarConverter:
             "method": req["method"],
             "url": url,
         }
-        if req.get("httpVersion") not in ("", "HTTP/1.1"):
+        if req.get("httpVersion").upper() not in ("", "HTTP/1.1"):
             logger.warning("Unknown httpVersion: {!r}".format(req.get("httpVersion")))
             # logger.warning("Unknown httpVersion: {}".format(req))
 
@@ -231,13 +241,35 @@ class HarConverter:
         # Remove unwanted entries and strip base_url where possible
         el = []
         skip_ext = self.opts["skip_externals"]
+        collate_max_len = self.opts["collate_max_len"]
+        collate_max_duration = self.opts["collate_max_duration"]
+        collate_max_pause = self.opts["collate_max_pause"]
+        bucket = []
+        bucket_start_stamp = 0
+        bucket_last_stamp = 0
+
+        def _flush():
+            nonlocal bucket, bucket_start_stamp, bucket_last_stamp
+            if not bucket:
+                return
+            self.stats["collated_activities"] += 1
+            entry = bucket[0]
+            entry["url_list"] = [e["url"] for e in bucket]
+            # print("FLUSH\n{}".format(pformat(entry)))
+            bucket = []
+            bucket_start_stamp = 0
+            bucket_last_stamp = 0
+
         for entry in self.entries:
             self.stats["entries_total"] += 1
             skip = False
+
+            # Fix URL by removing the `base_url` prefix
             url = entry["url"]
             rel_url = lstrip_string(url, base_url, ignore_case=True)
-            if rel_url is url:
-                # The URL did not start with base_url, so it is 'external'
+            # The URL did not start with base_url, so it is 'external'
+            is_external = rel_url is url
+            if is_external:
                 if skip_ext:
                     logger.warning("Skipping external URL: {}".format(url))
                     self.stats["external_urls"] += 1
@@ -246,12 +278,40 @@ class HarConverter:
                 entry["url_org"] = url
                 entry["url"] = rel_url
 
+            # Collate bursts of simple GET request to one single entry
+            start = entry["start"]
+            if len(bucket) >= collate_max_len:
+                _flush()
+            first = len(bucket) == 0
+
+            if (
+                collate_max_len > 1  # Collation enabled
+                and entry["method"] == "GET"  # Only GET requests
+                and not entry.get("data")  # No POST data
+                and len(bucket) < collate_max_len  # Bucket size limit
+                and (first or (start - bucket_start_stamp) <= collate_max_duration)
+                and (first or (start - bucket_last_stamp) <= collate_max_pause)
+                and self._is_static(entry)  # Only static resources (JS, CSS, ...)
+            ):
+                self.stats["collated_urls"] += 1
+                bucket.append(entry)
+                if not bucket_start_stamp:
+                    bucket_start_stamp = start
+                bucket_last_stamp = start
+                # We keep the first entry, so we can add the bucket URLs there later
+                if len(bucket) > 1:
+                    skip = True
+            elif bucket:
+                # If a burst of simple requests is interrupted, flush and restart
+                _flush()
+
             if skip:
                 self.stats["skipped"] += 1
             else:
                 self.stats["entries"] += 1
                 el.append(entry)
 
+        _flush()
         self.entries = el
         return
 
@@ -262,24 +322,39 @@ class HarConverter:
         "DELETE": "DeleteRequest",
     }
 
+    # def _write_line(self, fp, )
     def _write_entry(self, fp, entry):
-
+        opts = self.opts
         activity = self.activity_map.get(entry["method"], "HTTPRequest")
+        url_list = entry.get("url_list")
+        is_bucket = bool(url_list) and len(url_list) > 1
+        if is_bucket:
+            activity = "StaticRequests"
+
         lines = []
         if entry.get("comment"):
             lines.append("# {}\n".format(shorten_string(entry["comment"], 75)))
-        lines.append(
-            "# Response type: {!r}, size: {:,}\n".format(
-                entry.get("resp_type"), entry.get("resp_size", -1)
+        if is_bucket:
+            lines.append("# Auto-collated {:,} GET requests\n".format(len(url_list)))
+        else:
+            lines.append(
+                "# Response type: {!r}, size: {:,}\n".format(
+                    entry.get("resp_type"), entry.get("resp_size", -1)
+                )
             )
-        )
         if entry.get("resp_comment"):
             lines.append("# {}\n".format(shorten_string(entry["resp_comment"], 75)))
 
         url = entry["url"]
 
         lines.append("- activity: {}\n".format(activity))
-        lines.append('  url: "{}"\n'.format(url))
+        if is_bucket:
+            lines.append("  thread_count: {}\n".format(opts["collate_thread_count"]))
+            lines.append("  url_list:\n")
+            for url in url_list:
+                lines.append('    - "{}"\n'.format(url))
+        else:
+            lines.append('  url: "{}"\n'.format(url))
 
         if activity == "HTTPRequest":
             lines.append("  method: {}\n".format(entry["method"]))
@@ -293,8 +368,10 @@ class HarConverter:
         fp.writelines(lines)
 
     def _write_sequence(self, fspec):
+        logger.info("Writing activity sequence to {!r}...".format(fspec))
         with open(fspec, "wt") as fp:
             fp.write("# Stressor Activity Definitions\n")
+            fp.write("# See https://stressor.readthedocs.io/\n")
             fp.write("# Auto-generated {}\n".format(datetime_to_iso()))
             fp.write("# Source:\n")
             fp.write("#     File: {}\n".format(self.opts["fspec"]))
@@ -308,4 +385,5 @@ class HarConverter:
 
             for entry in self.entries:
                 self._write_entry(fp, entry)
+        logger.info("Done.")
         return

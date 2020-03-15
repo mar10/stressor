@@ -78,7 +78,7 @@ We can use the Chrome browser as macro recorder like so:
 2.  Activate the `Network` panel.
 3. Clear the current network log if any.
 4. Navigate to the URL that you want to record and perform your activities.
-5. Select `Save all as HAR with content...`
+5. Select `Save all as HAR with content...` from the context menu.
 
 Now convert the HAR file to a new *stressor* project::
 
@@ -87,13 +87,40 @@ Now convert the HAR file to a new *stressor* project::
 You probably want to edit ``scenario.yaml`` and ``main_sequence.yaml`` in
 the ``/path/to/scenario_name/`` folder now.
 
+Optionally, additional conversion options can be defined::
+
+    $ stressor init /path/to/scenario_name --convert /path/to/har_file.har --config /path/to/convert_opts.yaml
+
+The available options (with their default): |br|
+``convert_opts.yaml``
+
+.. literalinclude:: convert_opts.yaml
+    :linenos:
+    :language: yaml
+
 
 Debugging
 =========
 
-Use the `--single` option to run all activities once, but only in one single
-session. Also loop counts are ignored.
+Use the ``--verbose`` (short ``-v``) option to generate more console logging. |br|
+Use the ``--single`` option to run all activities once, but only in one single
+session. Also loop counts are ignored::
 
-```bash
-$ stressor run ./scenario_1/scenario.yaml --single
-```
+    $ stressor run ./scenario_1/scenario.yaml --single -v
+
+Activities can be marked with a `debug` argument, which will generate more
+output, for example response body, etc. |br|
+The `monitor` argument will add the activity as distinct entry of a special
+section of the monitor dashboard (use with the ``--monitor`` option):
+
+.. code-block:: yaml
+
+    sequences:
+      main:
+        - activity: GetRequest
+          url: $(base_url)/
+          assert_match: ".*Index of /.*"
+          assert_html:
+            "//*[@class='logo']": true
+          debug: true
+          monitor: true

@@ -4,7 +4,9 @@
 """
 """
 import re
+import threading
 from pprint import pformat
+from queue import Empty, Queue
 from urllib.parse import urlencode, urljoin
 
 from lxml import html
@@ -287,14 +289,100 @@ class DeleteRequestActivity(HTTPRequestActivity):
         super().__init__(config_manager, method="DELETE", **activity_args)
 
 
-class StaticRequestActivity(HTTPRequestActivity):
+class StaticRequestsActivity(ActivityBase):
+    REQUEST_ARGS = {"auth", "data", "json", "headers", "params", "timeout", "verify"}
+    _mandatory_args = {"url_list"}
+    _known_args = REQUEST_ARGS | _mandatory_args | {"assert_status", "thread_count"}
+    _info_args = ("name", "method", "thread_count")
     """
-    TODO: this activity recieves a list of URLs (JavaScrip, Html, CSS, Images, ...)
-    and load them, using max. ~5 threads, as a Broweer would.
+    TODO: this activity recieves a list of URLs (JavaScript, Html, CSS, Images, ...)
+    and loads them, using max. ~5 threads, as a browser would.
     """
 
     def __init__(self, config_manager, **activity_args):
-        raise NotImplementedError
+        super().__init__(config_manager, **activity_args)
+
+    def execute(self, session, **expanded_args):
+        """
+        """
+        url_list = expanded_args.pop("url_list")
+        base_url = session.get_context("base_url")
+        expanded_args.setdefault("timeout", session.get_context("timeout"))
+        debug = expanded_args.get("debug")
+        thread_count = int(expanded_args.get("thread_count", 1))
+        method = "GET"
+        r_args = {k: v for k, v in expanded_args.items() if k in self.REQUEST_ARGS}
+
+        verify_ssl = session.sessions.get("verify_ssl", True)
+        r_args.setdefault("verify", verify_ssl)
+
+        basic_auth = session.sessions.get("basic_auth", False)
+        if basic_auth:
+            r_args.setdefault("auth", session.user.auth)
+
+        headers = r_args.setdefault("headers", {})
+        headers.setdefault(
+            "User-Agent",
+            "session/{} Stressor/{}".format(session.session_id, __version__),
+        )
+
+        # TODO: requests.Session is not guaranteed to be thread-safe!
+        bs = session.browser_session
+        # Queue-up all pending request
+        queue = Queue()
+        for url in url_list:
+            url = resolve_url(base_url, url)
+            queue.put(url)
+
+        results = []
+
+        def _work(name):
+            # logger.debug("StaticRequests({}) started...".format(name, ))
+            while not session.stop_request.is_set():
+                try:
+                    url = queue.get(False)
+                except Empty:
+                    break
+
+                if debug:
+                    logger.info("StaticRequests({}, {})...".format(name, url))
+                # The actual HTTP request:
+                # TODO: requests.Session is not guaranteed to be thread-safe!
+                try:
+                    res = bs.request(method, url, **r_args)
+                    res.raise_for_status()
+                    results.append((True, name, url, None))
+                except Exception as e:
+                    results.append((False, name, url, "{}".format(e)))
+                queue.task_done()
+            logger.debug("StaticRequests({}) stopped.".format(name))
+            return
+
+        logger.debug(
+            "Starting {} StaticRequestsActivity workers...".format(thread_count)
+        )
+
+        thread_list = []
+        for i in range(thread_count):
+            name = "{}.{:02}".format(session.session_id, i + 1)
+            t = threading.Thread(name=name, target=_work, args=[name])
+            t.setDaemon(True)  # Required to make Ctrl-C work
+            thread_list.append(t)
+
+        for t in thread_list:
+            t.start()
+
+        logger.debug("All StaticRequestsActivity workers running...")
+        queue.join()
+        for t in thread_list:
+            t.join()
+        errors = ["{}".format(error) for ok, name, url, error in results if not ok]
+        if errors:
+            raise ActivityError(
+                "{} reqests failed:\n{}".format(len(errors), format(errors))
+            )
+            # logger.error(pformat(errors))
+        return bool(errors)
 
 
 class PollRequestActivity(HTTPRequestActivity):
