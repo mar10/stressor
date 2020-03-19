@@ -203,7 +203,8 @@ setup_opts = {
     "package_data": {
         # If any package contains *.txt files, include them:
         # "": ["*.css", "*.html", "*.ico", "*.js"],
-        # "wsgidav.dir_browser": ["htdocs/*.*"]
+        "": ["*.tmpl"],
+        "stressor.monitor": ["htdocs/*.*"],
     },
     "install_requires": install_requires,
     "setup_requires": setup_requires,
