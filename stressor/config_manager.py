@@ -420,6 +420,13 @@ class ConfigManager:
             except yaml.parser.ParserError as e:
                 raise ConfigurationError("Could not parse YAML: {}".format(e)) from None
 
+        if not isinstance(res, dict) or not res.get("file_version", "").startswith(
+            "stressor#"
+        ):
+            raise ConfigurationError(
+                "Not a `stressor` file (missing 'stressor#VERSION' tag)."
+            )
+
         self._compile(res)
 
         self.file_version = self.validate_config(res)
