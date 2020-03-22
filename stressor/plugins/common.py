@@ -10,7 +10,7 @@ from textwrap import dedent
 import yaml
 
 from stressor.plugins.base import ActivityBase, MacroBase
-from stressor.util import check_arg
+from stressor.util import check_arg, format_elap
 
 
 class LoadMacro(MacroBase):
@@ -147,10 +147,13 @@ class SleepActivity(ActivityBase):
     _default_ignore_timing = True
 
     def __init__(self, config_manager, **activity_args):
-        super().__init__(config_manager, **activity_args)
-
         check_arg(activity_args.get("duration"), (str, int, float))
         check_arg(activity_args.get("duration_2"), (str, int, float), or_none=True)
+
+        #: Set while sleeping, to enhance the info string
+        self._cur_duration = None
+
+        super().__init__(config_manager, **activity_args)
 
         # TODO: Support CronTab syntax
         #     https://github.com/taichino/croniter
@@ -161,12 +164,33 @@ class SleepActivity(ActivityBase):
     # def __str__(self):
     #     return "Sleep({:.3} sec.)".format(self.duration)
 
-    def execute(self, session, **expanded_args):
-        # session.report_activity(self, True, "Sleep({:.3} sec)".format(self.duration))
+    def get_info(self, info_args=True, expanded_args=None):
+        if (
+            self._cur_duration and expanded_args and "duration_2" in expanded_args
+        ):  # Set by prepare_execute()
+            return "{}(duration[{}..{}] => {})".format(
+                self.get_script_name(),
+                float(expanded_args["duration"]),
+                float(expanded_args["duration_2"]),
+                format_elap(self._cur_duration),
+            )
+        return super().get_info(info_args, expanded_args)
+
+    def prepare_execute(self, session, **expanded_args):
         duration = float(expanded_args["duration"])
         duration_2 = expanded_args.get("duration_2")
         if duration_2 is not None:
             duration = random.uniform(duration, float(duration_2))
+        self._cur_duration = duration
+
+    def execute(self, session, **expanded_args):
+        # duration = float(expanded_args["duration"])
+        # duration_2 = expanded_args.get("duration_2")
+        # if duration_2 is not None:
+        #     duration = random.uniform(duration, float(duration_2))
+        assert self._cur_duration
+        duration = self._cur_duration
+        self._cur_duration = None
         if not session.dry_run:
             session.stop_request.wait(timeout=duration)
         return

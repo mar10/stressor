@@ -256,9 +256,17 @@ class SessionManager:
             activity = activity_args.pop("activity")
 
             # Add activity info to path
+            # Note: `get_info()` is not as detailed as it could b, since we don't
+            # pass the expanded args here. We set it anyway, so we have a valid
+            # stack in case `_evaluate_macros()` blows.
             with stack.enter("#{:02}-{}".format(act_idx, activity.get_info())):
-                # context = stack.context
+
                 expanded_args = self._evaluate_macros(activity_args, context)
+
+                # Let activity do internal calculations, that might be used by
+                # the follwing call to `get_info()`
+                activity.prepare_execute(self, **expanded_args)
+
                 # Enhance the path info with expanded args
                 stack.set_last_part(activity.get_info(expanded_args=expanded_args))
 

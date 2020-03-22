@@ -222,18 +222,29 @@ class ActivityBase(ABC):
             )
         return "{}({})".format(self.get_script_name(), ", ".join(args))
 
+    def prepare_execute(self, session, **expanded_args):
+        """Allow an activity to prepare the next execution.
+
+        The session manager calls this for every activity instance, directly
+        before `get_info()` and `execute()`.
+        Normally this method does not need to be implemented. (On use case is
+        `SleepActivity`, that calculates the next random duration, so it can
+        be displayed by `get_info()`.)
+        """
+        pass
+
     @abstractmethod
     def execute(self, session, **expanded_args):
         """
-        Called by the :class:`SessionManager`, directly after __init__.
+        Called by the :class:`SessionManager`, after `$(context.var)` macros
+        have been resolved if any.
+        A derived class MUST implement this method.
 
-        The constructor is called by the :class:`SessionManager`, after
-        `$(context.var)` macros have been resolved if any.
+        The session manager calls this methods for every activity instance:
 
-        The default implementation stores `activity_args` as `self.raw_args`,
-        however derived classes may choose to add named args explicitly for
-        better readability and checking.
-        A derived class MUST implement this method and
+        1. prepare_execute()
+        2. get_info()
+        3. execute()
 
           - Call session.log_warning()
           - raise ActivityError() for errors that a user can ignore by --force flag
