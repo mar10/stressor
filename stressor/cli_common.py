@@ -33,14 +33,17 @@ common_parser = argparse.ArgumentParser(
     add_help=False,
     # allow_abbrev=False,
 )
-
 common_parser.add_argument(
     "-n",
     "--dry-run",
     action="store_true",
     help="just simulate and log results, but don't change anything",
 )
-
 common_parser.add_argument(
     "--no-color", action="store_true", help="prevent use of ansi terminal color codes"
+)
+common_parser.add_argument(
+    "--log",
+    dest="log_file",
+    help="Path to log file or folder (generate unique file name in the latter case)",
 )

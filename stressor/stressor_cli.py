@@ -133,11 +133,6 @@ def run():
         action="store_true",
         help="Open a web server and browser application to display real-time progress",
     )
-    sp.add_argument(
-        "--log",
-        dest="log_file",
-        help="Path to log file or folder (generate unique file name in the latter case)",
-    )
 
     sp.set_defaults(command=handle_run_command)
 
