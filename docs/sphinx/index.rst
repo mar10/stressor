@@ -50,8 +50,8 @@ be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_
   (stressor) $ pipenv install stressor --upgrade
   (stressor) $ stressor --version -v
   (stressor) $ stressor --help
-  (stressor) $ stressor init --target ./scenario_1
-  (stressor) $ stressor run --target ./scenario_1/scenario.yaml
+  (stressor) $ stressor init ./scenario_1
+  (stressor) $ stressor run ./scenario_1/scenario.yaml
 
 
 ..

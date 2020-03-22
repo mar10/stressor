@@ -43,6 +43,12 @@
     ```bash
     $ stressor run ./scenario_1/scenario.yaml --monitor
     ```
+
+    Use the `--log` argument to write output to a file:
+
+    ```bash
+    $ stressor run ./scenario_1/scenario.yaml --no-color --log c:\temp\stressor_latest.log
+    ```
     (Hit <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop.)
 
 5. [Read The Docs](https://stressor.readthedocs.io/en/latest/ug_tutorial.html)

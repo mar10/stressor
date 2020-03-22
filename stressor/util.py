@@ -97,7 +97,19 @@ class PathStack:
         return self.delimiter + self.delimiter.join(stack)
 
 
-def init_logging(verbose=3):
+def timetag(seconds=True, ms=False):
+    """Return a time stamp string that can be used as (part of a) filename (also sorts well)."""
+    now = datetime.now()
+    if ms or seconds:
+        s = now.strftime("%Y%m%d_%H%M%S")
+        if ms:
+            s = "{}_{}".format(s, now.microsecond)
+    else:
+        s = now.strftime("%Y%m%d_%H%M")
+    return s
+
+
+def init_logging(verbose=3, path=None):
     """CLI calls this."""
     if verbose < 1:
         level = logging.CRITICAL
@@ -109,6 +121,7 @@ def init_logging(verbose=3):
         level = logging.INFO
     else:
         level = logging.DEBUG
+
     logging.basicConfig(
         level=level,
         # format="%(asctime)s.%(msecs)03d <%(thread)d> %(levelname)-7s %(message)s",
@@ -118,6 +131,27 @@ def init_logging(verbose=3):
         # format="%(asctime)s.%(msecs)d <%(process)d.%(thread)d> %(message)s",
         datefmt="%H:%M:%S",
     )
+
+    if path:
+        if os.path.isdir(path):
+            fname = "stressor_{}.log".format(timetag())
+            path = os.path.join(path, fname)
+        logger.info("Writing log to '{}'".format(path))
+        if os.path.isfile(path):
+            logger.warning("Removing log file '{}'".format(path))
+            os.remove(path)
+        hdlr = logging.FileHandler(path)
+        formatter = logging.Formatter(
+            "%(asctime)s.%(msecs)-3d - %(levelname)s: %(message)s", "%H:%M:%S"
+        )
+        hdlr.setFormatter(formatter)
+        logger.addHandler(hdlr)
+        # logger.setLevel(logging.DEBUG)
+        logger.info("Start log ({})".format(datetime.now()))
+        logger.info("Running {}".format(" ".join(sys.argv)))
+
+        # redirect `logger` to our special log file as well:
+        logger.addHandler(hdlr)
 
     # Silence requests `InsecureRequestWarning` messages
     if verbose < 3:

@@ -133,6 +133,11 @@ def run():
         action="store_true",
         help="Open a web server and browser application to display real-time progress",
     )
+    sp.add_argument(
+        "--log",
+        dest="log_file",
+        help="Path to log file or folder (generate unique file name in the latter case)",
+    )
 
     sp.set_defaults(command=handle_run_command)
 
@@ -208,7 +213,7 @@ def run():
     del args.quiet
 
     # print("verbose", args.verbose)
-    init_logging(args.verbose)
+    init_logging(args.verbose, args.log_file)
 
     if not args.no_color and sys.stdout.isatty():
         log.enable_color(True)

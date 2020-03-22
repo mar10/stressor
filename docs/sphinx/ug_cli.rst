@@ -11,19 +11,22 @@ Basic Command
 Use the ``--help`` or ``-h`` argument to get help::
 
     $ stressor --help
-    usage: stressor [-h] [-v | -q] [-V] {run} ...
+    usage: stressor [-h] [-v | -q] [-n] [--no-color] [-V] {run,init} ...
 
     Stress-test your web app.
 
     positional arguments:
-    {run}          sub-command help
+    {run,init}     sub-command help
         run          run a test suite scenario
+        init         create new scenario folder and optinally convert HAR files
 
     optional arguments:
     -h, --help     show this help message and exit
     -v, --verbose  increment verbosity by one (default: 3, range: 0..5)
     -q, --quiet    decrement verbosity by one
-    -V, --version  display versin info and exit (combine with -v for more
+    -n, --dry-run  just simulate and log results, but don't change anything
+    --no-color     prevent use of ansi terminal color codes
+    -V, --version  display version info and exit (combine with -v for more
                     information)
 
     See also https://github.com/mar10/stressor
@@ -41,8 +44,9 @@ scenario::
 See also the help::
 
     $ stressor run --help
-    usage: stressor run [-h] [-v | -q] [-n] [-o [OPTION [OPTION ...]]] [--single]
-                        [--monitor]
+    usage: stressor run [-h] [-v | -q] [-n] [--no-color]
+                        [-o [OPTION [OPTION ...]]] [--single] [--monitor]
+                        [--log LOG_FILE]
                         SCENARIO
 
     positional arguments:
@@ -54,6 +58,7 @@ See also the help::
     -q, --quiet           decrement verbosity by one
     -n, --dry-run         just simulate and log results, but don't change
                             anything
+    --no-color            prevent use of ansi terminal color codes
     -o [OPTION [OPTION ...]], --option [OPTION [OPTION ...]]
                             override configuration, syntax `OPTION:VALUE`
                             (multiple values allowed)
@@ -61,10 +66,44 @@ See also the help::
                             thread is run
     --monitor             Open a web server and browser application to display
                             real-time progress
+    --log LOG_FILE        Path to log file or folder (generate unique file name
+                            in the latter case)
+    $
+
+
+`init` command
+--------------
+
+Quickly create a folder with a scenario boilerplate::
+
+    $ stressor init ./scenario_1
+
+or alternatively import an existing HAR file as a starting point::
+
+    $ stressor init ./scenario_1 --convert /path/to/output.har
+
+See also the help::
+
+    $ stressor init --help
+    usage: stressor init [-h] [-v | -q] [-n] [--no-color] [--import HAR_FILE]
+                        [--force] [--opts OPTS]
+                        TARGET
+
+    positional arguments:
+    TARGET             target folder (created if not existing)
+
+    optional arguments:
+    -h, --help         show this help message and exit
+    -v, --verbose      increment verbosity by one (default: 3, range: 0..5)
+    -q, --quiet        decrement verbosity by one
+    -n, --dry-run      just simulate and log results, but don't change anything
+    --no-color         prevent use of ansi terminal color codes
+    --import HAR_FILE  optional HAR file that is converted
+    --force            override existing files
+    --opts OPTS        YAML file with conversion options
     $
 
 See the :doc:`user_guide` example for details.
-
 
 
 Verbosity Level
