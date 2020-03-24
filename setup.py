@@ -76,7 +76,7 @@ for cmd in ["bdist_msi"]:
 #   2. users may prefer another server
 #   3. there may already cherrypy versions installed
 
-install_requires = ["lxml", "PyYAML", "requests", "sty"]
+install_requires = ["lxml", "python-dateutil", "PyYAML", "requests", "sty"]
 setup_requires = install_requires
 tests_require = []
 

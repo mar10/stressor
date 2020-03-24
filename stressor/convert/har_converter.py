@@ -13,7 +13,13 @@ from operator import itemgetter
 from pprint import pformat
 from urllib.parse import urlparse
 
-from stressor.util import datetime_to_iso, iso_to_stamp, lstrip_string, shorten_string
+from stressor.util import (
+    base_url,
+    datetime_to_iso,
+    iso_to_stamp,
+    lstrip_string,
+    shorten_string,
+)
 
 logger = logging.getLogger("stressor.har")
 
@@ -173,10 +179,20 @@ class HarConverter:
         if req.get("comment"):
             entry["comment"] = req["comment"]
 
-        if req.get("queryString"):
+        if req.get("queryString"):  # List of (name, value) tuples
             entry["query"] = req["queryString"]
+
         if req.get("postData"):
-            entry["data"] = req["postData"]
+            post_data = req["postData"]
+            if post_data.get("mimeType"):
+                entry["mimeType"] = post_data.get("mimeType")
+
+            if post_data.get("params"):
+                entry["data"] = post_data.get("params")
+            elif post_data.get("text"):
+                # according to spec, 'text' should be mutually exclusive to 'params'
+                # but Chrome produces both
+                entry["data"] = post_data.get("text")
 
         if resp.get("comment"):
             entry["resp_comment"] = resp["comment"]
@@ -323,7 +339,37 @@ class HarConverter:
         "DELETE": "DeleteRequest",
     }
 
-    # def _write_line(self, fp, )
+    def _write_args(self, lines, name, data):
+        """
+        Args:
+            lines (list):
+            name (str):
+            data (list): a 'params' list of {name: ..., value: ...} objects
+        """
+        assert isinstance(data, (list, tuple))
+        used = set()
+        lines.append("  {}:\n".format(name))
+        for p in data:
+            # TODO: coerce value (which in HAR is always a string)
+
+            # Convert [{name: ..., value: ...}, ...] syntax to dict
+            # TODO: We do this, because activity code doesn not handle the
+            #       tuple syntax yet. But we should fall back to tuples syntax
+            #       if the list does contain duplicate names, instead of
+            #       dicarding.
+            name, value = p["name"], p["value"]
+            # lines.append('    - ["{}", {}]\n'.format(name, json.dumps(value)))
+
+            if name in used:
+                logger.error(
+                    "Discarding multiple param name: {}: {}".format(name, value)
+                )
+                continue
+            used.add(name)
+            lines.append('    "{}": {}\n'.format(name, json.dumps(value)))
+
+        return
+
     def _write_entry(self, fp, entry):
         opts = self.opts
         activity = self.activity_map.get(entry["method"], "HTTPRequest")
@@ -347,6 +393,7 @@ class HarConverter:
             lines.append("# {}\n".format(shorten_string(entry["resp_comment"], 75)))
 
         url = entry["url"]
+        expand_url_params = False
 
         lines.append("- activity: {}\n".format(activity))
         if is_bucket:
@@ -355,16 +402,34 @@ class HarConverter:
             for url in url_list:
                 lines.append('    - "{}"\n'.format(url))
         else:
+            if entry.get("query"):
+                expand_url_params = True
+                url = base_url(url)
             lines.append('  url: "{}"\n'.format(url))
 
         if activity == "HTTPRequest":
             lines.append("  method: {}\n".format(entry["method"]))
+
         # TODO:
         # We have ?query also as part of the URL
         # if entry.get("query"):
         #     lines.append("  params: {}\n".format(entry["query"]))
-        if entry.get("data"):
-            lines.append("  data: {}\n".format(entry["data"]))
+        if expand_url_params:
+            self._write_args(lines, "params", entry["query"])
+
+        # TODO: set headers = {'Content-type': 'content_type_value'}
+        #       if entry.dData.mimeType is defined
+
+        data = entry.get("data")
+        if data:
+            if isinstance(data, (list, tuple)):
+                # Must be a 'params' list of {name: ..., value: ...} objects
+                self._write_args(lines, "data", data)
+            else:
+                assert type(data) is str
+                logger.warning("Did not expect text: {}".format(data))
+                lines.append('  data: "{}"\n'.format(json.dumps(data)))
+
         lines.append("\n")
         fp.writelines(lines)
 

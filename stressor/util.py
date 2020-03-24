@@ -12,6 +12,8 @@ import warnings
 from datetime import datetime
 
 from dateutil.parser import isoparse
+from urllib.parse import urlparse, urljoin
+
 
 logger = logging.getLogger("stressor")
 
@@ -448,6 +450,30 @@ def parse_args_from_str(arg_str, arg_defs):  # , context=None):
     if arg_list:
         raise ValueError("Extra args `{}`.".format(", ".join(arg_list)))
 
+    return res
+
+
+# def is_abs_url(url):
+#     """Return true if url is already absolute."""
+#     return "://" in url or url.startswith("/")
+
+
+def is_relative_url(url):
+    """Return true if url is relative to the server."""
+    return "://" not in url  # or url.startswith("/")
+
+
+def resolve_url(root, url):
+    """Convert relative URL to absolute, using `root` as default."""
+    return urljoin(root, url)
+
+
+def base_url(url):
+    parsed_uri = urlparse(url)
+    if parsed_uri.netloc:
+        res = "{uri.scheme}://{uri.netloc}{uri.path}".format(uri=parsed_uri)
+    else:
+        res = "{uri.path}".format(uri=parsed_uri)
     return res
 
 

@@ -7,7 +7,7 @@ import re
 import threading
 from pprint import pformat
 from queue import Empty, Queue
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode
 
 from lxml import html
 import requests
@@ -20,22 +20,14 @@ from stressor.plugins.base import (
     ActivityError,
     ActivityTimeoutError,
 )
-from stressor.util import check_arg, get_dict_attr, logger, shorten_string
-
-
-# def is_abs_url(url):
-#     """Return true if url is already absolute."""
-#     return "://" in url or url.startswith("/")
-
-
-def is_relative_url(url):
-    """Return true if url is relative to the server."""
-    return "://" not in url  # or url.startswith("/")
-
-
-def resolve_url(root, url):
-    """Convert relative URL to absolute, using `root` as default."""
-    return urljoin(root, url)
+from stressor.util import (
+    check_arg,
+    get_dict_attr,
+    logger,
+    shorten_string,
+    is_relative_url,
+    resolve_url,
+)
 
 
 def match_value(pattern, value, info):
@@ -87,6 +79,7 @@ class HTTPRequestActivity(ActivityBase):
         args_dict = expanded_args if expanded_args else self.raw_args
         url = args_dict.get("url")
         params = args_dict.get("params") or ""
+
         if params:
             params = "?" + urlencode(params)
         if self.__class__ is HTTPRequestActivity:
