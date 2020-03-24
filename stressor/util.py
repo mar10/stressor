@@ -11,6 +11,8 @@ import types
 import warnings
 from datetime import datetime
 
+from dateutil.parser import isoparse
+
 logger = logging.getLogger("stressor")
 
 
@@ -512,7 +514,9 @@ def datetime_to_iso(dt=None, microseconds=False):
 
 def iso_to_datetime(iso):
     """Convert as ISO formatted datetime string to datetime."""
-    dt = datetime.strptime(iso, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # dt = datetime.strptime(iso, "%Y-%m-%dT%H:%M:%S.%fZ")
+    dt = isoparse(iso)
+
     return dt
 
 

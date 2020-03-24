@@ -27,6 +27,7 @@ stressor = {path = ".",editable = true}
 fabulist = "*"
 PyYAML = "~=5.2"
 lxml = "~=4.4"
+python-dateutil = "*"
 requests = "*"
 sty = "*"
 
