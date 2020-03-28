@@ -28,10 +28,11 @@ class TestConvert:
             }
             conv = HarConverter(opts)
             conv.run()
-            assert len(conv.entries) == 5
-            assert conv.har_version == "1.2"
             act_yaml_path = os.path.join(target_folder, "main_sequence.yaml")
             yaml = open(act_yaml_path, "rt").read()
+            # print(yaml)
+            assert len(conv.entries) == 5
+            assert conv.har_version == "1.2"
         assert "activity: GetRequest" in yaml
         assert 'url: "/test1.json"' in yaml
         # assert 'url: "http://127.0.0.1:8082/test1.json"' in yaml

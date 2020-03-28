@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 from stressor.util import (
     base_url,
     datetime_to_iso,
+    format_elap,
     iso_to_stamp,
     lstrip_string,
     shorten_string,
@@ -147,6 +148,17 @@ class HarConverter:
                 return True
         return False
 
+    _time_names = ("blocked", "dns", "connect", "send", "wait", "receive")
+
+    def _calc_request_time(self, har_entry):
+        t = 0.0
+        timings = har_entry["timings"]
+        for name in self._time_names:
+            v = timings.get(name)
+            if v > 0:
+                t += v
+        return t
+
     def _add_entry(self, har_entry):
         """Store the most important properties of an HAR entry."""
         req = har_entry["request"]
@@ -168,6 +180,7 @@ class HarConverter:
             "start": iso_to_stamp(entry_dt),
             "method": req["method"],
             "url": url,
+            "elap": self._calc_request_time(har_entry),
         }
         if req.get("httpVersion").upper() not in ("", "HTTP/1.1"):
             logger.warning("Unknown httpVersion: {!r}".format(req.get("httpVersion")))
@@ -382,8 +395,10 @@ class HarConverter:
             lines.append("# Auto-collated {:,} GET requests\n".format(len(url_list)))
         else:
             lines.append(
-                "# Response type: {!r}, size: {:,}\n".format(
-                    entry.get("resp_type"), entry.get("resp_size", -1)
+                "# Response type: {!r}, size: {:,}, elap: {}\n".format(
+                    entry.get("resp_type"),
+                    entry.get("resp_size", -1),
+                    format_elap(entry.get("elap"), high_prec=True),
                 )
             )
         if entry.get("resp_comment"):
