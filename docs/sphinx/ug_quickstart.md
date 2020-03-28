@@ -1,8 +1,7 @@
-----------
 Quickstart
 ----------
 
-1. Install *stressor* ([details](installation.html))
+1. Install *stressor* ([details](installation))
 
 2. Create a new scenario folder. For example:
 
@@ -18,7 +17,7 @@ Quickstart
     ```
 
 3. Edit the scripts as needed (*users.yaml*, *main_sequence.yaml*, *scenario.yaml*)
-  ([details](ug_writing_scripts.html))
+  ([details](ug_writing_scripts))
 
 4. Run the script:
 

@@ -28,12 +28,9 @@ PATTERN_TYPE = type(re.compile("foo"))  # 're.Pattern' requires Python 3.7+
 
 
 class HarConverter:
-    """
+    """Convert HAR file to YAML scenario."""
 
-    Example::
-
-    """
-
+    #: Defaults for optional `--opts` paramter.
     DEFAULT_OPTS = {
         "fspec": None,
         "target_folder": None,

@@ -61,8 +61,28 @@ stressor.util module
     :show-inheritance:
     :inherited-members:
 
+stressor.log module
+-------------------
+
+.. automodule:: stressor.log
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
+    :inherited-members:
+
 stressor.plugins package
 ========================
+
+stressor.plugins.base module
+----------------------------
+
+.. automodule:: stressor.plugins.base
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
+    :inherited-members:
 
 stressor.plugins.common module
 ------------------------------
@@ -85,7 +105,7 @@ stressor.plugins.http_activities module
     :inherited-members:
 
 stressor.plugins.script_activities module
------------------------..----------------
+-----------------------------------------
 
 .. automodule:: stressor.plugins.script_activities
     :members:
@@ -93,3 +113,31 @@ stressor.plugins.script_activities module
     :private-members:
     :show-inheritance:
     :inherited-members:
+
+stressor.convert package
+========================
+
+stressor.convert.har_converter module
+-------------------------------------
+
+.. automodule:: stressor.convert.har_converter
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
+    :inherited-members:
+
+stressor.monitor package
+========================
+
+stressor.monitor.server module
+------------------------------
+
+.. automodule:: stressor.monitor.server
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
+
+    .. :inherited-members:
+

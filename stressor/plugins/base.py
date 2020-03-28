@@ -227,7 +227,7 @@ class ActivityBase(ABC):
 
         The session manager calls this for every activity instance, directly
         before `get_info()` and `execute()`.
-        Normally this method does not need to be implemented. (On use case is
+        Normally this method does not need to be implemented. (One exception is
         `SleepActivity`, that calculates the next random duration, so it can
         be displayed by `get_info()`.)
         """

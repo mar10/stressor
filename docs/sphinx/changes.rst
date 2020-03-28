@@ -5,4 +5,8 @@ Release Info
 .. toctree::
    :maxdepth: 2
 
-.. include:: ../../CHANGES.md
+..
+   .. mdinclude:: ../../CHANGES.md
+
+.. literalinclude:: ../../CHANGES.md
+    :language: md
