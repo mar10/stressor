@@ -287,7 +287,7 @@ class RunManager:
             t.setDaemon(True)  # Required to make Ctrl-C work
             thread_list.append(t)
 
-        logger.info("Starting session workers...")
+        logger.info("Starting {} session workers...".format(len(thread_list)))
         self.set_stage("running")
         self.stats.report_start(None, None, None)
 
@@ -303,7 +303,11 @@ class RunManager:
                 time.sleep(delay)
             t.start()
 
-        logger.info("All session workers running, now waiting for them to terminate...")
+        logger.info(
+            "All {} sessions running, waiting for them to terminate...".format(
+                len(thread_list)
+            )
+        )
         for t in thread_list:
             t.join()
 

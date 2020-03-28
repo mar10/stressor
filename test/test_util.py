@@ -15,6 +15,7 @@ from stressor.util import (
     format_rate,
     get_dict_attr,
     get_random_number,
+    is_yaml_keyword,
     parse_args_from_str,
     shorten_string,
 )
@@ -50,6 +51,15 @@ class TestBasics:
         assert 0.1 <= get_random_number((0.1, 2.0)) <= 2.0
         with pytest.raises(TypeError):
             get_random_number("1")
+
+    def test_is_yaml_keyword(self):
+        assert is_yaml_keyword(None) is False
+        assert is_yaml_keyword("") is False
+        assert is_yaml_keyword("0") is False
+        assert is_yaml_keyword("1") is False
+        #: NOTE: YAML evaluates `0_` as "0" and `0_1_` as "1", so we don't accept leading numbers
+        assert is_yaml_keyword("0_") is False
+        assert is_yaml_keyword("_0") is True
 
     def test_get_attr(self):
 

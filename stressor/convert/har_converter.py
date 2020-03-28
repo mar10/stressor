@@ -17,6 +17,7 @@ from stressor.util import (
     base_url,
     datetime_to_iso,
     format_elap,
+    is_yaml_keyword,
     iso_to_stamp,
     lstrip_string,
     shorten_string,
@@ -157,7 +158,7 @@ class HarConverter:
             v = timings.get(name)
             if v > 0:
                 t += v
-        return t
+        return t * 0.001
 
     def _add_entry(self, har_entry):
         """Store the most important properties of an HAR entry."""
@@ -376,7 +377,9 @@ class HarConverter:
                 )
                 continue
             used.add(name)
-            lines.append('    "{}": {}\n'.format(name, json.dumps(value)))
+            if not is_yaml_keyword(name):
+                name = '"' + name + '"'
+            lines.append("    {}: {}\n".format(name, json.dumps(value)))
 
         return
 
@@ -395,7 +398,7 @@ class HarConverter:
             lines.append("# Auto-collated {:,} GET requests\n".format(len(url_list)))
         else:
             lines.append(
-                "# Response type: {!r}, size: {:,}, elap: {}\n".format(
+                "# Response type: {!r}, size: {:,} bytes, time: {}\n".format(
                     entry.get("resp_type"),
                     entry.get("resp_size", -1),
                     format_elap(entry.get("elap"), high_prec=True),

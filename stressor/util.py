@@ -6,6 +6,7 @@
 import logging
 import os
 import random
+import re
 import sys
 import types
 import warnings
@@ -16,6 +17,10 @@ from urllib.parse import urlparse, urljoin
 
 
 logger = logging.getLogger("stressor")
+
+#: Check if a a string may be used as YAML dictionary key without using quotes.
+#: NOTE: YAML evaluates `0_` as "0" and `0_1_` as "1", so we don't accept leading numbers
+RE_YAML_KEYWORD = re.compile(r"^[a-zA-Z_]+\w*$")
 
 
 class StressorError(RuntimeError):
@@ -451,6 +456,11 @@ def parse_args_from_str(arg_str, arg_defs):  # , context=None):
         raise ValueError("Extra args `{}`.".format(", ".join(arg_list)))
 
     return res
+
+
+def is_yaml_keyword(s):
+    """Return true if `s` is a JSON compatible key."""
+    return bool(s and RE_YAML_KEYWORD.match(s))
 
 
 # def is_abs_url(url):

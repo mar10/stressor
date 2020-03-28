@@ -51,6 +51,8 @@ class TestConvert:
         }
         conv = HarConverter(opts)
         conv.run()
+        # yaml = open(opts["fspec"], "rt").read()
+        # print(yaml)
         assert len(conv.entries) == 27  # 47
         assert conv.stats["entries"] == 27
         assert conv.stats["entries_total"] == 51
