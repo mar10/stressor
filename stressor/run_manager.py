@@ -7,13 +7,12 @@ import itertools
 import sys
 import threading
 import time
-import webbrowser
 from collections import defaultdict
 from datetime import datetime
 
 from stressor.config_manager import ConfigManager
 from stressor.log import log
-from stressor.monitor.server import Monitor
+from stressor.monitor.server import MonitorServer
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
 from stressor.statistic_manager import StatisticManager
@@ -208,8 +207,10 @@ class RunManager:
         return "\n".join(lines)
 
     def get_status_info(self):
-        stats_info = self.stats.get_monitor_info()
         rc = self.run_config
+
+        stats_info = self.stats.get_monitor_info(rc)
+
         res = {
             "name": self.config_manager.name,
             "scenarioDetails": rc.get("details", "n.a."),
@@ -359,9 +360,9 @@ class RunManager:
 
         monitor = None
         if self.options.get("monitor"):
-            monitor = Monitor(self)
+            monitor = MonitorServer(self)
             monitor.start()
-            webbrowser.open_new_tab("http://127.0.0.1:8081/")
+            monitor.open_browser()
 
         self.start_dt = datetime.now()
         self.end_dt = None

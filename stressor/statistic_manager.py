@@ -109,10 +109,13 @@ class StatisticManager:
         """Called by compiler."""
         assert name not in self.sequence_names
         self.sequence_names[name] = True
-        self.stats["sequence_stats"][name] = {
+        res = {
+            "name": name,
             "errors": 0,
             "warnings": 0,
         }
+        self.stats["sequence_stats"][name] = res
+        return res
 
     def register_activity(self, activity):
         """Called by compiler."""
@@ -259,7 +262,7 @@ class StatisticManager:
         s = dict(self.stats)
         return "{}".format(pformat(s))
 
-    def get_monitor_info(self):
+    def get_monitor_info(self, run_config):
         stats = self.stats
 
         def f(d, k, secs=False):
@@ -268,13 +271,31 @@ class StatisticManager:
                 v = format_elap(v)
             return v
 
-        # Add rows for every sequence name:
+        # --- Add rows for every sequence name:
+
+        # Cache run_config.scenario.<sequence> entries as a dict:
+        scenario_map = {}
+        for scenario_seq_def in run_config["scenario"]:
+            seq_name = scenario_seq_def["sequence"]
+            scenario_map[seq_name] = scenario_seq_def
+
         seq_stats = []
 
         def _add_seq(name, info):
+            title = name
+            # Add duration/repeat info to the display title
+            seq_def = scenario_map.get(name, {})
+            extra = []
+            if "repeat" in seq_def:
+                extra.append("n: {:,}".format(seq_def["repeat"]))
+            if "duration" in seq_def:
+                extra.append("Δt: {}".format(format_elap(seq_def["duration"])))
+            if extra:
+                title = "{} ({})".format(seq_name, ", ".join(extra))
+
             seq_stats.append(
                 [
-                    name,
+                    title,
                     f(info, "seq_count"),
                     f(info, "seq_time", True),
                     f(info, "seq_time_avg", True),
@@ -294,7 +315,7 @@ class StatisticManager:
             _add_seq(seq_name, info)
         _add_seq("Summary", stats)
 
-        # List of all activities that are marked `monitor: true`
+        # --- List of all activities that are marked `monitor: true`
         activity_stats = []
         for act_compile_path in self.monitored_activities:
             info = stats["monitored"][act_compile_path]
@@ -311,7 +332,7 @@ class StatisticManager:
                 ]
             )
 
-        # Sessions
+        # --- List all sessions
         sessions = []
         for idx, (session_id, info) in enumerate(stats["sessions"].items(), 1):
             sessions.append(

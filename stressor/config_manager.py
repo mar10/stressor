@@ -16,6 +16,7 @@ from stressor.plugins.base import (
     register_plugins,
 )
 from stressor.util import (
+    NO_DEFAULT,
     PathStack,
     StressorError,
     assert_always,
@@ -128,6 +129,10 @@ class ConfigManager:
         # if path is not None:
         #     self.read(path)
         return
+
+    def get(self, key_path, default=NO_DEFAULT):
+        res = get_dict_attr(self.config_all, key_path, default)
+        return res
 
     def resolve_path(self, path, must_exist=True, check_root=True, default_ext=None):
         """Return an absolute path, assuming relative to the original config file."""
@@ -323,6 +328,7 @@ class ConfigManager:
             stack = self.stack
             # Register sequence names
             for seq_name in value.get("sequences", {}).keys():
+                # Create an initial statistics dict for sequence_stats[SEQ_NAME]:
                 stats.register_sequence(seq_name)
 
         if parent_key == "activity":

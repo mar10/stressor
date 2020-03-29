@@ -5,15 +5,13 @@
 
   function poll() {
     const tag = "Poll status from stressor";
-
     console.time(tag);
     $(".flash-on-update").removeClass("flash");
     $.ajax({
-      url: "getStats",
-      data: { arg1: "bar" }
+      url: "getStats"
+      // data: { arg1: "bar" }
     })
-    .done(function(result) {
-      console.timeEnd(tag);
+      .done(function(result) {
         $(".flash-on-update").addClass("flash");
         update(result);
         pollTimer = setTimeout(poll, interval);
@@ -24,6 +22,11 @@
         $("#statusContainer")
           .text(JSON.stringify(err))
           .addClass("error");
+        // alert("Ajax error")
+        // pollTimer = setTimeout(poll, interval);
+      })
+      .always(function() {
+        console.timeEnd(tag);
       });
   }
 
@@ -95,7 +98,11 @@
     );
   }
 
+  console.info("loaded...");
+  // alert("loaded...");
   $(function() {
+    console.info("start...");
+    // alert("start...");
     $("#btnStop").on("click", function() {
       $(this).prop("disabled", true);
       $.ajax({ url: "stopManager" }).done(function(result) {
@@ -111,6 +118,8 @@
         poll();
       }
     });
-    poll();
+    setTimeout(function() {
+      poll();
+    }, 1000);
   });
 })();

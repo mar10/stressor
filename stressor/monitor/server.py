@@ -8,6 +8,7 @@ import os
 import json
 import io
 import logging
+import webbrowser
 from http.server import SimpleHTTPRequestHandler, HTTPStatus
 from threading import Thread
 
@@ -23,7 +24,7 @@ class Handler(SimpleHTTPRequestHandler):
     server_version = (
         "stressor/" + __version__ + " " + SimpleHTTPRequestHandler.server_version
     )
-    # Custom attributes, set by `Monitor`:
+    # Custom attributes, set by `MonitorServer`:
     DIRECTORY = None
     run_manager = None
 
@@ -68,9 +69,6 @@ class Handler(SimpleHTTPRequestHandler):
         return self._return_json(res)
 
     def on_getStats(self, args):
-        # res = {
-        #     "stats": self.run_manager.get_status_info(),
-        # }
         res = self.run_manager.get_status_info()
         return self._return_json(res)
 
@@ -90,7 +88,7 @@ class Handler(SimpleHTTPRequestHandler):
         return SimpleHTTPRequestHandler.do_GET(self)
 
 
-class Monitor(Thread):
+class MonitorServer(Thread):
     """
     Run a web server in a separate thread, so it does not block
     """
@@ -107,11 +105,22 @@ class Monitor(Thread):
     def run(self):
         with socketserver.TCPServer((self.bind, self.port), Handler) as httpd:
             self.httpd = httpd
-            logger.info("Monitor serving at port {}:{}...".format(self.bind, self.port))
+            logger.info(
+                "Monitor serving at port {}:{}...".format(
+                    self.bind or "localhost", self.port
+                )
+            )
             httpd.serve_forever()
-            self.httpd = None
-            logger.info("Monitor server stopped.")
+        self.httpd = None
+        logger.info("Monitor server stopped.")
 
     def shutdown(self):
         if self.httpd:
             self.httpd.shutdown()
+
+    def open_browser(self):
+        assert self.bind == ""
+        monitor_url = "http://localhost:{}/".format(self.port)
+        # monitor_url = "http://127.0.0.1:{}/".format(self.port)
+        logger.info("Open web browser at {}".format(monitor_url))
+        webbrowser.open_new_tab(monitor_url)
