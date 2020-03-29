@@ -362,6 +362,7 @@ class RunManager:
         if self.options.get("monitor"):
             monitor = MonitorServer(self)
             monitor.start()
+            time.sleep(0.5)
             monitor.open_browser()
 
         self.start_dt = datetime.now()

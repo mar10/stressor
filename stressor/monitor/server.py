@@ -106,7 +106,7 @@ class MonitorServer(Thread):
         with socketserver.TCPServer((self.bind, self.port), Handler) as httpd:
             self.httpd = httpd
             logger.info(
-                "Monitor serving at port {}:{}...".format(
+                "Monitor serving at http://{}:{}...".format(
                     self.bind or "localhost", self.port
                 )
             )
