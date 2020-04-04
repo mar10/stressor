@@ -104,6 +104,9 @@ if use_cx_freeze:
         install_requires.remove("PyYAML")
         install_requires.append("yaml")
 
+        install_requires.remove("python-dateutil")
+        install_requires.append("dateutil")
+
         executables = [
             Executable(
                 script="stressor/stressor_cli.py",

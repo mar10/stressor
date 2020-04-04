@@ -3,6 +3,8 @@
 # > cd C:\Prj\git\stressor
 # > .\tools\release_stressor.ps1
 
+Write-Error "Use `tox -e make_relase_msi` instead."
+Exit 1
 
 $ProjectRoot = "C:\Prj\git\stressor";
 
