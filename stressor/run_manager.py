@@ -194,15 +194,18 @@ class RunManager:
             )
         )
         if has_errors:
+            pics = " 💥 💔 💥" if log.use_colors else ""
             ap(
                 log.red(
                     "Result: ERROR, found {:,} errors and {:,} warnings.".format(
                         self.stats["errors"], self.stats["warnings"],
                     )
+                    + pics
                 )
             )
         else:
-            ap(log.green("Result: Ok."))
+            pics = " ✨ 🍰 ✨" if log.use_colors else ""
+            ap(log.green("Result: Ok." + pics))
         ap(col("=-" * 35))
         return "\n".join(lines)
 
@@ -383,6 +386,7 @@ class RunManager:
 
             if monitor:
                 self.set_stage("waiting")
+                logger.info("Press Ctrl+C to quit.")
                 self.stop_request.wait()
         finally:
             if monitor:

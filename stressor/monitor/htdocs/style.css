@@ -109,6 +109,10 @@ div.info div.value {
   text-decoration: none;
   color: gray;
 }
+#statusBar a:hover {
+  text-decoration: underline;
+  color: gray;
+}
 
 /* */
 

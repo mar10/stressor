@@ -47,6 +47,7 @@ def match_value(pattern, value, info):
 
 
 class HTTPRequestActivity(ActivityBase):
+    # RESPONSE_LOG_LENGTH = 200
     REQUEST_ARGS = {"auth", "data", "json", "headers", "params", "timeout", "verify"}
     _mandatory_args = {"method", "url"}
     _known_args = (
@@ -88,7 +89,9 @@ class HTTPRequestActivity(ActivityBase):
             method = ""
         return "{}({}{}{})".format(self.get_script_name(), method, url, params)
 
-    def _format_response(self, resp, short=False, add_headers=False, ruler=True):
+    @classmethod
+    def _format_response(cls, resp, short=False, add_headers=False, ruler=True):
+
         try:
             s = resp.json()
             s = pformat(s)
@@ -119,6 +122,12 @@ class HTTPRequestActivity(ActivityBase):
         res.append(s)
         res.append("<<< ---")
         return "\n".join(res)
+
+    @classmethod
+    def _raise_assertion(cls, cause, resp):
+        msg = cls._format_response(resp, short=True)
+        msg = "\n  | ".join(msg.split("\n"))
+        raise ActivityAssertionError("{}\n{}".format(cause, msg))
 
     def execute(self, session, **expanded_args):
         """
@@ -185,13 +194,9 @@ class HTTPRequestActivity(ActivityBase):
             result = resp.text
 
         if not resp.ok:
-            s = self._format_response(resp, short=True)
-            logger.error(s)
-
-        if debug:
-            # not only with --verbose?
+            logger.error(self._format_response(resp, short=not debug))
+        elif debug:
             logger.info(self._format_response(resp, short=False))
-            # logger.debug(self._format_response(resp, short=False))
 
         assert_status = expanded_args.get("assert_status")
         if not assert_status:
@@ -208,37 +213,27 @@ class HTTPRequestActivity(ActivityBase):
         if arg:
             text = str(resp.headers)
             if not re.match(arg, text):
-                raise ActivityAssertionError(
-                    "Result headers do not match `{}`: {!r}".format(
-                        arg, shorten_string(text, 200)
-                    )
+                self._raise_assertion(
+                    "Result headers do not match `{}`".format(arg), resp
                 )
 
         arg = expanded_args.get("assert_json")
         if arg:
             if not is_json:
-                raise ActivityAssertionError(
-                    "Unexpected result type (expected JSON): {}".format(
-                        shorten_string(result, 200)
-                    )
-                )
+                self._raise_assertion("Unexpected result type (expected JSON)", resp)
+
             for key, pattern in arg.items():
                 value = get_dict_attr(result, key)
                 # print(result, key, value)
                 match, msg = match_value(pattern, value, key)
                 if not match:
-                    raise ActivityAssertionError(
-                        "Unexpected JSON result: {}".format(msg)
-                    )
+                    self._raise_assertion("Unexpected JSON result {}".format(msg), resp)
 
         arg = expanded_args.get("assert_html")
         if arg:
             if is_json:
-                raise ActivityAssertionError(
-                    "Unexpected result type (expected HTML): {}".format(
-                        shorten_string(result, 200)
-                    )
-                )
+                self._raise_assertion("Unexpected result type (expected HTML)", resp)
+
             for xpath, pattern in arg.items():
                 # print(result)
                 tree = html.fromstring(result)
@@ -255,8 +250,9 @@ class HTTPRequestActivity(ActivityBase):
                     # print("match", html.tostring(match))
                     raise NotImplementedError
                 if not ok:
-                    raise ActivityAssertionError(
-                        "Unexpected HTML result: XPath {!r} -> {}".format(xpath, match)
+                    self._raise_assertion(
+                        "Unexpected HTML result: XPath {!r} -> {}".format(xpath, match),
+                        resp,
                     )
 
         return result

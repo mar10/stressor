@@ -5,6 +5,7 @@
 """
 import logging
 import os
+import platform
 import random
 import re
 import sys
@@ -15,12 +16,20 @@ from datetime import datetime
 from dateutil.parser import isoparse
 from urllib.parse import urlparse, urljoin
 
+from stressor import __version__
 
 logger = logging.getLogger("stressor")
 
 #: Check if a a string may be used as YAML dictionary key without using quotes.
 #: NOTE: YAML evaluates `0_` as "0" and `0_1_` as "1", so we don't accept leading numbers
 RE_YAML_KEYWORD = re.compile(r"^[a-zA-Z_]+\w*$")
+
+PYTHON_VERSION = "{}.{}.{}".format(
+    sys.version_info[0], sys.version_info[1], sys.version_info[2]
+)
+version_info = "stressor/{} Python/{} {}".format(
+    __version__, PYTHON_VERSION, platform.platform()
+)
 
 
 class StressorError(RuntimeError):
