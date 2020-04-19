@@ -171,6 +171,7 @@ def init_logging(verbose=3, path=None):
         # redirect `logger` to our special log file as well:
         logger.addHandler(hdlr)
 
+    logger.info(version_info)
     # Silence requests `InsecureRequestWarning` messages
     if verbose < 3:
         warnings.filterwarnings("ignore", message="Unverified HTTPS request")

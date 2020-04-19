@@ -6,12 +6,11 @@ Stress-test your web app.
 Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 
 Usage examples:
-  $ stressor --help
-  $ stressor run .
+    $ stressor --help
+    $ stressor run .
 """
 import argparse
 import os
-import platform
 import sys
 
 import yaml
@@ -21,15 +20,10 @@ from stressor.cli_common import common_parser, verbose_parser
 from stressor.convert.har_converter import HarConverter
 from stressor.log import log
 from stressor.run_manager import RunManager
-from stressor.util import init_logging, logger
+from stressor.util import init_logging, logger, version_info
 
 
 def handle_run_command(parser, args):
-    # try:
-    #     config = read_config(args.scenario, verbose=args.verbose)
-    # except ConfigurationError as e:
-    #     parser.error("{}".format(e))
-
     options = {
         "monitor": args.monitor,
         "log_summary": True,
@@ -96,11 +90,6 @@ def run():
         action="store_true",
         help="display version info and exit (combine with -v for more information)",
     )
-    # parser.add_argument(
-    #     "--no-color",
-    #     action="store_true",
-    #     help="prevent use of ansi terminal color codes",
-    # )
     subparsers = parser.add_subparsers(help="sub-command help")
 
     # --- Create the parser for the "run" command ------------------------------
@@ -149,9 +138,6 @@ def run():
         # default="./scenario.yaml",
         help="target folder (created if not existing)",
     )
-    # sp.add_argument(
-    #     "--target", required=True, help="target folder",
-    # )
     sp.add_argument(
         "--import",
         dest="har_file",
@@ -215,15 +201,9 @@ def run():
 
     if getattr(args, "version", None):
         if args.verbose >= 4:
-            PYTHON_VERSION = "{}.{}.{}".format(
-                sys.version_info[0], sys.version_info[1], sys.version_info[2]
-            )
-            version_info = "stressor/{} Python/{} {}".format(
-                __version__, PYTHON_VERSION, platform.platform()
-            )
+            print(version_info)
         else:
-            version_info = __version__
-        print(version_info)
+            print(__version__)
         sys.exit(0)
 
     if not callable(getattr(args, "command", None)):
