@@ -169,7 +169,7 @@ class SessionManager:
 
         # Create a copy of the current context, so we can shorten values
         context = self.context_stack.context.copy()
-        context["last_result"] = shorten_string(context.get("last_result"), 100)
+        context["last_result"] = shorten_string(context.get("last_result"), 500, 100)
 
         msg = []
         # msg.append("{} {}: {!r}:".format(self.context_stack, activity, exc))
@@ -221,7 +221,7 @@ class SessionManager:
             if not re.search(arg, text, re.MULTILINE):
                 errors.append(
                     "Result does not match `{}`: {!r}".format(
-                        arg, shorten_string(text, 100, 30)
+                        arg, shorten_string(text, 500, 100)
                     )
                 )
 

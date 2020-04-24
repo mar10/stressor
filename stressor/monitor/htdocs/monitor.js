@@ -1,4 +1,4 @@
-(function() {
+(function () {
   var interval = 3000,
     pollTimer = null,
     pollMap = { 0: 0, 1: 60000, 2: 30000, 3: 10000, 4: 3000, 5: 1000 };
@@ -8,24 +8,22 @@
     console.time(tag);
     $(".flash-on-update").removeClass("flash");
     $.ajax({
-      url: "getStats"
+      url: "getStats",
       // data: { arg1: "bar" }
     })
-      .done(function(result) {
+      .done(function (result) {
         $(".flash-on-update").addClass("flash");
         update(result);
         pollTimer = setTimeout(poll, interval);
       })
-      .fail(function(err) {
+      .fail(function (err) {
         status = "error";
         console.error("ERROR: " + JSON.stringify(err), arguments);
-        $("#statusContainer")
-          .text(JSON.stringify(err))
-          .addClass("error");
+        $("#statusContainer").text(JSON.stringify(err)).addClass("error");
         // alert("Ajax error")
         // pollTimer = setTimeout(poll, interval);
       })
-      .always(function() {
+      .always(function () {
         console.timeEnd(tag);
       });
   }
@@ -46,7 +44,7 @@
     tbody.innerHTML = "";
     data.forEach((row, i) => {
       var tr = table.insertRow(i);
-      row.forEach((val, j) => {
+      row.cols.forEach((val, j) => {
         var cell = tr.insertCell(j);
         if (typeof val === "number") {
           cell.innerHTML = val.toLocaleString();
@@ -56,8 +54,22 @@
         // Copy class from related <col> element
         var cl = colgroup[j].classList;
         cell.classList = cl;
+        if (cl.contains("err-text") && val !== "n.a.") {
+          cell.classList.add("warn");
+        }
         if (cl.contains("err-num")) {
           cell.classList.add(val === 0 ? "ok" : "warn");
+          if (val > 0 && row.key) {
+            cell.innerHTML =
+              "<a href='getErrorInfo?type=" +
+              row.type +
+              "&key=" +
+              row.key +
+              "' target=_blank>" +
+              // " <img src='info_red_16.png' width=16 heigth=16> &nbsp;" +
+              cell.innerHTML +
+              "</a>";
+          }
         }
       });
       tbody.appendChild(tr);
@@ -73,12 +85,12 @@
       !(stage === "running" || stage === "waiting")
     );
 
-    $("span.value").each(function() {
+    $("span.value").each(function () {
       var $this = $(this);
       $this.text(result[$this.data("value")]);
     });
     $("body")
-      .removeClass(function(index, className) {
+      .removeClass(function (index, className) {
         return (className.match(/(^|\s)stage-\S+/g) || []).join(" ");
       })
       .addClass("stage-" + result.stage)
@@ -100,17 +112,17 @@
 
   console.info("loaded...");
   // alert("loaded...");
-  $(function() {
+  $(function () {
     console.info("start...");
     // alert("start...");
-    $("#btnStop").on("click", function() {
+    $("#btnStop").on("click", function () {
       $(this).prop("disabled", true);
-      $.ajax({ url: "stopManager" }).done(function(result) {
+      $.ajax({ url: "stopManager" }).done(function (result) {
         clearTimeout(pollTimer);
         $("#btnStop").text("Cancelled.");
       });
     });
-    $("#pollFreq").on("change", function() {
+    $("#pollFreq").on("change", function () {
       interval = parseInt($(this).val(), 10);
       interval = pollMap[interval];
       clearTimeout(pollTimer);
@@ -118,7 +130,7 @@
         poll();
       }
     });
-    setTimeout(function() {
+    setTimeout(function () {
       poll();
     }, 1000);
   });

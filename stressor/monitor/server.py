@@ -3,14 +3,15 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
-import socketserver
-import os
-import json
 import io
+import json
 import logging
+import os
+import socketserver
 import webbrowser
-from http.server import SimpleHTTPRequestHandler, HTTPStatus
+from http.server import HTTPStatus, SimpleHTTPRequestHandler
 from threading import Thread
+from urllib import parse
 
 from stressor import __version__
 
@@ -72,9 +73,14 @@ class Handler(SimpleHTTPRequestHandler):
         res = self.run_manager.get_status_info()
         return self._return_json(res)
 
+    def on_getErrorInfo(self, args):
+        res = self.run_manager.stats.get_error_info(args)
+        return self._return_json(res)
+
     def do_GET(self):
         handler_name = self.path.strip("/")
-        handler_name, _sep, args = handler_name.partition("?")
+        handler_name, _sep, _args = handler_name.partition("?")
+        args = dict(parse.parse_qsl(parse.urlsplit(self.path).query))
         handler = getattr(self, "on_" + handler_name, None)
         if callable(handler):
             try:

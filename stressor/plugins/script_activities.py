@@ -55,7 +55,7 @@ class RunScriptActivity(ActivityBase):
             raise ActivityCompileError("Either `path` or `script` expected")
 
         #: Store a shortened code snippet for debug output
-        self.source = shorten_string(dedent(script), 200)
+        self.source = shorten_string(dedent(script), 500, 100)
         # print(self.source)
 
         if export is None:
@@ -144,7 +144,7 @@ class RunScriptActivity(ActivityBase):
             logger.info(
                 "{} returnd: {!r}".format(
                     session.context_stack,
-                    shorten_string(result, 100) if isinstance(result, str) else result,
+                    shorten_string(result, 200) if isinstance(result, str) else result,
                 )
             )
 

@@ -154,6 +154,13 @@ table.metrics td.warn {
   color: red;
   background-color: #fdd;
 }
+table.metrics td.warn a {
+  text-decoration: none;
+  color: red;
+}
+table.metrics td.warn a:hover {
+  text-decoration: underline;
+}
 table.metrics td.ok {
   color: green;
 }
@@ -161,6 +168,15 @@ table.metrics th.text,
 table.metrics td.text {
   text-align: left;
   width: 1;
+}
+table.metrics td.text.trim {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+}
+table.metrics td.warn.err-text {
+  color: red;
 }
 table.metrics th.w-xs,
 table.metrics td.w-xs {

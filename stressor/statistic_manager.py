@@ -252,7 +252,7 @@ class StatisticManager:
     def _add_error(self, d, error):
         d.setdefault("errors", 0)
         d["errors"] += 1
-        d["last_error"] = shorten_string("{}".format(error), 150)
+        d["last_error"] = shorten_string("{}".format(error), 500, 100)
 
     def has_errors(self, or_warnings=False):
         error_count = self.stats["errors"]
@@ -294,20 +294,26 @@ class StatisticManager:
                 title = "{} ({})".format(seq_name, ", ".join(extra))
 
             seq_stats.append(
-                [
-                    title,
-                    f(info, "seq_count"),
-                    f(info, "seq_time", True),
-                    f(info, "seq_time_avg", True),
-                    f(info, "seq_time_max", True),
-                    f(info, "act_count"),
-                    f(info, "errors"),
-                    f(info, "net_act_count"),
-                    f(info, "net_act_time", True),
-                    f(info, "net_act_time_avg", True),
-                    f(info, "net_act_time_max", True),
-                    format_rate(info.get("net_act_count"), info.get("net_act_time")),
-                ]
+                {
+                    "cols": [
+                        title,
+                        f(info, "seq_count"),
+                        f(info, "seq_time", True),
+                        f(info, "seq_time_avg", True),
+                        f(info, "seq_time_max", True),
+                        f(info, "act_count"),
+                        f(info, "errors"),
+                        f(info, "net_act_count"),
+                        f(info, "net_act_time", True),
+                        f(info, "net_act_time_avg", True),
+                        f(info, "net_act_time_max", True),
+                        format_rate(
+                            info.get("net_act_count"), info.get("net_act_time")
+                        ),
+                    ],
+                    "type": "sequence",
+                    "key": name if name != "Summary" else None,
+                }
             )
 
         for seq_name in self.sequence_names:
@@ -320,31 +326,39 @@ class StatisticManager:
         for act_compile_path in self.monitored_activities:
             info = stats["monitored"][act_compile_path]
             activity_stats.append(
-                [
-                    act_compile_path,
-                    f(info, "act_count"),
-                    f(info, "errors"),
-                    f(info, "act_time", True),
-                    f(info, "act_time_min", True),
-                    f(info, "act_time_avg", True),
-                    f(info, "act_time_max", True),
-                    f(info, "last_error") or "n.a.",
-                ]
+                {
+                    "cols": [
+                        act_compile_path,
+                        f(info, "act_count"),
+                        f(info, "errors"),
+                        f(info, "act_time", True),
+                        f(info, "act_time_min", True),
+                        f(info, "act_time_avg", True),
+                        f(info, "act_time_max", True),
+                        f(info, "last_error") or "n.a.",
+                    ],
+                    "type": "monitored",
+                    "key": act_compile_path,
+                }
             )
 
         # --- List all sessions
         sessions = []
         for idx, (session_id, info) in enumerate(stats["sessions"].items(), 1):
             sessions.append(
-                [
-                    idx,
-                    session_id,
-                    info["user"],
-                    f(info, "seq_count"),
-                    f(info, "act_count"),
-                    f(info, "errors"),
-                    info["path"],
-                ]
+                {
+                    "cols": [
+                        idx,
+                        session_id,
+                        info["user"],
+                        f(info, "seq_count"),
+                        f(info, "act_count"),
+                        f(info, "errors"),
+                        info["path"],
+                    ],
+                    "type": "session",
+                    "key": session_id,
+                }
             )
 
         res = {
@@ -355,3 +369,15 @@ class StatisticManager:
             "raw": self.stats,
         }
         return res
+
+    def get_error_info(self, args):
+        type_ = args["type"]
+        key = args["key"]
+        if type_ == "sequence":
+            errors = self.stats["sequence_stats"][key]["last_error"]
+        elif type_ == "session":
+            errors = self.stats["sessions"][key]["last_error"]
+        elif type_ == "monitored":
+            errors = self.stats["monitored"][key]["last_error"]
+
+        return "Last Error Info ({}):\n\n{}".format(args, errors)

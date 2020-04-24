@@ -12,9 +12,9 @@ import sys
 import types
 import warnings
 from datetime import datetime
+from urllib.parse import urljoin, urlparse
 
 from dateutil.parser import isoparse
-from urllib.parse import urlparse, urljoin
 
 from stressor import __version__
 
@@ -166,12 +166,12 @@ def init_logging(verbose=3, path=None):
         logger.addHandler(hdlr)
         # logger.setLevel(logging.DEBUG)
         logger.info("Start log ({})".format(datetime.now()))
+        logger.info(version_info)
         logger.info("Running {}".format(" ".join(sys.argv)))
 
         # redirect `logger` to our special log file as well:
         logger.addHandler(hdlr)
 
-    logger.info(version_info)
     # Silence requests `InsecureRequestWarning` messages
     if verbose < 3:
         warnings.filterwarnings("ignore", message="Unverified HTTPS request")

@@ -203,10 +203,11 @@ class HTTPRequestActivity(ActivityBase):
             # requests.exceptions.HTTPError: On 404, 500, etc.
             resp.raise_for_status()
         elif resp.status_code not in assert_status:
-            raise ActivityAssertionError(
+            self._raise_assertion(
                 "HTTP status does not match {}: {}".format(
                     assert_status, resp.status_code
-                )
+                ),
+                resp,
             )
 
         arg = expanded_args.get("assert_match_headers")
