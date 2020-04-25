@@ -33,8 +33,13 @@ def handle_run_command(parser, args):
         "dry_run": args.dry_run,
     }
 
+    scenario_fspec = args.scenario
+    if os.path.isdir(scenario_fspec):
+        scenario_fspec = os.path.join(scenario_fspec, "scenario.yaml")
+        logger.info("Looking for {}".format(scenario_fspec))
+
     rm = RunManager()
-    rm.load_config(args.scenario)
+    rm.load_config(scenario_fspec)
     if args.single:
         rm.run_config["force_single"] = True
 
@@ -104,7 +109,7 @@ def run():
         "scenario",
         metavar="SCENARIO",
         default="./scenario.yaml",
-        help="path to configuration file (default: %(default)s)",
+        help="path to configuration file or folder (default: %(default)s)",
     )
     sp.add_argument(
         "-o",
