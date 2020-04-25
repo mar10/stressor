@@ -13,7 +13,7 @@ stressor
 :Version:   |version|, Date: |today|
 
 .. warning::
-  Stressor has currently *beta* status and is **not** fit for production!
+  Stressor has currently *beta* status.
 
 .. toctree::
    :hidden:

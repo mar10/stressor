@@ -202,7 +202,7 @@ class HarConverter:
                 entry["data"] = post_data.get("params")
             elif post_data.get("text"):
                 # according to spec, 'text' should be mutually exclusive to 'params'
-                # but Chrome produces both
+                # but Chrome produces both or sometimes text only:
                 entry["data"] = post_data.get("text")
 
         if resp.get("comment"):

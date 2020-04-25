@@ -53,13 +53,13 @@ class TestConvert:
         conv.run()
         # yaml = open(opts["fspec"], "rt").read()
         # print(yaml)
-        assert len(conv.entries) == 27  # 47
-        assert conv.stats["entries"] == 27
-        assert conv.stats["entries_total"] == 51
-        assert conv.stats["external_urls"] == 4
-        assert conv.stats["skipped"] == 24
-        assert conv.stats["collated_activities"] == 10
-        assert conv.stats["collated_urls"] == 33
+        assert len(conv.entries) == 46
+        assert conv.stats["entries"] == 46
+        assert conv.stats["entries_total"] == 81
+        assert conv.stats["external_urls"] == 6
+        assert conv.stats["skipped"] == 35
+        assert conv.stats["collated_activities"] == 9
+        assert conv.stats["collated_urls"] == 41
 
         assert conv.har_version == "1.2"
         # assert 0

@@ -9,8 +9,6 @@
 
 > Stress-test your web app.
 
-**NOTE:** This is work-in-progress and has *beta* status.
-
 
 ## Quickstart
 

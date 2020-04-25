@@ -12,5 +12,6 @@ User Guide
     ug_reference
     ug_cli
 
-.. warning::
-  Stressor has currently *beta* status and is **not** fit for production!
+..
+  .. warning::
+    Stressor has currently *beta* status and is **not** fit for production!
