@@ -442,8 +442,8 @@ class HarConverter:
                 self._write_args(lines, "data", data)
             else:
                 assert type(data) is str
-                logger.warning("Did not expect text: {}".format(data))
-                lines.append('  data: "{}"\n'.format(json.dumps(data)))
+                logger.warning("Expected list, but got text: {!r}".format(data))
+                lines.append("  data: {}\n".format(json.dumps(data)))
 
         lines.append("\n")
         fp.writelines(lines)
