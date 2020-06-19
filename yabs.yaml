@@ -9,7 +9,7 @@ config:
     oauth_token_var: GITHUB_OAUTH_TOKEN
   version:
     - type: __version__        # First entry is master for synchronizing
-      file: src/stressor/__init__.py
+      file: stressor/__init__.py
       # match: '__version__\s*=\s*[''\"](\d+\.\d+\.\d+).*[''\"]'
       # template: '__version__ = "{version}"'
     # - type: setup_cfg        # First entry is master for synchronizing

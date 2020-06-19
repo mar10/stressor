@@ -2,26 +2,29 @@
 # See https://stressor.readthedocs.io/
 file_version: stressor#0
 
-run_config:
+config:
   name: Test Scenario 1
 
-  # Initial context value definitions and defaults:
-  context:
-    base_url: http://127.0.0.1:8082
+  #: (int|bool) max. number of errors before stopping
+  fail_on_errors: false
 
-  # Define the virtual test users and no. of sessions:
-  sessions:
-    users: $load(users.yaml)
-    count: 3
-    basic_auth: false
-    verify_ssl: false
+# Initial context value definitions and defaults:
+context:
+  base_url: http://127.0.0.1:8082
 
-  # Define what actions should be performed by every session:
-  scenario:
-    - sequence: init
-    - sequence: main
-      repeat: 3
-    - sequence: end
+# Define the virtual test users and no. of sessions:
+sessions:
+  users: $load(users.yaml)
+  count: 3
+  basic_auth: false
+  verify_ssl: false
+
+# Define what actions should be performed by every session:
+scenario:
+  - sequence: init
+  - sequence: main
+    repeat: 3
+  - sequence: end
 
 # List of named action sequences. Used as building blocks for scenarios:
 sequences:

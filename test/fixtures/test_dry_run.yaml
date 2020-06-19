@@ -2,26 +2,26 @@ file_version: stressor#0
 
 # The run configuration defines how the `sequences` are executed in parallel
 # sessions.
-run_config:
+config:
   name: Test scenario 1
   details: Some details...
 
-  context:
-    base_url: http://127.0.0.1:8082
-    timeout: 5
-    default_sleep: .03
-    new_title: "test"
+context:
+  base_url: http://127.0.0.1:8082
+  timeout: 5
+  default_sleep: .03
+  new_title: "test"
 
-  sessions:
-    users: $load(users.yaml)
-    count: 2
-    # threads_per_process: 5
+sessions:
+  users: $load(users.yaml)
+  count: 2
+  # threads_per_process: 5
 
-  # Define what actions should be performed by every session
-  scenario:
-    - sequence: init
-    - sequence: main
-    - sequence: end
+# Define what actions should be performed by every session
+scenario:
+  - sequence: init
+  - sequence: main
+  - sequence: end
 
 # List of named action sequences. Used as building blocks for scenarios
 sequences:

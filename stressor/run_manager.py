@@ -19,7 +19,6 @@ from stressor.statistic_manager import StatisticManager
 from stressor.util import (
     check_arg,
     format_elap,
-    get_dict_attr,
     get_random_number,
     logger,
     set_console_ctrl_handler,
@@ -73,7 +72,7 @@ class RunManager:
         #: Finalize the current sequence, then do 'end' sequence before stopping?
         self.stop_request_graceful = None
         self.session_list = []
-        self.run_config = None
+        # self.run_config = None
         #: :class:`~stressor.statistic_manager.StatisticManager` object that containscurrent execution path
         self.stats = StatisticManager()
         self.options = self.DEFAULT_OPTS.copy()
@@ -165,7 +164,7 @@ class RunManager:
         return self.stats.has_errors()
 
     def get_cli_summary(self):
-        rc = self.run_config
+        cm = self.config_manager
         lines = []
 
         has_errors = self.has_errors()
@@ -175,9 +174,9 @@ class RunManager:
 
         ap("Result Summary:")
         ap(col("=-" * 35))
-        ap("Stressor scenario '{}' finished.".format(self.config_manager.name))
-        ap("  Tag:      '{}'".format(rc.get("tag", "n.a.")))
-        ap("  Base URL: {}".format(get_dict_attr(rc, "context.base_url")))
+        ap("Stressor scenario '{}' finished.".format(cm.name))
+        ap("  Tag:      '{}'".format(cm.get("tag", "n.a.")))
+        ap("  Base URL: {}".format(cm.context.get("base_url", "")))
         ap("  Start:    {}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap(
@@ -210,19 +209,19 @@ class RunManager:
         return "\n".join(lines)
 
     def get_status_info(self):
-        rc = self.run_config
+        cm = self.config_manager
 
-        stats_info = self.stats.get_monitor_info(rc)
+        stats_info = self.stats.get_monitor_info(cm.config_all)
 
         res = {
-            "name": self.config_manager.name,
-            "scenarioDetails": rc.get("details", "n.a."),
-            "tag": rc.get("tag", "n.a."),
+            "name": cm.name,
+            "scenarioDetails": cm.get("config.details", "n.a."),
+            "tag": cm.get("config.tag", "n.a."),
             "stage": self.stage,
             "stageDisplay": "done" if self.stage == "waiting" else self.stage,
             "hasErrors": self.has_errors(),
             "startTimeStr": "{}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")),
-            "baseUrl": get_dict_attr(rc, "context.base_url"),
+            "baseUrl": cm.get("context.base_url"),
             "sessionCount": self.stats["sess_count"],
             "sessionsRunning": self.stats["sess_running"],
             "stats": stats_info,
@@ -250,7 +249,7 @@ class RunManager:
         cr.read(run_config_file, load_files=True)
 
         self.config_manager = cr
-        self.run_config = cr.run_config
+        # self.run_config = cr.run_config
         logger.info("Successfully compiled configuration {}.".format(cr.path))
 
     def _run_one(self, session_manager):
@@ -295,7 +294,7 @@ class RunManager:
         self.set_stage("running")
         self.stats.report_start(None, None, None)
 
-        ramp_up_delay = self.run_config["sessions"].get("ramp_up_delay")
+        ramp_up_delay = self.config_manager.sessions.get("ramp_up_delay")
 
         start_run = time.monotonic()
         for i, t in enumerate(thread_list):
@@ -340,14 +339,14 @@ class RunManager:
 
         self.options.update(options)
 
-        context = self.run_config["context"]
+        context = self.config_manager.context
         if extra_context:
             context.update(extra_context)
 
-        sessions = self.run_config["sessions"]
+        sessions = self.config_manager.sessions
 
         count = int(sessions.get("count", 1))
-        if count > 1 and self.run_config.get("force_single"):
+        if count > 1 and self.config_manager.config.get("force_single"):
             logger.info("force_single: restricting sessions count to one.")
             count = 1
 

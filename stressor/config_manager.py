@@ -112,12 +112,6 @@ class ConfigManager:
         self.root_folder = None
         #: (str) Shortcut to self.run_config["name"] (defaults to filename without extension)
         self.name = None
-        # #: (dict) shortcut to config_all["run_config"]
-        # self.run_config = None
-        # #: (dict) shortcut to config_all["run_config"]["context"]
-        # self.context = None
-        # #: (dict) shortcut to config_all["sequences"]
-        # self.sequences = None
         #: (:class:`stressor.util.PathStack`) Current compile location
         self.stack = None
         #: (dict) lists of compile errors and warnings
@@ -169,18 +163,28 @@ class ConfigManager:
         self.results[level].append({"msg": msg, "path": path})
 
     @property
-    def run_config(self):
-        """shortcut to config_all["run_config"]."""
-        return self.config_all["run_config"]
+    def config(self):
+        """Shortcut to config_all["run_config"]."""
+        return self.config_all["config"]
 
     @property
     def context(self):
-        """shortcut to config_all["context"]."""
-        return self.run_config["context"]
+        """Shortcut to config_all["context"]."""
+        return self.config_all["context"]
+
+    @property
+    def scenario(self):
+        """Shortcut to config_all["scenario"]."""
+        return self.config_all["scenario"]
+
+    @property
+    def sessions(self):
+        """Shortcut to config_all["sessions"]."""
+        return self.config_all["sessions"]
 
     @property
     def sequences(self):
-        """shortcut to config_all["sequences"]."""
+        """Shortcut to config_all["sequences"]."""
         return self.config_all["sequences"]
 
     def has_errors(self, or_warnings=False):
@@ -194,7 +198,7 @@ class ConfigManager:
             (int) Current file format version as defined in `file_version: stressor#N`
         """
         if cfg is None:
-            cfg = self.run_config
+            cfg = self.config_all
 
         def _check_type(key, types):
             try:
@@ -210,7 +214,9 @@ class ConfigManager:
             return True
 
         sections = set(cfg.keys())
-        known_sections = set(("file_version", "run_config", "sequences"))
+        known_sections = set(
+            ("file_version", "config", "context", "sessions", "scenario", "sequences")
+        )
 
         file_version = cfg.get("file_version", "")
         if not file_version.startswith("stressor#"):
@@ -230,12 +236,12 @@ class ConfigManager:
         if extra or missing:
             raise ConfigurationError(
                 "Configuration file check failed:\n  missing sections: {}\n  invalid sections: {}".format(
-                    ", ".join(missing), ", ".join(extra)
+                    ", ".join(missing or "-"), ", ".join(extra or "-")
                 )
             )
 
-        if _check_type("run_config.context", (dict, None)):
-            base_url = get_dict_attr(cfg, "run_config.context.base_url", None)
+        if _check_type("context", (dict, None)):
+            base_url = get_dict_attr(cfg, "context.base_url", None)
             if base_url and (not base_url.startswith("http") or "://" not in base_url):
                 self.report_error(
                     "context.base_url must be an absolute URL ('http(s)://...'): {!r}".format(
@@ -243,7 +249,7 @@ class ConfigManager:
                     ),
                 )
 
-        if _check_type("run_config.sessions", dict):
+        if _check_type("sessions", dict):
             pass
 
         #   - sequences must be a dict of dicts.
@@ -295,9 +301,9 @@ class ConfigManager:
                                     )
 
         # Scenario list must contain 'sequence' keys and all sequences must exist
-        if _check_type("run_config.scenario", list):
-            for idx, seq_def in enumerate(cfg["run_config"]["scenario"]):
-                stack = "run_config.scenario#{:02}".format(idx)
+        if _check_type("scenario", list):
+            for idx, seq_def in enumerate(cfg["scenario"]):
+                stack = ".scenario#{:02}".format(idx)
                 if not isinstance(seq_def, dict) or "sequence" not in seq_def:
                     self.report_error(
                         "Expected dict with `sequence` key", stack=stack,
@@ -324,6 +330,8 @@ class ConfigManager:
         """
         stats = self.stats_manager
         if stack is None:
+            # Top-Level call; `value` is the YAML cnfig dict
+
             self.stack = PathStack("config")
             stack = self.stack
             # Register sequence names
@@ -449,4 +457,16 @@ class ConfigManager:
             raise ConfigurationError("Config file had compile errors.")
 
         self.config_all = res
+
+        self.config_all.setdefault("context", {})
+        # Cast 'fail_on_errors' to int
+        # fail_on_errors = self.get("config.fail_on_errors", False)
+        # if fail_on_errors is True:
+        #     fail_on_errors = 1
+        # elif fail_on_errors is False:
+        #     fail_on_errors = 0
+        # else:
+        #     fail_on_errors = int(fail_on_errors)
+        # self.config_all["config"]["fail_on_errors"] = fail_on_errors
+
         return self.config_all

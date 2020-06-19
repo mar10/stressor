@@ -41,7 +41,7 @@ def handle_run_command(parser, args):
     rm = RunManager()
     rm.load_config(scenario_fspec)
     if args.single:
-        rm.run_config["force_single"] = True
+        rm.config_manager.config["force_single"] = True
 
     res = rm.run(options, extra_context)
 

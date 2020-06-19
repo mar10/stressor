@@ -82,7 +82,7 @@ class SessionManager:
         #: The :class:`User` object that is assigned to this session
         self.user = user or User("anonymous", "")
         #: (dict) Copy of `run_config.sessions` configuration
-        self.sessions = run_manager.run_config["sessions"].copy()
+        self.sessions = run_manager.config_manager.sessions.copy()
         #: (bool)
         self.dry_run = bool(context.get("dry_run"))
         #: (int)
@@ -104,7 +104,7 @@ class SessionManager:
         # Lazy initialization using a property
         self._browser_session = None
         #: (bool|int) Stop session if error count > X
-        self.fail_on_errors = False
+        self.fail_on_errors = context.get("fail_on_errors")
 
         # Used by StatisticsManager
         self.pending_sequence = None
@@ -150,6 +150,10 @@ class SessionManager:
         res = self.context_stack.get_attr(dotted_key)
         return res
 
+    def get_config(self, dotted_key=None, default=NO_DEFAULT):
+        res = self.run_manager.config_manager.get(dotted_key, default)
+        return res
+
     def log_info(self, *args):
         logger.info(self.session_id, *args)
         # self.publish("log", self.session_id, *args, level="info")
@@ -189,6 +193,7 @@ class SessionManager:
         self.stats.report_error(self, sequence, activity, error=msg)
 
         if self.fail_on_errors:
+
             raise exc
         return
 
@@ -333,10 +338,11 @@ class SessionManager:
     def run(self):
         stack = self.context_stack
         rm = self.run_manager
-        run_config = rm.run_config
-        sequences = rm.config_manager.sequences
-        scenario = run_config["scenario"]
-        sessions = run_config["sessions"]
+        config_manager = rm.config_manager
+        config = config_manager.config
+        sequences = config_manager.sequences
+        scenario = config_manager.scenario
+        sessions = config_manager.sessions
         session_duration = float(sessions.get("duration", 0))
 
         self.publish("start_session", session=self)
@@ -366,7 +372,7 @@ class SessionManager:
                 if loop_repeat and loop_idx > loop_repeat:
                     break
                 # `--single`:
-                if loop_idx > 1 and run_config.get("force_single"):
+                if loop_idx > 1 and config.get("force_single"):
                     logger.warning(
                         "force_single: sequence '{}' skipping remaining {} loops.".format(
                             seq_name, loop_repeat - 1 if loop_repeat else ""
