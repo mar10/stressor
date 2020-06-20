@@ -262,7 +262,7 @@ class StatisticManager:
         s = dict(self.stats)
         return "{}".format(pformat(s))
 
-    def get_monitor_info(self, run_config):
+    def get_monitor_info(self, config_all):
         stats = self.stats
 
         def f(d, k, secs=False):
@@ -273,9 +273,9 @@ class StatisticManager:
 
         # --- Add rows for every sequence name:
 
-        # Cache run_config.scenario.<sequence> entries as a dict:
+        # Cache config_all.scenario.<sequence> entries as a dict:
         scenario_map = {}
-        for scenario_seq_def in run_config["scenario"]:
+        for scenario_seq_def in config_all["scenario"]:
             seq_name = scenario_seq_def["sequence"]
             scenario_map[seq_name] = scenario_seq_def
 

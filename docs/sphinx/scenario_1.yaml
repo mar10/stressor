@@ -7,10 +7,10 @@ config:
 
   #: (int|bool) max. number of errors before stopping
   fail_on_errors: false
+  base_url: http://127.0.0.1:8082
 
 # Initial context value definitions and defaults:
 context:
-  base_url: http://127.0.0.1:8082
 
 # Define the virtual test users and no. of sessions:
 sessions:

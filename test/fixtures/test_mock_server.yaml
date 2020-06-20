@@ -12,15 +12,15 @@ config:
       $ wsgidav --root test/fixtures/ --port 8082 --auth anonymous
     - Open a second terminal and run
       $ stressor run test/fixtures/test_mock_server
+  verbose: 4
+  base_url: http://127.0.0.1:8082
+  timeout: 1
 
 # Initial context value definitions.
 # All used parameters must be listed here in the form:
 #   parameter_name: default_value
 # Set `null` value to make it mandatory, i.e. must be passed by caller.
 context:
-  verbose: 4
-  base_url: http://127.0.0.1:8082
-  timeout: 1
 
 sessions:
   users: $load(users.yaml)

@@ -4,21 +4,19 @@ file_version: stressor#0
 
 # The run configuration defines how the `sequences` are executed in parallel
 # sessions.
-run_config:
+config:
   name: Simple Example Scenario
+  base_url: http://127.0.0.1:8082
 
-  context:
-    base_url: http://127.0.0.1:8082
+sessions:
+  count: 3  # Run 3 parallel sessions
 
-  sessions:
-    count: 3  # Run 3 parallel sessions
-
-  # Define what actions should be performed by every session
-  scenario:
-    - sequence: init
-    - sequence: main
-      duration: 60  # Loop 'main' for one minute
-    - sequence: end
+# Define what actions should be performed by every session
+scenario:
+  - sequence: init
+  - sequence: main
+    duration: 60  # Loop 'main' for one minute
+  - sequence: end
 
 # List of named action sequences. Used as building blocks for scenarios
 sequences:

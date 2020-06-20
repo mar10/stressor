@@ -1,25 +1,24 @@
 file_version: stressor#0
 
-run_config:
+config:
   name: Test WebDAV
   details: |
     Simple long-running scenario to test Ctrl-C.
+  base_url: http://127.0.0.1:8082
 
-  context:
-    base_url: http://127.0.0.1:8082
+context:
 
-  sessions:
-    users: $load(users.yaml)
-    count: 3
-    # duration: 5
+sessions:
+  users: $load(users.yaml)
+  count: 3
+  # duration: 5
 
-  # Define what actions should be performed by every session
-  scenario:
-    - sequence: init
-    - sequence: main
-      duration: 10
-    - sequence: end
-
+# Define what actions should be performed by every session
+scenario:
+  - sequence: init
+  - sequence: main
+    duration: 10
+  - sequence: end
 
 # List of named action sequences. Used as building blocks for scenarios
 sequences:

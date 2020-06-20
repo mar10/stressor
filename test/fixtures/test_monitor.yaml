@@ -2,7 +2,7 @@ file_version: stressor#0
 
 # The run configuration defines how the `sequences` are executed in parallel
 # sessions.
-run_config:
+config:
   name: Test WebDAV
   tag: Not set (pass `-o tag:TAG_NAME` to override)
   details: |
@@ -12,24 +12,24 @@ run_config:
       $ wsgidav --root test/fixtures/ --port 8082 --auth anonymous
     - Open a second terminal and run
       $ stressor run test/fixtures/test_mock_server
+  verbose: 4
+  base_url: http://127.0.0.1:8082
+  timeout: 1
 
-  # Initial context value definitions.
-  # All used parameters must be listed here in the form:
-  #   parameter_name: default_value
-  # Set `null` value to make it mandatory, i.e. must be passed by caller.
-  context:
-    verbose: 4
-    base_url: http://127.0.0.1:8082
-    timeout: 1
+# Initial context value definitions.
+# All used parameters must be listed here in the form:
+#   parameter_name: default_value
+# Set `null` value to make it mandatory, i.e. must be passed by caller.
+context:
 
-  sessions:
-    users: $load(users.yaml)
-    count: 20
-    # basic_auth: true
-    # verify_ssl: false
-    # threads_per_process: 5
-    # duration: 5
-    ramp_up_delay: 0.5
+sessions:
+  users: $load(users.yaml)
+  count: 20
+  # basic_auth: true
+  # verify_ssl: false
+  # threads_per_process: 5
+  # duration: 5
+  ramp_up_delay: 0.5
 
   # Define what actions should be performed by every session
   scenario:

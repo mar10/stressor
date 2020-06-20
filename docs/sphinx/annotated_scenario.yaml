@@ -6,7 +6,7 @@ file_version: stressor#0
 
 # The run configuration defines how the `sequences` are executed in parallel
 # sessions.
-run_config:
+config:
   # Default: name of this config file without '.yaml' extension
   name: Test WebDAV
   tag: Not set (pass `-o tag:TAG_NAME` to override)
@@ -20,32 +20,34 @@ run_config:
     - Open a second terminal and run
       $ stressor run test/fixtures/test_mock_server
 
-  # Initial context value definitions.
-  # All used parameters must be listed here in the form:
-  #   parameter_name: default_value
-  # Set `null` value to make it mandatory, i.e. must be passed by caller.
-  context:
-    verbose: 4
-    base_url: http://127.0.0.1:8082
-    timeout: 1
+  verbose: 4
+  base_url: http://127.0.0.1:8082
+  timeout: 1
+  fail_on_errors: false
 
-  sessions:
-    users: $load(users.yaml)
-    count: 3
-    # threads_per_process: 5
-    # duration: 5
-    basic_auth: false
-    verify_ssl: false
-    ramp_up_delay: 0
+# Initial context value definitions.
+# Context values can be accessed using `$(NAME)` macros, e.g. `$(base_url)`.
+# The context is initialized with  all values fron the `config` section,
+ä but we can add or override values here.
+# Set `null` value to make it mandatory, i.e. must be passed by caller.
+context:
 
-  # Define what actions should be performed by every session
-  scenario:
-    - sequence: init
-    - sequence: main
-      duration: 40
-      # repeat: 3
-    - sequence: end
+sessions:
+  users: $load(users.yaml)
+  count: 3
+  # threads_per_process: 5
+  # duration: 5
+  basic_auth: false
+  verify_ssl: false
+  ramp_up_delay: 0
 
+# Define what actions should be performed by every session
+scenario:
+  - sequence: init
+  - sequence: main
+    duration: 40
+    # repeat: 3
+  - sequence: end
 
 # List of named action sequences. Used as building blocks for scenarios
 sequences:

@@ -7,28 +7,44 @@ Script Reference
     :hidden:
 
 
-Session Configuration
-=====================
+Configuration
+=============
+General Configuration
+---------------------
 
-users
+config.base_url
+    Default: null
+config.name
+    Default: null
+config.tag
+    Default: null
+config.details
+    Default: null
+config.verbose
+    Default: null
+config.timeout
+    Default: null
+config.fail_on_errors
+    Default: null
+
+Session Configuration
+---------------------
+
+sessions.users
     The current user that is assigned to this session.
     ``users: $load(users.yaml)``
-count:
+sessions.count
     ...
-base_url
-    Default: null
-basic_auth
+sessions.basic_auth
     Default: false
-verify_ssl
+sessions.verify_ssl
     Default: true
-ramp_up_delay
+sessions.ramp_up_delay
     Default: 0
 
 
 Activities
 ==========
-
-
 Common Args
 -----------
 All activites share these common arguments

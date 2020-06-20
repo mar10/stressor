@@ -176,7 +176,7 @@ class RunManager:
         ap(col("=-" * 35))
         ap("Stressor scenario '{}' finished.".format(cm.name))
         ap("  Tag:      '{}'".format(cm.get("tag", "n.a.")))
-        ap("  Base URL: {}".format(cm.context.get("base_url", "")))
+        ap("  Base URL: {}".format(cm.config.get("base_url", "")))
         ap("  Start:    {}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap(
@@ -221,7 +221,7 @@ class RunManager:
             "stageDisplay": "done" if self.stage == "waiting" else self.stage,
             "hasErrors": self.has_errors(),
             "startTimeStr": "{}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")),
-            "baseUrl": cm.get("context.base_url"),
+            "baseUrl": cm.get("config.base_url"),
             "sessionCount": self.stats["sess_count"],
             "sessionsRunning": self.stats["sess_running"],
             "stats": stats_info,

@@ -206,6 +206,8 @@ class ConfigManager:
             except Exception:
                 self.report_error("Could not find expected entry", stack=key)
                 return False
+            if o is None and None in types:
+                return True
             if not isinstance(o, types):
                 self.report_error(
                     "Expected type {}, but found {!r}".format(types, type(o)), stack=key
@@ -240,15 +242,17 @@ class ConfigManager:
                 )
             )
 
-        if _check_type("context", (dict, None)):
-            base_url = get_dict_attr(cfg, "context.base_url", None)
+        if _check_type("config", dict):
+            base_url = get_dict_attr(cfg, "config.base_url", None)
             if base_url and (not base_url.startswith("http") or "://" not in base_url):
                 self.report_error(
-                    "context.base_url must be an absolute URL ('http(s)://...'): {!r}".format(
+                    "config.base_url must be an absolute URL ('http(s)://...'): {!r}".format(
                         base_url
                     ),
                 )
 
+        if _check_type("context", (dict, None)):
+            pass
         if _check_type("sessions", dict):
             pass
 
@@ -458,7 +462,12 @@ class ConfigManager:
 
         self.config_all = res
 
-        self.config_all.setdefault("context", {})
+        # Copy values from `config.*` to `context.*`
+        if self.config_all.get("context") is None:
+            self.config_all["context"] = {}
+        for k, v in self.config.items():
+            self.context.setdefault(k, v)
+
         # Cast 'fail_on_errors' to int
         # fail_on_errors = self.get("config.fail_on_errors", False)
         # if fail_on_errors is True:
