@@ -369,7 +369,7 @@ class HarConverter:
             #       if the list does contain duplicate names, instead of
             #       dicarding.
             name, value = p["name"], p["value"]
-            # lines.append('    - ["{}", {}]\n'.format(name, json.dumps(value)))
+            # lines.append("    - ['{}', {}]\n".format(name, json.dumps(value)))
 
             if name in used:
                 logger.error(
@@ -415,12 +415,12 @@ class HarConverter:
             lines.append("  thread_count: {}\n".format(opts["collate_thread_count"]))
             lines.append("  url_list:\n")
             for url in url_list:
-                lines.append('    - "{}"\n'.format(url))
+                lines.append("    - '{}'\n".format(url))
         else:
             if entry.get("query"):
                 expand_url_params = True
                 url = base_url(url)
-            lines.append('  url: "{}"\n'.format(url))
+            lines.append("  url: '{}'\n".format(url))
 
         if activity == "HTTPRequest":
             lines.append("  method: {}\n".format(entry["method"]))

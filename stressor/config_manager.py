@@ -206,9 +206,10 @@ class ConfigManager:
             except Exception:
                 self.report_error("Could not find expected entry", stack=key)
                 return False
+
             if o is None and None in types:
                 return True
-            if not isinstance(o, types):
+            elif not isinstance(o, types):
                 self.report_error(
                     "Expected type {}, but found {!r}".format(types, type(o)), stack=key
                 )
