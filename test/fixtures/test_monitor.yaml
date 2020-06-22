@@ -31,13 +31,13 @@ sessions:
   # duration: 5
   ramp_up_delay: 0.5
 
-  # Define what actions should be performed by every session
-  scenario:
-    - sequence: init
-    - sequence: main
-      # repeat: 3
-      duration: 40
-    - sequence: end
+# Define what actions should be performed by every session
+scenario:
+  - sequence: init
+  - sequence: main
+    # repeat: 3
+    duration: 40
+  - sequence: end
 
 
 # List of named action sequences. Used as building blocks for scenarios
