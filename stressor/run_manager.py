@@ -67,12 +67,15 @@ class RunManager:
         self.has_hooks = False
         self.has_catch_all_hooks = False
         self._hooks = defaultdict(list)
+        #: Set this event to shut down the app
         self.stop_request = threading.Event()
-        #: (float): TODO: determines if a stop request is graceful or not
-        #: Finalize the current sequence, then do 'end' sequence before stopping?
+        #: (bool): TODO: determines if a stop request is graceful or not
+        #: True: Finalize the current sequence, then do 'end' sequence before stopping
         self.stop_request_graceful = None
+        #: (bool): TODO: determines if a stop request will keep the monitor running
+        #: True: Finalize the current sequence, then do 'end' sequence before stopping?
+        self.stop_request_monitor = None
         self.session_list = []
-        # self.run_config = None
         #: :class:`~stressor.statistic_manager.StatisticManager` object that containscurrent execution path
         self.stats = StatisticManager()
         self.options = self.DEFAULT_OPTS.copy()
@@ -202,6 +205,12 @@ class RunManager:
                     + pics
                 )
             )
+            if self.stats.stats["max_error_reached"]:
+                ap(
+                    log.yellow(
+                        "Some activities where skipped due to the `fail_on_errors` limit."
+                    )
+                )
         else:
             pics = " ✨ 🍰 ✨" if log.use_colors else ""
             ap(log.green("Result: Ok." + pics))

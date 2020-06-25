@@ -20,16 +20,21 @@ config:
     - Open a second terminal and run
       $ stressor run test/fixtures/test_mock_server
 
-  verbose: 4
+  #: (int) Output verbosity level [0..5]
+  verbose: 3
+  #: (string)
   base_url: http://127.0.0.1:8082
+  #: (float)
   timeout: 1
+  #: (int|bool) Max. total error count that is tolerated before stopping.
+  #: true is interpreted as `1`, false is equivalent to `0`. Default: false
   fail_on_errors: false
 
 # Initial context value definitions.
 # Context values can be accessed using `$(NAME)` macros, e.g. `$(base_url)`.
 # The context is initialized with  all values fron the `config` section,
-ä but we can add or override values here.
-# Set `null` value to make it mandatory, i.e. must be passed by caller.
+# but we can add or override values here.
+# Set a `null` value to make it mandatory, i.e. must be passed by caller.
 context:
 
 sessions:
@@ -40,6 +45,8 @@ sessions:
   basic_auth: false
   verify_ssl: false
   ramp_up_delay: 0
+  #: (int|bool) similar to `config.fail_on_errors`, but interpreted per session.
+  fail_on_errors: false
 
 # Define what actions should be performed by every session
 scenario:

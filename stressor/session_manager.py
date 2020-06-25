@@ -24,7 +24,11 @@ from stressor.util import (
 
 
 class StoppedError(StressorError):
-    """"""
+    """Raised when an activity stops due because the `stop_request` is set."""
+
+
+class SkippedError(StressorError):
+    """Raised when an activity is skipped due to `fail_on_errors`."""
 
 
 class User:
@@ -74,8 +78,9 @@ class SessionManager:
 
         #: The :class:`RunManager` object that holds global settings and definitions
         self.run_manager = run_manager
-        #: (dict) Global variables for this session. Initialized from the
-        #: run configuration, but not shared between sessions.
+        # (dict) Global variables for this session. Initialized from the
+        # run configuration, but not shared between sessions.
+        # (`self.context` is accessible by the respective property below.)
         context = context.copy()
         #: (str) Unique ID string for this session
         self.session_id = session_id
@@ -103,8 +108,13 @@ class SessionManager:
         self.stats = run_manager.stats
         # Lazy initialization using a property
         self._browser_session = None
-        #: (bool|int) Stop session if error count > X
-        self.fail_on_errors = context.get("fail_on_errors")
+        fail_on_errors = context.get("fail_on_errors")
+        #: (int) Stop session if global error count > X (calculated from `config.fail_on_errors`)
+        #: The
+        self.max_errors = 0
+        if fail_on_errors:
+            self.max_errors = 1 if fail_on_errors is True else int(fail_on_errors)
+        self._cancelled_seq = None
 
         # Used by StatisticsManager
         self.pending_sequence = None
@@ -161,6 +171,39 @@ class SessionManager:
     def has_errors(self, or_warnings=False):
         return self.sess_stats["errors"] > 0
 
+    def check_max_errors(self, seq_name):
+        """Check if current number of error exceeds the global`fail_on_errors` option.
+
+        Args:
+            seq_name (str):
+                current sequence name. Used to determine if a stopping session
+                should still execute the 'end' sequence if the limit was reached
+                during a main sequence.
+        Returns:
+            (bool) false if the current operation should be skipped.
+        """
+        cs = self._cancelled_seq
+        if not cs and self.max_errors and self.stats.error_count() >= self.max_errors:
+            # We just hit the limit: issue a warning and take a note of the sequence
+            self._cancelled_seq = seq_name
+            self.stats.stats["max_error_reached"] = True
+            logger.warning(
+                log.yellow(
+                    "Reached max. error limit of {}: stopping...".format(
+                        self.max_errors
+                    )
+                )
+            )
+            return False
+        elif cs in ("init", "end"):
+            # The limit was reached inside the init or end sequence: always skip
+            return False
+        elif cs:
+            # The limit was reached inside a main sequence: allow to run the end
+            # sequence but skip all others
+            return seq_name == "end"
+        return True
+
     def report_activity_start(self, sequence, activity):
         """Called by session runner before activities is executed."""
         path = self.context_stack.path()
@@ -170,6 +213,11 @@ class SessionManager:
     def report_activity_error(self, sequence, activity, activity_args, exc):
         """Called session runner when activity `execute()` or assertions raise an error."""
         # self.stats.inc("errors")
+
+        if isinstance(exc, SkippedError):
+            logger.warning(log.yellow("Skipped {}".format(activity)))
+            self.pending_activity = None
+            return
 
         # Create a copy of the current context, so we can shorten values
         context = self.context_stack.context.copy()
@@ -191,10 +239,6 @@ class SessionManager:
         msg = "\n    ".join(msg)
         logger.error(log.red(msg))
         self.stats.report_error(self, sequence, activity, error=msg)
-
-        if self.fail_on_errors:
-
-            raise exc
         return
 
     def report_activity_result(self, sequence, activity, activity_args, result, elap):
@@ -293,6 +337,8 @@ class SessionManager:
                 try:
                     if self.stop_request.is_set():
                         raise StoppedError
+                    if not self.check_max_errors(seq_name):
+                        raise SkippedError
 
                     result = activity.execute(self, **expanded_args)
                     context["last_result"] = result
@@ -365,6 +411,9 @@ class SessionManager:
             loop_idx = 0
             while True:
                 loop_idx += 1
+                if not self.check_max_errors(seq_name=seq_name):
+                    skip_all_but_end = True
+                    break
                 # One single pass by default
                 if not loop_repeat and not loop_duration and loop_idx > 1:
                     break

@@ -94,6 +94,7 @@ class StatisticManager:
             "sess_running": 0,
             "errors": 0,
             "warnings": 0,
+            "max_error_reached": False,
             "stage": None,
             "sequence_stats": {},
             "sessions": {},
@@ -254,9 +255,12 @@ class StatisticManager:
         d["errors"] += 1
         d["last_error"] = shorten_string("{}".format(error), 500, 100)
 
-    def has_errors(self, or_warnings=False):
+    def error_count(self, or_warnings=False):
         error_count = self.stats["errors"]
-        return error_count > 0
+        return error_count
+
+    def has_errors(self, or_warnings=False):
+        return self.error_count(or_warnings) > 0
 
     def format_result(self):
         s = dict(self.stats)
