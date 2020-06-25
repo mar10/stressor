@@ -16,4 +16,4 @@ NOTE:
     "3.0.0a4" seems not to work in this case!
 """
 # flake8: noqa
-__version__ = "0.1.2"
+__version__ = "0.2.0"
