@@ -24,8 +24,8 @@ config:
   verbose: 3
   #: (string)
   base_url: http://127.0.0.1:8082
-  #: (float)
-  timeout: 1
+  #: (float) Default timeout for web requests
+  timeout: 1.0
   #: (int|bool) Max. total error count that is tolerated before stopping.
   #: true is interpreted as `1`, false is equivalent to `0`. Default: false
   fail_on_errors: false
