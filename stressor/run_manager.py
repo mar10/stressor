@@ -11,7 +11,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from stressor.config_manager import ConfigManager
-from stressor.log import log
+from stressor.stylish import colors_enabled, green, red, yellow
 from stressor.monitor.server import MonitorServer
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
@@ -173,7 +173,7 @@ class RunManager:
         has_errors = self.has_errors()
 
         ap = lines.append
-        col = log.red if has_errors else log.green
+        col = red if has_errors else green
 
         ap("Result Summary:")
         ap(col("=-" * 35))
@@ -196,9 +196,9 @@ class RunManager:
             )
         )
         if has_errors:
-            pics = " 💥 💔 💥" if log.use_colors else ""
+            pics = " 💥 💔 💥" if colors_enabled() else ""
             ap(
-                log.red(
+                red(
                     "Result: ERROR, found {:,} errors and {:,} warnings.".format(
                         self.stats["errors"], self.stats["warnings"],
                     )
@@ -207,13 +207,13 @@ class RunManager:
             )
             if self.stats.stats["max_error_reached"]:
                 ap(
-                    log.yellow(
+                    yellow(
                         "Some activities where skipped due to the `fail_on_errors` limit."
                     )
                 )
         else:
-            pics = " ✨ 🍰 ✨" if log.use_colors else ""
-            ap(log.green("Result: Ok." + pics))
+            pics = " ✨ 🍰 ✨" if colors_enabled() else ""
+            ap(green("Result: Ok." + pics))
         ap(col("=-" * 35))
         return "\n".join(lines)
 

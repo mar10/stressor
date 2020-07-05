@@ -9,10 +9,10 @@ from copy import deepcopy
 
 import requests
 
-from stressor import log
 from stressor.config_manager import replace_var_macros
 from stressor.context_stack import ContextStack
 from stressor.plugins.base import ActivityAssertionError
+from stressor.stylish import red, yellow
 from stressor.util import (
     NO_DEFAULT,
     StressorError,
@@ -188,7 +188,7 @@ class SessionManager:
             self._cancelled_seq = seq_name
             self.stats.stats["max_error_reached"] = True
             logger.warning(
-                log.yellow(
+                yellow(
                     "Reached max. error limit of {}: stopping...".format(
                         self.max_errors
                     )
@@ -215,7 +215,7 @@ class SessionManager:
         # self.stats.inc("errors")
 
         if isinstance(exc, SkippedError):
-            logger.warning(log.yellow("Skipped {}".format(activity)))
+            logger.warning(yellow("Skipped {}".format(activity)))
             self.pending_activity = None
             return
 
@@ -237,7 +237,7 @@ class SessionManager:
         msg.append("Context: {}".format(context))
 
         msg = "\n    ".join(msg)
-        logger.error(log.red(msg))
+        logger.error(red(msg))
         self.stats.report_error(self, sequence, activity, error=msg)
         return
 
