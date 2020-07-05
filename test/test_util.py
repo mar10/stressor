@@ -3,8 +3,6 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
-import sys
-
 import pytest
 
 from stressor.util import (
@@ -219,16 +217,12 @@ class TestBasics:
         # assert res == {"name": "http://example.com/foo", "amount": 8, "hint": "test"}
 
     def test_log(self):
-        from stressor.log import Log
+        from stressor.stylish import red, green, enable_colors, colors_enabled
 
-        log = Log("stressor", False)
-        assert log.red("error") == "error"
-        assert log.green("ok") == "ok"
+        assert not colors_enabled()
+        assert red("error") == "error"
+        assert green("ok") == "ok"
 
-        log = Log("stressor", True)
-        if sys.version_info < (3, 6):
-            assert log.red("error") == "error", "Python 3.5 must disable colors"
-            assert log.green("ok") == "ok"
-        else:
-            assert log.red("error") == "\x1b[91merror\x1b[39m"
-            assert log.green("ok") == "\x1b[32mok\x1b[39m"
+        enable_colors(True, True)
+        assert red("error") == "\x1b[91merror\x1b[39m"
+        assert green("ok") == "\x1b[32mok\x1b[39m"
