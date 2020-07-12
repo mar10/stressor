@@ -217,7 +217,7 @@ class TestBasics:
         # assert res == {"name": "http://example.com/foo", "amount": 8, "hint": "test"}
 
     def test_log(self):
-        from stressor.stylish import red, green, enable_colors, colors_enabled
+        from stressor.snazzy import red, green, enable_colors, colors_enabled
 
         assert not colors_enabled()
         assert red("error") == "error"

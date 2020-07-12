@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
-# (c) 2020 Martin Wendt and contributors; see https://github.com/mar10/stylish
+# (c) 2020 Martin Wendt and contributors; see https://github.com/mar10/snazzy
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 Simple helper for colored terminal output.
 
 Examples:
-    from stylish import colored as _c
+    from snazzy import enable_colors, red
 
-    if not args.no_color and sys.stdout.isatty():
+    if not args.no_color:
         enable_colors(True)
-
+    print(red("foo"))
 """
 import os
 import sys
+
+
+__version__ = "0.0.3-a0"
+
 
 # Foreground ANSI codes using SGR format:
 _SGR_FG_COLOR_MAP = {
@@ -139,7 +143,7 @@ def rgb_bg(r, g, b):
 # "`e[32m";[16] for PowerShell 5 you had to use [char]0x1B+"[32m".
 
 
-class Stylish:
+class Snazzy:
     """
     This is basically a namespace, since the core functionality is implemented
     as classmethods.
@@ -147,7 +151,7 @@ class Stylish:
     However an instance is required to use a context manager.
     Examples:
 
-        with Stylish("yellow", bg="blue"):
+        with Snazzy("yellow", bg="blue"):
             print("hey")
 
     """
@@ -156,15 +160,18 @@ class Stylish:
     _enabled = False
     _initialized = False
 
-    def __init__(self, fg, bg=None, bold=False, underline=False, italic=False):
+    def __init__(
+        self, fg=None, bg=None, bold=False, underline=False, italic=False, stream=None
+    ):
         self.format = (fg, bg, bold, underline, italic)
+        self.stream = stream
 
     def __enter__(self):
-        print(self.ansi(*self.format), end="")
+        print(self.ansi(*self.format), end="", file=self.stream)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        print(self.reset(*self.format), end="")
+        print(self.reset(*self.format), end="", file=self.stream)
 
     @classmethod
     def _initialize(cls):
@@ -183,7 +190,6 @@ class Stylish:
     @classmethod
     def enable(cls, flag, force=False):
         if flag and not force and not sys.stdout.isatty():
-            print("SSS", sys.stdout.isatty())
             flag = False
 
         if flag:
@@ -220,7 +226,7 @@ class Stylish:
         return res
 
     @classmethod
-    def ansi(cls, fg, bg=None, bold=False, underline=False, italic=False):
+    def ansi(cls, fg=None, bg=None, bold=False, underline=False, italic=False):
         if not cls._enabled:
             return ""
         sl = []
@@ -247,7 +253,7 @@ class Stylish:
         return "".join(sl)
 
     @classmethod
-    def wrap(cls, text, fg, bg=None, bold=False, underline=False, italic=False):
+    def wrap(cls, text, fg=None, bg=None, bold=False, underline=False, italic=False):
         """Return a colorized text using ANSI escape codes.
 
         See also: https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -270,42 +276,42 @@ class Stylish:
         text = "".join(str(s) for s in sl)
         return text
 
-    @classmethod
-    def set_cursor(cls, x, y, apply=True):
-        # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-        if not cls._enabled:
-            return ""
-        ansi = ""
-        if apply:
-            print(ansi, end="")
-        return ansi
+    # @classmethod
+    # def set_cursor(cls, x, y, apply=True):
+    #     # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+    #     if not cls._enabled:
+    #         return ""
+    #     ansi = ""
+    #     if apply:
+    #         print(ansi, end="")
+    #     return ansi
 
 
 def enable_colors(flag=True, force=False):
-    return Stylish.enable(flag, force)
+    return Snazzy.enable(flag, force)
 
 
 def colors_enabled():
-    return Stylish.is_enabled()
+    return Snazzy.is_enabled()
 
 
 def ansi_reset(fg=True, bg=True, bold=True, underline=True, italic=True):
     """Reset color attributes to console default."""
-    return Stylish.reset(fg, bg, bold, underline, italic)
+    return Snazzy.reset(fg, bg, bold, underline, italic)
 
 
-def ansi(fg, bg=None, bold=False, underline=False, italic=False):
+def ansi(fg=None, bg=None, bold=False, underline=False, italic=False):
     """Return ANSI control string that enables the requested console formatting."""
-    return Stylish.ansi(fg, bg, bold, underline, italic)
+    return Snazzy.ansi(fg, bg, bold, underline, italic)
 
 
-def wrap(text, fg, bg=None, bold=False, underline=False, italic=False):
+def wrap(text, fg=None, bg=None, bold=False, underline=False, italic=False):
     """Wrap text in ANSI sequences that enable and disable console formatting."""
-    return Stylish.wrap(text, fg, bg, bold, underline, italic)
+    return Snazzy.wrap(text, fg, bg, bold, underline, italic)
 
 
-def set_cursor(x, y):
-    return Stylish.set_cursor(x, y)
+# def set_cursor(x, y):
+#     return Snazzy.set_cursor(x, y)
 
 
 def red(text):
@@ -324,32 +330,55 @@ def gray(text):
     return wrap(text, "li_black")
 
 
-if __name__ == "__main__":
-    enable_colors(True)
+# def demo():
+#     enable_colors(True)
 
-    with Stylish("li_yellow", bg="blue"):
-        print("yellow on blue")
+#     with Snazzy("li_green", bg="black"):
+#         print("This is so eighties...")
 
-    with Stylish((255, 255, 0), bg=(0, 0, 255)):
-        print("yellow on blue (rgb)")
+#     print()
+#     print("That looks " + green("good") + ", right?")
+#     print()
 
-    with Stylish("li_white", bg="black"):
-        print("white on black")
+#     with Snazzy("li_yellow", bg="blue"):
+#         print("yellow on blue")
 
-    with Stylish((255, 255, 255), bg="black"):
-        print("white on black (rgb)")
+#     with Snazzy((255, 255, 0), bg=(0, 0, 255)):
+#         print("yellow on blue (rgb)")
 
-    print("before " + red("reddish") + " after")
-    print("before " + yellow("yellow") + " after")
-    print("before " + wrap("yellow on blue", "yellow", bg="blue") + " after")
-    print("before " + wrap("green underlined", "green", underline=True) + " after")
-    print("before " + wrap("blue bold", "blue", bold=True) + " after")
-    print("before " + wrap("red italic", "red", italic=True) + " after")
+#     with Snazzy("li_white", bg="black"):
+#         print("white on black")
 
-    for color in FG_MAP.keys():
-        print(wrap(color, color), end=", ")
-    print(".")
+#     with Snazzy((255, 255, 255), bg="black"):
+#         print("white on black (rgb)")
 
-    for color in BG_MAP.keys():
-        print(wrap(color, None, bg=color), end=", ")
-    print(".")
+#     print("before " + red("reddish") + " after")
+#     print("before " + yellow("yellow") + " after")
+#     print("before " + wrap("yellow on blue", "yellow", bg="blue") + " after")
+#     print("before " + wrap("green underlined", "green", underline=True) + " after")
+#     print("before " + wrap("blue bold", "blue", bold=True) + " after")
+#     print("before " + wrap("red italic", "red", italic=True) + " after")
+
+#     sl = []
+#     for color in FG_MAP.keys():
+#         if "reset" in color:
+#             continue
+#         sl.append(wrap(color, color))
+#     print("Foreground colors:\n{}".format(", ".join(sl)))
+
+#     sl = []
+#     for color in BG_MAP.keys():
+#         if "reset" in color:
+#             continue
+#         sl.append(wrap(color, bg=color))
+#     print("Background colors:\n{}".format(", ".join(sl)))
+
+#     sl = []
+#     sl.append(wrap("bold", bold=True))
+#     sl.append(wrap("italic", italic=True))
+#     sl.append(wrap("underline", underline=True))
+#     print("Effects:\n{}".format(", ".join(sl)))
+
+
+# if __name__ == "__main__":
+#     demo()

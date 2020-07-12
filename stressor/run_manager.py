@@ -11,7 +11,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from stressor.config_manager import ConfigManager
-from stressor.stylish import colors_enabled, green, red, yellow
+from stressor.snazzy import colors_enabled, green, red, yellow
 from stressor.monitor.server import MonitorServer
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User

@@ -12,7 +12,7 @@ import requests
 from stressor.config_manager import replace_var_macros
 from stressor.context_stack import ContextStack
 from stressor.plugins.base import ActivityAssertionError
-from stressor.stylish import red, yellow
+from stressor.snazzy import red, yellow
 from stressor.util import (
     NO_DEFAULT,
     StressorError,
