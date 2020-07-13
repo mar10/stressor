@@ -1,4 +1,4 @@
-# wsgidav -r test/fixtures/htdocs --host 127.0.0.1 --port 8082 --auth anonymous
+# wsgidav -r tests/fixtures/htdocs --host 127.0.0.1 --port 8082 --auth anonymous
 # See http://wsgidav.readthedocs.io/en/latest/user_guide_configure.html
 
 server: "cheroot"
@@ -6,8 +6,8 @@ host: 127.0.0.1
 port: 8082
 
 provider_mapping:
-    "/": "test/fixtures/htdocs"
-    "/private": "test/fixtures/htdocs/private"
+    "/": "tests/fixtures/htdocs"
+    "/private": "tests/fixtures/htdocs/private"
 
 # ==============================================================================
 # AUTHENTICATION

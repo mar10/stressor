@@ -9,14 +9,12 @@ config:
     This scenario runs some tests against a WebDAV server.
     We use it to test stressor against a locally running WsgiDAV server:
     - Open a terminal and run
-      $ wsgidav --root test/fixtures/ --port 8082 --auth anonymous
+      $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
     - Open a second terminal and run
-      $ stressor run test/fixtures/test_mock_server
+      $ stressor run tests/fixtures/test_mock_server
   verbose: 4
   base_url: http://127.0.0.1:8082
   timeout: 1
-  fail_on_errors: false
-
 
 # Initial context value definitions.
 # All used parameters must be listed here in the form:
@@ -26,19 +24,18 @@ context:
 
 sessions:
   users: $load(users.yaml)
-  count: 20
+  count: 3
   # basic_auth: true
-  # verify_ssl: false
+
   # threads_per_process: 5
   # duration: 5
-  ramp_up_delay: 0.5
 
 # Define what actions should be performed by every session
 scenario:
   - sequence: init
   - sequence: main
     # repeat: 3
-    duration: 40
+    # duration: 40
   - sequence: end
 
 
@@ -74,7 +71,7 @@ sequences:
       url: $(base_url)/private/test.html
       auth: $(user.auth)
       assert_match: ".*Secret text.*"
-      # debug: true
+      debug: true
 
     # - activity: $debug()
 
@@ -82,14 +79,29 @@ sequences:
       url: $(base_url)/wsgidav_test_file~$(session_id).txt
       data: "Test"
       assert_max_time: 0.5
-      # timeout: 0.01
       # debug: true
       monitor: true
+
+    - activity: RunScript
+      script: |
+        new_val = "New URL:" + base_url
+
+    - activity: RunScript
+      name: "Print context"
+      script: |
+        from pprint import pprint
+        pprint(locals())
+
+    # - activity: RunScript
+    #   name: "Print context 2"
+    #   script: |
+    #     print(locals())
+
+    # - activity: $sleep(0.3)
 
     - activity: GetRequest
       url: $(base_url)/wsgidav_test_file~$(session_id).txt
       assert_match: "Test"
-      monitor: true
 
     - activity: $sleep(0.3)
 

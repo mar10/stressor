@@ -4,7 +4,7 @@
 """
 """
 import os
-from test.mock_server import WsgiDavTestServer
+from tests.mock_server import WsgiDavTestServer
 
 import pytest
 
