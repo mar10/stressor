@@ -27,10 +27,11 @@ stressor = {path = ".",editable = true}
 
 [packages]
 fabulist = "*"
-PyYAML = "~=5.2"
 lxml = "~=4.4"
 python-dateutil = "*"
+PyYAML = "~=5.2"
 requests = "*"
+snazzy = "*"
 
 [requires]
 python_version = "3.7"

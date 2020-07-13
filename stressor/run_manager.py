@@ -10,8 +10,8 @@ import time
 from collections import defaultdict
 from datetime import datetime
 
+from snazzy import colors_enabled, green, red, yellow
 from stressor.config_manager import ConfigManager
-from stressor.snazzy import colors_enabled, green, red, yellow
 from stressor.monitor.server import MonitorServer
 from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User

@@ -15,11 +15,11 @@ import sys
 
 import yaml
 
+from snazzy import enable_colors
 from stressor import __version__
 from stressor.cli_common import common_parser, verbose_parser
 from stressor.convert.har_converter import HarConverter
 from stressor.run_manager import RunManager
-from stressor.snazzy import enable_colors
 from stressor.util import init_logging, logger, version_info
 
 
