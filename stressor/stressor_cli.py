@@ -206,9 +206,11 @@ def run():
 
     if getattr(args, "version", None):
         if args.verbose >= 4:
-            print(version_info)
+            info = version_info
+            info += "\nPython from: {}".format(sys.executable)
         else:
-            print(__version__)
+            info = __version__
+        print(info)
         sys.exit(0)
 
     if not callable(getattr(args, "command", None)):

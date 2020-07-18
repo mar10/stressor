@@ -27,8 +27,11 @@ RE_YAML_KEYWORD = re.compile(r"^[a-zA-Z_]+\w*$")
 PYTHON_VERSION = "{}.{}.{}".format(
     sys.version_info[0], sys.version_info[1], sys.version_info[2]
 )
-version_info = "stressor/{} Python/{} {}".format(
-    __version__, PYTHON_VERSION, platform.platform()
+version_info = "stressor/{} Python/{}({} bit) {}".format(
+    __version__,
+    "64" if sys.maxsize > 2 ** 32 else "32",
+    PYTHON_VERSION,
+    platform.platform(),
 )
 
 
