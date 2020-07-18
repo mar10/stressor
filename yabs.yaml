@@ -10,30 +10,17 @@ config:
   version:
     - type: __version__        # First entry is master for synchronizing
       file: stressor/__init__.py
-      # match: '__version__\s*=\s*[''\"](\d+\.\d+\.\d+).*[''\"]'
-      # template: '__version__ = "{version}"'
-    # - type: setup_cfg        # First entry is master for synchronizing
-    #  entry: metadata.version
-    #  template:
   max_increment: patch
   branches:                  # Allowed git branches
     - master
 
-
 tasks:
-  # The following tools are available. They are executed in the order
-  # listed here
-
   # 'check': Assert preconditons and fail otherwise
   - task: check
     branches: master        # Current branch must be in this list
     can_push: true          # Test if 'git push' would/would not succeed
-    # connected: null         # TODO: internet available
     github: true            # GitHub repo name valid and online accessible
     clean: true             # Repo must/must not contain modifications
-    # cmp_version: null       # E.g. set to 'gt' to assert that the current
-    #                         # version is higher than the latest tag (gt,
-    #                         # gte, lt, lte, eq, neq)
     os: null                # (str, list)
     python: ">=3.5"         # SemVer specifier
     twine: true             # `twine` is available
@@ -44,14 +31,12 @@ tasks:
   # 'run': Run arbitrary shell command
   - task: exec
     args: ["tox", "-e", "lint"]     # shell command and optional arguments
-    # dry_run_args: ["pwd"]   #
     always: true            # `true`: run even in dry-run mode
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
 
   - task: exec
     args: ["tox"]           # shell command and optional arguments
-    # dry_run_args: ["pwd"]   #
     always: true            # `true`: run even in dry-run mode
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
@@ -59,16 +44,6 @@ tasks:
   # 'bump': version by `--inc` argument
   - task: bump
     # inc: null               # Use value passed as 'yabs run --inc INC'
-
-  # # 'replace': In-place string replacements
-  # # (Uses https://github.com/outaTiME/applause)
-  # - task: replace
-  #  files: null               # minimatch globbing pattern
-  #  patterns: []              # See https://github.com/outaTiME/applause
-  #  # Shortcut patterns (pass false to disable):
-  #  setTimestamp: "{%= grunt.template.today('isoUtcDateTime') %}"
-  #                            # Replace '@@timestamp' with current datetime
-  #  setVersion: '{version}'   # Replace '@@version' with current version
 
     # 'commit': Commit modified files
   - task: commit
@@ -78,9 +53,9 @@ tasks:
       Bump version to {version}
 
   # 'tag': Create an annotated tag
-  - task: tag               #
-    name: v{version}        #
-    message: |              #
+  - task: tag
+    name: v{version}
+    message: |
       Version {version}
 
   # 'push': Push changes and tags
@@ -93,12 +68,9 @@ tasks:
       - sdist
       - bdist_wheel
     upload: true
-    # revert_bump_on_error: true
 
   # 'github_release': Create a release on GitHub
   - task: github_release
-    # gh_auth:
-    #   oauth_token_var: GITHUB_OAUTH_TOKEN
     name: 'v{version}'
     message: |
       Released {version}
@@ -109,12 +81,13 @@ tasks:
       - sdist
       - bdist_wheel
 
+  # Commit after-release version
   - task: bump
     inc: postrelease
-    prerelease_prefix: 'a'
 
   - task: commit
     add_known: true
+    # '[ci skip]' tells travis to ignore
     message: |
       Bump prerelease ({version}) [ci skip]
 
