@@ -315,7 +315,7 @@ class RunManager:
                 time.sleep(delay)
             t.start()
 
-        logger.info(
+        logger.important(
             "All {} sessions running, waiting for them to terminate...".format(
                 len(thread_list)
             )
@@ -390,11 +390,11 @@ class RunManager:
                 self.end_dt = datetime.now()
 
             if self.options.get("log_summary", True):
-                logger.info(self.get_cli_summary())
+                logger.important(self.get_cli_summary())
 
             if monitor:
                 self.set_stage("waiting")
-                logger.info("Press Ctrl+C to quit.")
+                logger.important("Press Ctrl+C to quit.")
                 self.stop_request.wait()
         finally:
             if monitor:

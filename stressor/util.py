@@ -152,6 +152,16 @@ def init_logging(verbose=3, path=None):
         # format="%(asctime)s.%(msecs)d <%(process)d.%(thread)d> %(message)s",
         datefmt="%H:%M:%S",
     )
+    # Use logger.important("message even in -q mode")
+    LOGLEVEL_IMPORTANT = logging.WARNING + 1
+    logging.addLevelName(LOGLEVEL_IMPORTANT, "NOTE")
+
+    def log_important(self, message, *args, **kws):
+        if self.isEnabledFor(LOGLEVEL_IMPORTANT):
+            # Yes, logger takes its '*args' as 'args'.
+            self._log(LOGLEVEL_IMPORTANT, message, args, **kws)
+
+    logging.Logger.important = log_important
 
     if path:
         if os.path.isdir(path):
