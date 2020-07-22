@@ -20,6 +20,20 @@ from stressor import __version__
 
 logger = logging.getLogger("stressor")
 
+# Use logger.important("message even in -q mode")
+LOGLEVEL_IMPORTANT = logging.WARNING + 1
+logging.addLevelName(LOGLEVEL_IMPORTANT, "NOTE")
+
+
+def log_important(self, message, *args, **kws):
+    if self.isEnabledFor(LOGLEVEL_IMPORTANT):
+        # Yes, logger takes its '*args' as 'args'.
+        self._log(LOGLEVEL_IMPORTANT, message, args, **kws)
+
+
+logging.Logger.important = log_important
+
+
 #: Check if a a string may be used as YAML dictionary key without using quotes.
 #: NOTE: YAML evaluates `0_` as "0" and `0_1_` as "1", so we don't accept leading numbers
 RE_YAML_KEYWORD = re.compile(r"^[a-zA-Z_]+\w*$")
@@ -29,8 +43,8 @@ PYTHON_VERSION = "{}.{}.{}".format(
 )
 version_info = "stressor/{} Python/{}({} bit) {}".format(
     __version__,
-    "64" if sys.maxsize > 2 ** 32 else "32",
     PYTHON_VERSION,
+    "64" if sys.maxsize > 2 ** 32 else "32",
     platform.platform(),
 )
 
@@ -152,16 +166,6 @@ def init_logging(verbose=3, path=None):
         # format="%(asctime)s.%(msecs)d <%(process)d.%(thread)d> %(message)s",
         datefmt="%H:%M:%S",
     )
-    # Use logger.important("message even in -q mode")
-    LOGLEVEL_IMPORTANT = logging.WARNING + 1
-    logging.addLevelName(LOGLEVEL_IMPORTANT, "NOTE")
-
-    def log_important(self, message, *args, **kws):
-        if self.isEnabledFor(LOGLEVEL_IMPORTANT):
-            # Yes, logger takes its '*args' as 'args'.
-            self._log(LOGLEVEL_IMPORTANT, message, args, **kws)
-
-    logging.Logger.important = log_important
 
     if path:
         if os.path.isdir(path):
