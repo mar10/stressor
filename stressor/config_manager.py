@@ -469,14 +469,4 @@ class ConfigManager:
         for k, v in self.config.items():
             self.context.setdefault(k, v)
 
-        # Cast 'fail_on_errors' to int
-        # fail_on_errors = self.get("config.fail_on_errors", False)
-        # if fail_on_errors is True:
-        #     fail_on_errors = 1
-        # elif fail_on_errors is False:
-        #     fail_on_errors = 0
-        # else:
-        #     fail_on_errors = int(fail_on_errors)
-        # self.config_all["config"]["fail_on_errors"] = fail_on_errors
-
         return self.config_all

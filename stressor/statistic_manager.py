@@ -94,7 +94,7 @@ class StatisticManager:
             "sess_running": 0,
             "errors": 0,
             "warnings": 0,
-            "max_error_reached": False,
+            "run_limit_reached": False,
             "stage": None,
             "sequence_stats": {},
             "sessions": {},
@@ -229,6 +229,13 @@ class StatisticManager:
 
     def report_error(self, session, sequence, activity, error):
         self._report("error", session, sequence, activity, error=error)
+
+    def report_limit_violation(self, msg):
+        """"Register 'limit reached' error (not more than once)."""
+        if not self.stats["run_limit_reached"]:
+            self.stats["run_limit_reached"] = True
+            self.stats["errors"] += 1
+            self.stats["last_error"] = msg
 
     def _add_timing(self, d, key_prefix, elap, is_net=None):
         p = key_prefix

@@ -24,7 +24,9 @@ config.verbose
     Default: null
 config.timeout
     Default: null
-config.fail_on_errors
+config.max_errors
+    Default: null
+config.max_time
     Default: null
 
 Session Configuration

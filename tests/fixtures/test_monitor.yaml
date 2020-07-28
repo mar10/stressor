@@ -15,7 +15,7 @@ config:
   verbose: 4
   base_url: http://127.0.0.1:8082
   timeout: 1
-  fail_on_errors: false
+  max_errors: false
 
 
 # Initial context value definitions.

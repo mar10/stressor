@@ -28,7 +28,7 @@ class StoppedError(StressorError):
 
 
 class SkippedError(StressorError):
-    """Raised when an activity is skipped due to `fail_on_errors`."""
+    """Raised when an activity is skipped due to `max_errors` or `max_time`."""
 
 
 class User:
@@ -78,6 +78,8 @@ class SessionManager:
 
         #: The :class:`RunManager` object that holds global settings and definitions
         self.run_manager = run_manager
+        config = run_manager.config_manager.config
+
         # (dict) Global variables for this session. Initialized from the
         # run configuration, but not shared between sessions.
         # (`self.context` is accessible by the respective property below.)
@@ -88,9 +90,9 @@ class SessionManager:
         self.user = user or User("anonymous", "")
         #: (dict) Copy of `run_config.sessions` configuration
         self.sessions = run_manager.config_manager.sessions.copy()
-        #: (bool)
+        #: (bool) True: only simulate activities
         self.dry_run = bool(context.get("dry_run"))
-        #: (int)
+        #: (int) Verbosity 0..5
         self.verbose = context.get("verbose", 3)
         #: (:class:`threading.Event`)
         self.stop_request = run_manager.stop_request
@@ -108,12 +110,14 @@ class SessionManager:
         self.stats = run_manager.stats
         # Lazy initialization using a property
         self._browser_session = None
-        fail_on_errors = context.get("fail_on_errors")
-        #: (int) Stop session if global error count > X (calculated from `config.fail_on_errors`)
-        #: The
-        self.max_errors = 0
-        if fail_on_errors:
-            self.max_errors = 1 if fail_on_errors is True else int(fail_on_errors)
+
+        #: (int) Stop session if global error count > X
+        #: Passing `--max-errors` will override this.
+        self.max_errors = int(config.get("max_errors", 0))
+
+        #: (float) Stop session if total run time  > X seconds.
+        #: Passing `--max-time` will override this.
+        self.max_time = float(config.get("max_time", 0.0))
         self._cancelled_seq = None
 
         # Used by StatisticsManager
@@ -171,8 +175,8 @@ class SessionManager:
     def has_errors(self, or_warnings=False):
         return self.sess_stats["errors"] > 0
 
-    def check_max_errors(self, seq_name):
-        """Check if current number of error exceeds the global`fail_on_errors` option.
+    def check_run_limits(self, seq_name):
+        """Check if current time or number of errors exceeds the configured limits.
 
         Args:
             seq_name (str):
@@ -183,17 +187,29 @@ class SessionManager:
             (bool) false if the current operation should be skipped.
         """
         cs = self._cancelled_seq
-        if not cs and self.max_errors and self.stats.error_count() >= self.max_errors:
-            # We just hit the limit: issue a warning and take a note of the sequence
+        err_limit_reached = (
+            # Compare max_errors against global error count
+            self.max_errors
+            and self.stats.error_count() >= self.max_errors
+        )
+
+        run_time = self.run_manager.get_run_time()
+        time_limit_reached = self.max_time and run_time > self.max_time
+
+        if not cs and (err_limit_reached or time_limit_reached):
+            # We just hit a limit: issue a warning and take a note of the sequence
             self._cancelled_seq = seq_name
-            self.stats.stats["max_error_reached"] = True
-            logger.warning(
-                yellow(
-                    "Reached max. error limit of {}: stopping...".format(
-                        self.max_errors
-                    )
+            # self.stats.stats["run_limit_reached"] = True
+            if err_limit_reached:
+                msg = "Reached max. error limit of {}: stopping...".format(
+                    self.max_errors
                 )
-            )
+            elif time_limit_reached:
+                msg = "Reached max. run time limit of {}: stopping...".format(
+                    self.max_time
+                )
+            self.stats.report_limit_violation(msg)
+            logger.warning(yellow(msg))
             return False
         elif cs in ("init", "end"):
             # The limit was reached inside the init or end sequence: always skip
@@ -337,7 +353,7 @@ class SessionManager:
                 try:
                     if self.stop_request.is_set():
                         raise StoppedError
-                    if not self.check_max_errors(seq_name):
+                    if not self.check_run_limits(seq_name):
                         raise SkippedError
 
                     result = activity.execute(self, **expanded_args)
@@ -411,7 +427,7 @@ class SessionManager:
             loop_idx = 0
             while True:
                 loop_idx += 1
-                if not self.check_max_errors(seq_name=seq_name):
+                if not self.check_run_limits(seq_name=seq_name):
                     skip_all_but_end = True
                     break
                 # One single pass by default
@@ -472,4 +488,6 @@ class SessionManager:
 
         self.publish("end_session", session=self, elap=elap)
 
+        # if self._cancelled_seq:
+        #     return False
         return not self.has_errors()

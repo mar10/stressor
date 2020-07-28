@@ -26,9 +26,11 @@ config:
   base_url: http://127.0.0.1:8082
   #: (float) Default timeout for web requests
   timeout: 1.0
-  #: (int|bool) Max. total error count that is tolerated before stopping.
-  #: true is interpreted as `1`, false is equivalent to `0`. Default: false
-  fail_on_errors: false
+  #: (int) Max. total error count that is tolerated before stopping
+  #: (override with `--max-errors`)
+  max_errors: 0
+  #: (float) Max. run time in seconds before stopping (override with `--max-time`)
+  max_time: 0.0
 
 # Initial context value definitions.
 # Context values can be accessed using `$(NAME)` macros, e.g. `$(base_url)`.
@@ -45,8 +47,6 @@ sessions:
   basic_auth: false
   verify_ssl: false
   ramp_up_delay: 0
-  #: (int|bool) similar to `config.fail_on_errors`, but interpreted per session.
-  fail_on_errors: false
 
 # Define what actions should be performed by every session
 scenario:

@@ -10,7 +10,7 @@ import time
 from collections import defaultdict
 from datetime import datetime
 
-from snazzy import colors_enabled, green, red, yellow
+from snazzy import emoji, green, red, yellow
 from stressor.config_manager import ConfigManager
 from stressor.monitor.server import MonitorServer
 from stressor.plugins.base import register_plugins
@@ -174,9 +174,10 @@ class RunManager:
 
         ap = lines.append
         col = red if has_errors else green
+        horz_line = col("=-" * 35 + "=")
 
         ap("Result Summary:")
-        ap(col("=-" * 35))
+        ap(horz_line)
         ap("Stressor scenario '{}' finished.".format(cm.name))
         ap("  Tag:      '{}'".format(cm.get("tag", "n.a.")))
         ap("  Base URL: {}".format(cm.config.get("base_url", "")))
@@ -196,7 +197,7 @@ class RunManager:
             )
         )
         if has_errors:
-            pics = " 💥 💔 💥" if colors_enabled() else ""
+            pics = emoji(" 💥 💔 💥", "")
             ap(
                 red(
                     "Result: ERROR, found {:,} errors and {:,} warnings.".format(
@@ -205,16 +206,17 @@ class RunManager:
                     + pics
                 )
             )
-            if self.stats.stats["max_error_reached"]:
+            if self.stats.stats["run_limit_reached"]:
                 ap(
                     yellow(
-                        "Some activities where skipped due to the `fail_on_errors` limit."
+                        "Some activities where skipped due to the `max-errors` "
+                        " or `max-time` limit."
                     )
                 )
         else:
-            pics = " ✨ 🍰 ✨" if colors_enabled() else ""
+            pics = emoji(" ✨ 🍰 ✨", "")
             ap(green("Result: Ok." + pics))
-        ap(col("=-" * 35))
+        ap(horz_line)
         return "\n".join(lines)
 
     def get_status_info(self):
@@ -376,6 +378,7 @@ class RunManager:
             time.sleep(0.5)
             monitor.open_browser()
 
+        self.start_stamp = time.monotonic()
         self.start_dt = datetime.now()
         self.end_dt = None
         try:
@@ -394,7 +397,7 @@ class RunManager:
 
             if monitor:
                 self.set_stage("waiting")
-                logger.important("Press Ctrl+C to quit.")
+                logger.important("Waiting for monitor... Press Ctrl+C to quit.")
                 self.stop_request.wait()
         finally:
             if monitor:
@@ -411,3 +414,6 @@ class RunManager:
         self.set_stage("stopping")
         self.stop_request.set()
         return True
+
+    def get_run_time(self):
+        return time.monotonic() - self.start_stamp

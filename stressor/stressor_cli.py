@@ -42,6 +42,10 @@ def handle_run_command(parser, args):
     rm.load_config(scenario_fspec)
     if args.single:
         rm.config_manager.config["force_single"] = True
+    if args.max_time:
+        rm.config_manager.config["max_time"] = float(args.max_time)
+    if args.max_errors:
+        rm.config_manager.config["max_errors"] = int(args.max_errors)
 
     res = rm.run(options, extra_context)
 
@@ -127,6 +131,18 @@ def run():
         action="store_true",
         help="Open a web server and browser application to display real-time progress",
     )
+    sp.add_argument(
+        "--max-errors",
+        type=int,
+        default=0,
+        help="Stop after N errors (overrides `config.max_errors`)",
+    )
+    sp.add_argument(
+        "--max-time",
+        type=float,
+        default=0.0,
+        help="Stop after N seconds (overrides `config.max_time`)",
+    )
 
     sp.set_defaults(command=handle_run_command)
 
@@ -202,6 +218,7 @@ def run():
     init_logging(args.verbose, args.log_file)
 
     if not args.no_color:
+        # Enable snazzy colors and emojis if terminal supports them
         enable_colors(True, force=False)
 
     if getattr(args, "version", None):
