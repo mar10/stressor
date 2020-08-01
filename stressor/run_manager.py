@@ -81,7 +81,9 @@ class RunManager:
         self.options = self.DEFAULT_OPTS.copy()
         self.stage = "ready"
         self.start_dt = None
+        self.start_stamp = None
         self.end_dt = None
+        self.end_stamp = None
 
         register_plugins()
         self.CURRENT_RUN_MANAGER = self
@@ -169,7 +171,8 @@ class RunManager:
     def get_cli_summary(self):
         cm = self.config_manager
         lines = []
-
+        run_time = self.end_stamp - self.start_stamp
+        # run_time = self.end_dt - self.start_dt
         has_errors = self.has_errors()
 
         ap = lines.append
@@ -185,8 +188,7 @@ class RunManager:
         ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap(
             "Run time {}, net: {}.".format(
-                self.end_dt - self.start_dt,
-                format_elap(self.stats["net_act_time"], high_prec=True),
+                run_time, format_elap(self.stats["net_act_time"], high_prec=True),
             )
         )
         ap(
@@ -194,6 +196,13 @@ class RunManager:
                 self.stats["act_count"],
                 self.stats["seq_count"],
                 len(self.session_list),
+            )
+        )
+        fact = run_time * len(self.session_list)
+        fact = 1.0 / fact if fact else 0.0
+        ap(
+            "Performance: {:,.3f} activities ({:,.3f} sequences) per sec./session.".format(
+                fact * self.stats["act_count"], fact * self.stats["seq_count"],
             )
         )
         if has_errors:
@@ -381,6 +390,7 @@ class RunManager:
         self.start_stamp = time.monotonic()
         self.start_dt = datetime.now()
         self.end_dt = None
+        self.end_stamp = None
         try:
             try:
                 res = False
@@ -391,6 +401,7 @@ class RunManager:
                 self.stop()
             finally:
                 self.end_dt = datetime.now()
+                self.end_stamp = time.monotonic()
 
             if self.options.get("log_summary", True):
                 logger.important(self.get_cli_summary())
