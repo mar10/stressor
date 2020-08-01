@@ -62,7 +62,7 @@ sequences:
   init:
     # Log-in
     - activity: HTTPRequest
-      url: $(base_url)
+      url: /
       method: OPTIONS
       assert_match_headers: ".*'DAV'.*"
 
@@ -79,7 +79,7 @@ sequences:
   # Other sections can have arbitrary names and are excuted in order of appearance
   main:
     - activity: GetRequest
-      url: $(base_url)/
+      url: /
       assert_match: ".*Index of /.*"
       assert_html:
         "//*[@class='logo']": true
@@ -87,7 +87,7 @@ sequences:
     # - activity: $debug()
 
     - activity: PutRequest
-      url: $(base_url)/wsgidav_test_file~$(session_id).txt
+      url: /wsgidav_test_file~$(session_id).txt
       data: "Test"
       assert_max_time: 0.5
       # debug: true
@@ -106,7 +106,7 @@ sequences:
     - activity: $sleep(0.3)
 
     - activity: GetRequest
-      url: $(base_url)/wsgidav_test_file~$(session_id).txt
+      url: /wsgidav_test_file~$(session_id).txt
       assert_match: "Test"
 
     - activity: $sleep(0.3)
@@ -126,4 +126,4 @@ sequences:
     - activity: $sleep(0.1)
 
     - activity: DeleteRequest
-      url: $(base_url)/wsgidav_test_file~$(session_id).txt
+      url: /wsgidav_test_file~$(session_id).txt

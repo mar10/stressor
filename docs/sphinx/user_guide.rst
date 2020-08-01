@@ -7,6 +7,7 @@ User Guide
 
     ug_quickstart.md
     ug_tutorial
+    ug_use_cases
     ug_writing_scripts
     ug_sample_stressor_yaml
     ug_reference

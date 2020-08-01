@@ -188,7 +188,7 @@ class SleepActivity(ActivityBase):
         # duration_2 = expanded_args.get("duration_2")
         # if duration_2 is not None:
         #     duration = random.uniform(duration, float(duration_2))
-        assert self._cur_duration
+        assert self._cur_duration is not None
         duration = self._cur_duration
         self._cur_duration = None
         if not session.dry_run:
