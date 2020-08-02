@@ -172,12 +172,12 @@ class RunManager:
         cm = self.config_manager
         lines = []
         run_time = self.end_stamp - self.start_stamp
-        # run_time = self.end_dt - self.start_dt
+        user_count = len(self.session_list)
         has_errors = self.has_errors()
 
         ap = lines.append
         col = red if has_errors else green
-        horz_line = col("=-" * 35 + "=")
+        horz_line = col("=-" * 38 + "=")
 
         ap("Result Summary:")
         ap(horz_line)
@@ -188,23 +188,51 @@ class RunManager:
         ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap(
             "Run time {}, net: {}.".format(
-                run_time, format_elap(self.stats["net_act_time"], high_prec=True),
+                format_elap(run_time, high_prec=True),
+                format_elap(self.stats["net_act_time"], high_prec=True),
             )
         )
         ap(
             "Executed {:,} activities in {:,} sequences, using {:,} parallel sessions.".format(
-                self.stats["act_count"],
-                self.stats["seq_count"],
-                len(self.session_list),
+                self.stats["act_count"], self.stats["seq_count"], user_count,
             )
         )
-        fact = run_time * len(self.session_list)
-        fact = 1.0 / fact if fact else 0.0
-        ap(
-            "Performance: {:,.3f} activities ({:,.3f} sequences) per sec./session.".format(
-                fact * self.stats["act_count"], fact * self.stats["seq_count"],
+        if run_time:
+            ap(
+                "Sequence duration: {} average.".format(
+                    format_elap(run_time / self.stats["seq_count"], high_prec=True)
+                )
             )
-        )
+            ap(
+                "             rate: {:,.3f} sequences per minute (per user: {:,.3f}).".format(
+                    60.0 * self.stats["seq_count"] / run_time,
+                    60.0 * self.stats["seq_count"] / (run_time * user_count),
+                )
+            )
+            ap(
+                "Activity rate:     {:,.3f} activities per second (per user: {:,.3f}).".format(
+                    self.stats["act_count"] / run_time,
+                    self.stats["act_count"] / (run_time * user_count),
+                )
+            )
+
+        # --- List of all activities that are marked `monitor: true`
+        if self.stats["monitored"]:
+            print(self.stats["monitored"])
+            ap("{} monitored activities:".format(len(self.stats["monitored"])))
+            for path, info in self.stats["monitored"].items():
+                errors = info.get("errors")
+                ap("  - {}".format(path))
+                ap(
+                    "    n: {:,}, min: {}, avg: {}, max: {}{}".format(
+                        info["act_count"],
+                        format_elap(info["act_time_min"], high_prec=True),
+                        format_elap(info["act_time_avg"], high_prec=True),
+                        format_elap(info["act_time_max"], high_prec=True),
+                        red(", {} errors".format(errors)) if errors else "",
+                    )
+                )
+
         if has_errors:
             pics = emoji(" 💥 💔 💥", "")
             ap(

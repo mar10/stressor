@@ -22,7 +22,7 @@ Stress Tests
   access.
 - Optionally define ``monitor: true`` for selected activities, to collect extra
   statistics.
-- Pass ``--monitor`` to view live proogress.
+- Pass ``--monitor`` to view live progress in a separate browser window.
 
 
 CI Tests
@@ -63,8 +63,8 @@ Developing and Debugging Scripts
 - Pass ``--single`` so ``duration`` and ``repeat`` options are ignored.
 - Pass ``--verbose`` (``-v``) or even ``-vv`` to print more information about
   requests and responses.
-- Set the ``config.max_errors: 1`` option (or pass the``--max-errors=1`` argument),
-  so we fail on the first error.
+- Set the ``config.max_errors: 1`` option (or pass the ``--max-errors=1``
+  argument), so we fail on the first error.
 - Optionally define ``debug: true`` for selected activities, to print extra
   information.
 
