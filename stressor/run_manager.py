@@ -19,6 +19,7 @@ from stressor.statistic_manager import StatisticManager
 from stressor.util import (
     check_arg,
     format_elap,
+    format_num,
     get_random_number,
     logger,
     set_console_ctrl_handler,
@@ -204,15 +205,17 @@ class RunManager:
                 )
             )
             ap(
-                "             rate: {:,.3f} sequences per minute (per user: {:,.3f}).".format(
-                    60.0 * self.stats["seq_count"] / run_time,
-                    60.0 * self.stats["seq_count"] / (run_time * user_count),
+                "             rate: {} sequences per minute (per user: {}).".format(
+                    format_num(60.0 * self.stats["seq_count"] / run_time),
+                    format_num(
+                        60.0 * self.stats["seq_count"] / (run_time * user_count)
+                    ),
                 )
             )
             ap(
-                "Activity rate:     {:,.3f} activities per second (per user: {:,.3f}).".format(
-                    self.stats["act_count"] / run_time,
-                    self.stats["act_count"] / (run_time * user_count),
+                "Activity rate:     {} activities per second (per user: {}).".format(
+                    format_num(self.stats["act_count"] / run_time),
+                    format_num(self.stats["act_count"] / (run_time * user_count)),
                 )
             )
 

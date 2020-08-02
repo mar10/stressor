@@ -10,6 +10,7 @@ from stressor.util import (
     assert_always,
     check_arg,
     format_elap,
+    format_num,
     format_rate,
     get_dict_attr,
     get_random_number,
@@ -135,6 +136,16 @@ class TestBasics:
         assert format_elap(367) == "6:07 min"
         assert format_elap(367, high_prec=True) == "6:07.00 min"
         assert format_elap(12.34, count=10) == "12.3 sec, 0.8 items/sec"
+
+    def test_format_num(self):
+        assert format_num(1000.2345) == "1,000"
+        assert format_num(100.2345) == "100.2"
+        assert format_num(10.2345) == "10.23"
+        assert format_num(1.2345) == "1.234"
+        assert format_num(0) == "0"
+        assert format_num(1) == "1"
+        assert format_num(10) == "10"
+        assert format_num(0.000123456) == "0.000123456"
 
     def test_format_rate(self):
         assert format_rate(0, 0) == "0"

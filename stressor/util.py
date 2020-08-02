@@ -607,7 +607,10 @@ def format_elap(seconds, count=None, unit="items", high_prec=False):
             res = "{:d}:{:02d} min".format(int(m), int(s))
     else:
         if high_prec:
-            res = "{:.3f} sec".format(seconds)
+            if seconds > 0.01:
+                res = "{:.3f} sec".format(seconds)
+            else:
+                res = "{:f} sec".format(seconds)
         elif seconds > 5:
             res = "{:.1f} sec".format(seconds)
         else:
@@ -620,6 +623,25 @@ def format_elap(seconds, count=None, unit="items", high_prec=False):
 
     if count and (seconds > 0):
         res += ", {:,.1f} {}/sec".format(float(count) / seconds, unit)
+    return res
+
+
+def format_num(num):
+    """Return num rounded to reasonable precision (promille)."""
+    if num >= 1000.0:
+        res = "{:,}".format(round(num))
+    elif num >= 100.0:
+        res = str(round(num, 1))
+        # res = "{:,.1f}".format(num)
+    elif num >= 10.0:
+        res = str(round(num, 2))
+        # res = "{:,.2f}".format(num)
+    elif num >= 1.0:
+        res = str(round(num, 3))
+        # res = "{:,.3f}".format(num)
+    else:
+        res = str(num)
+        # res = "{:,}".format(num)
     return res
 
 
