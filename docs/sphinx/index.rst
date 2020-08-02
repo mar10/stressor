@@ -26,9 +26,13 @@ stressor
    changes
 
 
+.. image:: ../summary.png
+  :target: https://github.com/mar10/stressor
+  :name: Summary output
+
 .. image:: ../teaser.png
   :target: https://github.com/mar10/stressor
-  :name: Live demo
+  :name: '--monitor' window
 
 
 Features

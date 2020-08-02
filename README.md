@@ -52,5 +52,6 @@
 5. [Read The Docs](https://stressor.readthedocs.io/en/latest/ug_tutorial.html)
    for details.
 
+<img src="https://stressor.readthedocs.io/en/latest/_images/summary.png">
 
 <img src="https://stressor.readthedocs.io/en/latest/_images/teaser.png">
