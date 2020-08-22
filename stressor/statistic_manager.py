@@ -90,6 +90,7 @@ class StatisticManager:
             "act_time": 0.0,
             "net_act_count": 0,
             "net_act_time": 0.0,
+            "seq_count": 0,
             "sess_count": 0,
             "sess_running": 0,
             "errors": 0,

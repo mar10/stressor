@@ -1,62 +1,104 @@
+##############################################################################
 # Stressor Scenario Definition
 # See https://stressor.readthedocs.io/
 
 # File identifier, must be 'stressor#0'
 file_version: stressor#0
 
-# The run configuration defines how the `sequences` are executed in parallel
-# sessions.
+# ----------------------------------------------------------------------------
+#: `config`: Global scenario settings.
 config:
-  # Default: name of this config file without '.yaml' extension
+  #: Scenario name (defaults to name of this file without '.yaml' extension)
   name: Test WebDAV
-  tag: Not set (pass `-o tag:TAG_NAME` to override)
-  # tag: Test-Run STAGING nightly $(datetime_iso)
 
+  #: Optional multi-line string with additional info
   details: |
-    This scenario runs some tests against a WebDAV server.
-    We use it to test stressor against a locally running WsgiDAV server:
+  This scenario runs some tests against a WebDAV server.
+  We use it to test stressor against a locally running WsgiDAV server:
     - Open a terminal and run
-      $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
+    $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
     - Open a second terminal and run
-      $ stressor run tests/fixtures/test_mock_server
+    $ stressor run tests/fixtures/test_mock_server
 
-  #: (int) Output verbosity level [0..5]
+  # Optional string that describes the current run.
+  # May be used to display additional info about boundary conditions, etc.
+  # Example 'Test-Run STAGING nightly $(datetime_iso)'
+  # (pass `-o tag:TAG_NAME` to override)
+  tag:
+
+  #: (int) Output verbosity level [0..5], default: 3
   verbose: 3
-  #: (string)
+  #: (str)
   base_url: http://127.0.0.1:8082
-  #: (float) Default timeout for web requests
-  timeout: 1.0
+  #: (float) Default timeout on seconds for web requests (i.e. HTTP activities)
+  #: This value can be overridden with HTTP-Activity's `timeout` parameter
+  request_timeout: 1.0
   #: (int) Max. total error count that is tolerated before stopping
-  #: (override with `--max-errors`)
+  #: Override with `--max-errors` argument.
+  #: Default: 0: don't stop on errors
   max_errors: 0
   #: (float) Max. run time in seconds before stopping (override with `--max-time`)
+  #: Default: 0.0: no time limit
   max_time: 0.0
 
-# Initial context value definitions.
+# ----------------------------------------------------------------------------
+# `context`: Initial context value definitions.
 # Context values can be accessed using `$(NAME)` macros, e.g. `$(base_url)`.
 # The context is initialized with  all values fron the `config` section,
 # but we can add or override values here.
-# Set a `null` value to make it mandatory, i.e. must be passed by caller.
 context:
 
+# ----------------------------------------------------------------------------
+# `sessions`: The run configuration defines how the `sequences` are executed
+# in parallel sessions.
 sessions:
+  #: (list) Defines a list of user dicts, with at least `name` and `pasword`
+  #: attributes. Often stored in a separate file and included like so:
   users: $load(users.yaml)
-  count: 3
-  # threads_per_process: 5
-  # duration: 5
+  #: (int) Number of sessions (virtual users). If greater than no. of users,
+  #: users will be re-used round robin.
+  #: Default: 1
+  count: 1
+  #: (float) max. run time in seconds, before the session stops. The current
+  #: and the 'end' sequences are completed.
+  #: Default: 0.0 means no time limit.
+  duration: 0.0
+  #: (bool) Pass true to enable HTTP basic authentication, using user's credentials
+  #: Default: false
   basic_auth: false
-  verify_ssl: false
-  ramp_up_delay: 0
+  #: (bool) Pass false to ignore SSL certificate errors. Default: true
+  verify_ssl: true
+  #: (float) Waiting time between starting distinct user sessions in seconds.
+  #: Default: 0.0 means start all session at once.
+  ramp_up_delay: 0.0
 
-# Define what actions should be performed by every session
+# ----------------------------------------------------------------------------
+# `scenario`: Define the order and duration of sequences that every virtual
+# user session performs.
+# All sequence definitions that are referenced here, must also appear in the
+# following `sequences` section.
 scenario:
+  # 'init' is the reserved name for the set-up sequence, like logging-in.
+  # If errors occur here, all subsequent sequences (including 'end') are skipped.
   - sequence: init
+  # Other sections can have arbitrary names and are excuted in order of appearance
   - sequence: main
-    duration: 40
-    # repeat: 3
+    #: (float) This sequence is repeated in a loop, until `duration` seconds are
+    #: reached (always completing the full sequence).
+    #: Default: 0.0 means no time-based looping.
+    duration: 0.0
+    #: (int) This sequence is repeated in a loop, until `duration` seconds are
+    #: reached (always completing the full sequence).
+    #: Default: 0 (or 1) means no repeat.
+    repeat: 0
+  # 'end' is the reserved name for the tear-down sequence (e..g. log out).
+  # If errors occurred in the mainhere, all subsequent sequences are skipped.
   - sequence: end
 
-# List of named action sequences. Used as building blocks for scenarios
+# ----------------------------------------------------------------------------
+# `sequences`: List of named action sequences. Used as building blocks for
+# scenarios
+# Following some example activites. Please refer to the docs for details.
 sequences:
   # 'init' is the reserved name for the set-up sequence.
   init:

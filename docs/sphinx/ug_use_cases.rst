@@ -68,7 +68,7 @@ Developing and Debugging Scripts
 - Optionally define ``debug: true`` for selected activities, to print extra
   information.
 
-See `ug_writing_scripts`_ for details.
+See :doc:`ug_writing_scripts` for details.
 
 
 Test Other Targets than Web-Applications

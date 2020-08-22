@@ -67,8 +67,8 @@ class SessionManager:
     Run a scenario in a single session.
     """
 
-    #: (float)
-    DEFAULT_TIMEOUT = 10.0
+    # #: (float)
+    # DEFAULT_REQUEST_TIMEOUT = 10.0
 
     def __init__(self, run_manager, context, session_id, user):
         # check_arg(run_manager, RunManager)
@@ -98,7 +98,7 @@ class SessionManager:
         self.stop_request = run_manager.stop_request
 
         # Set some default entries in context dict
-        context.setdefault("timeout", self.DEFAULT_TIMEOUT)
+        # context.setdefault("timeout", self.DEFAULT_REQUEST_TIMEOUT)
         context.setdefault("session_id", self.session_id)
         context.setdefault("user", self.user)
 
@@ -405,7 +405,7 @@ class SessionManager:
         sequences = config_manager.sequences
         scenario = config_manager.scenario
         sessions = config_manager.sessions
-        session_duration = float(sessions.get("duration", 0))
+        session_duration = float(sessions.get("duration", 0.0))
 
         self.publish("start_session", session=self)
         self.stats.report_start(self, None, None)
@@ -422,7 +422,7 @@ class SessionManager:
 
             sequence = sequences.get(seq_name)
             loop_repeat = int(seq_def.get("repeat", 0))
-            loop_duration = float(seq_def.get("duration", 0))
+            loop_duration = float(seq_def.get("duration", 0.0))
             start_seq_loop = time.monotonic()
             loop_idx = 0
             while True:

@@ -8,7 +8,7 @@ config:
     of the stressor framework
   verbose: 3
   base_url: http://127.0.0.1:8082
-  timeout: 1
+  request_timeout: 1.0
   # max_time: 3.2
 
 context:
@@ -17,7 +17,6 @@ sessions:
   users: $load(users.yaml)
   count: 10
   # basic_auth: true
-  # threads_per_process: 5
   # duration: 5
 
 # Define what actions should be performed by every session

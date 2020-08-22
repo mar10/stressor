@@ -14,7 +14,7 @@ config:
       $ stressor run tests/fixtures/test_mock_server
   verbose: 4
   base_url: http://127.0.0.1:8082
-  timeout: 1
+  request_timeout: 1.0
   # max_time: 3.2
 
 # Initial context value definitions.
@@ -27,8 +27,6 @@ sessions:
   users: $load(users.yaml)
   count: 3
   # basic_auth: true
-
-  # threads_per_process: 5
   # duration: 5
 
 # Define what actions should be performed by every session

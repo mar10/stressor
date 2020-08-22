@@ -4,7 +4,7 @@ file_version: stressor#0
 # sessions.
 config:
   name: Test WebDAV
-  tag: Not set (pass `-o tag:TAG_NAME` to override)
+  # tag: Not set (pass `-o tag:TAG_NAME` to override)
   details: |
     This scenario runs some tests against a WebDAV server.
     We use it to test stressor against a locally running WsgiDAV server:
@@ -14,7 +14,7 @@ config:
       $ stressor run tests/fixtures/test_mock_server
   verbose: 4
   base_url: http://127.0.0.1:8082
-  timeout: 1
+  request_timeout: 1.0
   max_errors: 0
 
 
@@ -29,8 +29,7 @@ sessions:
   count: 20
   # basic_auth: true
   # verify_ssl: false
-  # threads_per_process: 5
-  # duration: 5
+  # duration: 0.0
   ramp_up_delay: 0.5
 
 # Define what actions should be performed by every session
@@ -38,7 +37,7 @@ scenario:
   - sequence: init
   - sequence: main
     # repeat: 3
-    duration: 40
+    duration: 40.0
   - sequence: end
 
 

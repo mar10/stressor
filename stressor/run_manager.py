@@ -198,12 +198,13 @@ class RunManager:
                 self.stats["act_count"], self.stats["seq_count"], user_count,
             )
         )
-        if run_time:
+        if run_time and self.stats["seq_count"]:
             ap(
                 "Sequence duration: {} average.".format(
                     format_elap(run_time / self.stats["seq_count"], high_prec=True)
                 )
             )
+        if run_time:
             ap(
                 "             rate: {} sequences per minute (per user: {}).".format(
                     format_num(60.0 * self.stats["seq_count"] / run_time),
@@ -226,6 +227,10 @@ class RunManager:
             for path, info in self.stats["monitored"].items():
                 errors = info.get("errors")
                 ap("  - {}".format(path))
+                if not info:
+                    ap("    n: 0, min: n.a., avg: n.a., max: n.a.")
+                    continue
+
                 ap(
                     "    n: {:,}, min: {}, avg: {}, max: {}{}".format(
                         info["act_count"],

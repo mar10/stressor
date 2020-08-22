@@ -142,7 +142,7 @@ class HTTPRequestActivity(ActivityBase):
             raise ActivityError(
                 "Missing context variable 'base_url' to resolve relative URLs"
             )
-        expanded_args.setdefault("timeout", session.get_context("timeout"))
+        expanded_args.setdefault("timeout", session.get_context("request_timeout"))
         assert "timeout" in expanded_args
         debug = expanded_args.get("debug")
 
@@ -297,7 +297,7 @@ class StaticRequestsActivity(ActivityBase):
         """
         url_list = expanded_args.pop("url_list")
         base_url = session.get_context("base_url")
-        expanded_args.setdefault("timeout", session.get_context("timeout"))
+        expanded_args.setdefault("timeout", session.get_context("request_timeout"))
         debug = expanded_args.get("debug")
         thread_count = int(expanded_args.get("thread_count", 1))
         method = "GET"

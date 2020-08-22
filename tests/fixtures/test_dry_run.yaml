@@ -6,7 +6,7 @@ config:
   name: Test scenario 1
   details: Some details...
   base_url: http://127.0.0.1:8082
-  timeout: 5
+  request_timeout: 5.0
 
 context:
   default_sleep: .03
@@ -15,7 +15,6 @@ context:
 sessions:
   users: $load(users.yaml)
   count: 2
-  # threads_per_process: 5
 
 # Define what actions should be performed by every session
 scenario:
