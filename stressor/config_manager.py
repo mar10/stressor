@@ -190,6 +190,30 @@ class ConfigManager:
     def has_errors(self, or_warnings=False):
         return bool(self.results["error"] or (or_warnings and self.results["warning"]))
 
+    def update_config(self, extra_config, context_only=False):
+        """Override self.config (and self.context) with new items.
+
+        self.config was already copied to self.context, so normally we want to
+        update both.
+
+        Args:
+            extra_config (dict): new values
+            context_only (bool): pass true to only set the shadow-copy (i.e. context)
+        """
+        check_arg(extra_config, dict, or_none=True)
+        if not extra_config:
+            return
+        config = self.config
+        context = self.context
+        for k, v in extra_config.items():
+            if not context_only:
+                logger.info("Set config.{}: {!r} -> {!r}".format(k, config.get(k), v))
+                config[k] = v
+            else:
+                logger.info("Set context.{}: {!r} -> {!r}".format(k, context.get(k), v))
+            context[k] = v
+        return
+
     def validate_config(self, cfg=None):
         """
         Raises:

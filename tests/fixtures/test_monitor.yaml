@@ -4,7 +4,7 @@ file_version: stressor#0
 # sessions.
 config:
   name: Test WebDAV
-  # tag: Not set (pass `-o tag:TAG_NAME` to override)
+  # tag:
   details: |
     This scenario runs some tests against a WebDAV server.
     We use it to test stressor against a locally running WsgiDAV server:

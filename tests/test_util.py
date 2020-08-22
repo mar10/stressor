@@ -9,12 +9,14 @@ from stressor.util import (
     PathStack,
     assert_always,
     check_arg,
+    coerce_str,
     format_elap,
     format_num,
     format_rate,
     get_dict_attr,
     get_random_number,
     is_yaml_keyword,
+    parse_option_args,
     parse_args_from_str,
     shorten_string,
 )
@@ -158,6 +160,20 @@ class TestBasics:
         assert format_rate(12345, 10000.0) == "1.234"
         assert format_rate(12345, 100000.0) == "0.123"
         assert format_rate(12345, 1000000.0) == "0.012"
+
+    def test_coerce_str(self):
+        assert coerce_str("1.2") == 1.2
+        assert coerce_str("1") == 1
+        assert type(coerce_str("1")) is int
+        assert coerce_str("") == ""
+        assert coerce_str("1.2.3") == "1.2.3"
+        assert coerce_str(None) is None
+
+    def test_parse_option_args(self):
+        res = parse_option_args([])
+        assert res == {}
+        res = parse_option_args(["foo:bar", "baz:42"])
+        assert res == {"foo": "bar", "baz": 42}
 
     def test_parse_args_from_str(self):
         arg_def = (

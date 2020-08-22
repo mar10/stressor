@@ -22,8 +22,8 @@ config:
 
   # Optional string that describes the current run.
   # May be used to display additional info about boundary conditions, etc.
-  # Example 'Test-Run STAGING nightly $(datetime_iso)'
-  # (pass `-o tag:TAG_NAME` to override)
+  # Example 'Test-Run STAGING nightly'
+  # (pass `-o "tag:MY TAG INFO"` to override)
   tag:
 
   #: (int) Output verbosity level [0..5], default: 3

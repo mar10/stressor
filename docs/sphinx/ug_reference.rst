@@ -35,8 +35,8 @@ config.name (str, default: `file name`)
 config.tag (int, default: `''`)
     Optional string that describes the current run.
     May be used to display additional info about boundary conditions, etc.
-    Example 'Test-Run STAGING nightly $(datetime_iso)'
-    (pass `-o tag:TAG_NAME` to override)
+    Example 'Test-Run STAGING nightly'
+    (pass `-o "tag:MY TAG INFO"` to override)
 config.details (int, default: `''`)
     Optional multi-line string with additional info.
 config.verbose (int, default: `3`)

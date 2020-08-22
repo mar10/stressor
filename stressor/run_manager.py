@@ -36,6 +36,8 @@ class RunManager:
 
     DEFAULT_OPTS = {
         "monitor": False,
+        "log_summary": True,
+        # "dry_run": False,
     }
     STAGES = (
         # "new",
@@ -183,7 +185,7 @@ class RunManager:
         ap("Result Summary:")
         ap(horz_line)
         ap("Stressor scenario '{}' finished.".format(cm.name))
-        ap("  Tag:      '{}'".format(cm.get("tag", "n.a.")))
+        ap("  Tag:      '{}'".format(cm.config.get("tag", "n.a.")))
         ap("  Base URL: {}".format(cm.config.get("base_url", "")))
         ap("  Start:    {}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")))
         ap("  End:      {}".format(self.end_dt.strftime("%Y-%m-%d %H:%M:%S")))
@@ -386,19 +388,20 @@ class RunManager:
         """Run the current
 
         Args:
-            context (dict):
+            options (dict): see RunManager.DEFAULT_OPTS
+            extra_context (dict, optional):
         Returns:
-            (int) Exit code 0 if no errors occured
+            (int) Exit code 0 if no errors occurred
         """
         check_arg(options, dict)
         check_arg(extra_context, dict, or_none=True)
 
         self.options.update(options)
 
-        context = self.config_manager.context
         if extra_context:
-            context.update(extra_context)
+            self.config_manager.update_config(extra_context)
 
+        context = self.config_manager.context
         sessions = self.config_manager.sessions
 
         count = int(sessions.get("count", 1))

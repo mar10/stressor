@@ -47,11 +47,13 @@ scenario::
 See also the help::
 
     usage: stressor run [-h] [-v | -q] [-n] [--no-color] [--log LOG_FILE]
-                        [-o [OPTION [OPTION ...]]] [--single] [--monitor]
+                        [-o OPTION] [--single] [--monitor]
+                        [--max-errors MAX_ERRORS] [--max-time MAX_TIME]
                         SCENARIO
 
     positional arguments:
-    SCENARIO              path to configuration file (default: ./scenario.yaml)
+    SCENARIO              path to configuration file or folder (default:
+                            ./scenario.yaml)
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -62,13 +64,16 @@ See also the help::
     --no-color            prevent use of ansi terminal color codes
     --log LOG_FILE        Path to log file or folder (generate unique file name
                             in the latter case)
-    -o [OPTION [OPTION ...]], --option [OPTION [OPTION ...]]
+    -o OPTION, --option OPTION
                             override configuration, syntax `OPTION:VALUE`
                             (multiple values allowed)
     --single              Force `run_config.sessions.count: 1`, so only one
                             thread is run
     --monitor             Open a web server and browser application to display
                             real-time progress
+    --max-errors MAX_ERRORS
+                            Stop after N errors (overrides `config.max_errors`)
+    --max-time MAX_TIME   Stop after N seconds (overrides `config.max_time`)
     $
 
 

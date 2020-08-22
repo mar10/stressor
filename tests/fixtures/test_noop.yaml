@@ -2,7 +2,7 @@ file_version: stressor#0
 
 config:
   name: Test no-op
-  tag: Not set (pass `-o tag:TAG_NAME` to override)
+  # tag:
   details: |
     Contains only one sleep(0) activity. Use to benchmark max. throughput
     of the stressor framework

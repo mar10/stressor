@@ -20,18 +20,24 @@ from stressor import __version__
 from stressor.cli_common import common_parser, verbose_parser
 from stressor.convert.har_converter import HarConverter
 from stressor.run_manager import RunManager
-from stressor.util import init_logging, logger, version_info
+from stressor.util import init_logging, logger, parse_option_args, version_info
 
 
 def handle_run_command(parser, args):
     options = {
         "monitor": args.monitor,
         "log_summary": True,
-        "dry_run": args.dry_run,
+        # "dry_run": args.dry_run,
     }
-    extra_context = {
-        "dry_run": args.dry_run,
-    }
+    extra_context = {}
+    # Parse `--option=NAME:VALUE` arguments:
+    try:
+        extra_context.update(parse_option_args(args.option, coerce_values=True))
+    except Exception as e:
+        parser.error("--option: {}".format(e))
+    # Make sure that --dry-run arg is always honored:
+    if args.dry_run:
+        extra_context["dry_run"] = True
 
     scenario_fspec = args.scenario
     if os.path.isdir(scenario_fspec):
@@ -118,7 +124,7 @@ def run():
     sp.add_argument(
         "-o",
         "--option",
-        nargs="*",
+        action="append",
         help="override configuration, syntax `OPTION:VALUE` (multiple values allowed)",
     )
     sp.add_argument(

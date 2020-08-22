@@ -402,6 +402,46 @@ def get_dict_attr(d, key_path, default=NO_DEFAULT):
     return value
 
 
+def coerce_str(s):
+    """Return `s` converted to float, int, or str."""
+    check_arg(s, str, or_none=True)
+    if s is None:
+        return None
+    for t in (int, float, str):  # order matters!
+        try:
+            return t(s)
+        except ValueError:
+            if t is str:
+                raise
+
+
+def parse_option_args(opt_list, coerce_values=True):
+    """Evaluate `--option` args.
+
+    Args:
+        opt_list (list):
+            List of option definitions of the form "OPT_NAME:OPT_VALUE"
+        coerce_values (bool=true):
+    Returns:
+        Dict of {opt_name: opt_value, ...}
+    """
+    check_arg(opt_list, list, or_none=True)
+    res = {}
+    if not opt_list:
+        return res
+    for opt in opt_list:
+        # print(opt_list, opt)
+        if ":" not in opt:
+            raise ValueError("Expected 'NAME:VALUE', got {!r}".format(opt))
+        config_name, config_val = opt.split(":", 1)
+        if coerce_values:
+            res[config_name.strip()] = coerce_str(config_val)
+        else:
+            res[config_name.strip()] = config_val
+    # print(opt_list, res)
+    return res
+
+
 def parse_args_from_str(arg_str, arg_defs):  # , context=None):
     """
     Args:
