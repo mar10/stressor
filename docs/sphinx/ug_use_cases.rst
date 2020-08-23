@@ -31,34 +31,36 @@ CI Tests
 Run stressor as part of a continous integration workflow, e.g. inside Jenkins.
 
 - Define a script that covers important functionality of your target application.
-- Set the ``config.max_errors: 1`` option (or pass the``--max-errors=1`` argument),
-  so the script will abort in case of errors as soon as possible.
-- Set the ``config.max_errors=SECONDS`` option (or pass the ``--max-errors=SECONDS``
+- Set the ``config.max_errors: 1`` option (or pass the ``--max-errors=1``
+  argument), so the script will abort as soon as possible in case of errors.
+- Set the ``config.max_time: SECONDS`` option (or pass the ``--max-time=SECONDS``
   argument), so unexpectedly long execution times will generate errors. |br|
   Of course the sequences should not be time constrained using the
   ``duration: SECONDS`` option for sequences in this case.
-- Set the ``config.tag=INFO`` option (or pass the ``--option "tag:INFO"``
+- Set the ``config.tag: INFO`` option (or pass the ``--option "tag:INFO"``
   argument), to provide some details about the target system.
   (This string will be printed as part of the summary.)
 - Pass ``--log FOLDER`` so results can be reviewed later.
-- Pass ``--verbose`` (``-v``) so logging will contain useful additional information.
+- Pass ``--verbose`` (``-v``) so logging will contain useful additional
+  information.
 
 
 Benchmarks
 ==========
 
 - Pass ``--quiet`` (``-q``), so logging will not impact performance.
-- Set the ``config.max_errors: 1`` option (or pass the``--max-errors=1`` argument),
-  so we fail fast on errors (unless sporadic errors are tolerated).
+- Set the ``config.max_errors: 1`` option (or pass the ``--max-errors=1``
+  argument), so we fail fast on errors (unless sporadic errors are tolerated).
 - Define a script that runs for a given time, for example using the
   ``duration: SECONDS`` option for sequences. |br|
   Take note of 'activities per second per session' in the summary.
-- Or define a script that runs a number of sequences, for example using the
+  OR:
+- define a script that runs a number of sequences, for example using the
   ``repeat: COUNT`` option for sequences. |br|
   Take note of 'run time' in the summary.
-- Set the ``config.tag=INFO`` option (or pass the ``--option "tag:INFO"``
+- Set the ``config.tag: INFO`` option (or pass the ``--option "tag:INFO"``
   argument), to provide some details about the target system.
-  (This string will be printed as part of the summary.)
+  This string will be printed as part of the summary.
 - Optionally define ``monitor: true`` for selected activities, to collect extra
   statistics.
 
@@ -66,7 +68,8 @@ Benchmarks
 Developing and Debugging Scripts
 ================================
 
-- Pass ``--single`` so ``duration`` and ``repeat`` options are ignored.
+- Pass ``--single``, so ``duration`` and ``repeat`` options are ignored.
+  This also reduces the number of parallel sessions to one.
 - Pass ``--verbose`` (``-v``) or even ``-vv`` to print more information about
   requests and responses.
 - Set the ``config.max_errors: 1`` option (or pass the ``--max-errors=1``
