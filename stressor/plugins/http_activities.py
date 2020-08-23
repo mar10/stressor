@@ -284,6 +284,7 @@ class StaticRequestsActivity(ActivityBase):
     This activity recieves a list of URLs (JavaScript, Html, CSS, Images, ...)
     and loads them, using max. ~5 threads, as a browser would.
     """
+
     REQUEST_ARGS = {"auth", "data", "json", "headers", "params", "timeout", "verify"}
     _mandatory_args = {"url_list"}
     _known_args = REQUEST_ARGS | _mandatory_args | {"assert_status", "thread_count"}
