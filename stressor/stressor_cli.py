@@ -130,7 +130,7 @@ def run():
     sp.add_argument(
         "--single",
         action="store_true",
-        help="Force `run_config.sessions.count: 1`, so only one thread is run",
+        help="Force `sessions.count: 1` and prevent sequence loops, so only one thread is run straight",
     )
     sp.add_argument(
         "--monitor",

@@ -1,6 +1,9 @@
-##############################################################################
+# ----------------------------------------------------------------------------
 # Stressor Scenario Definition
-# See https://stressor.readthedocs.io/
+# See
+#   - https://stressor.readthedocs.io/
+#   - https://stressor.readthedocs.io/en/latest/ug_reference.html
+# ----------------------------------------------------------------------------
 
 # File identifier, must be 'stressor#0'
 file_version: stressor#0
@@ -44,8 +47,10 @@ config:
 # ----------------------------------------------------------------------------
 # `context`: Initial context value definitions.
 # Context values can be accessed using `$(NAME)` macros, e.g. `$(base_url)`.
-# The context is initialized with  all values fron the `config` section,
+# The context is initialized with  all values from the `config` section,
 # but we can add or override values here.
+# Values may also be defined or overridden using the the command line, e.g.
+# `--option "NAME:VALUE"`
 context:
 
 # ----------------------------------------------------------------------------

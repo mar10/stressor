@@ -37,6 +37,9 @@ Run stressor as part of a continous integration workflow, e.g. inside Jenkins.
   argument), so unexpectedly long execution times will generate errors. |br|
   Of course the sequences should not be time constrained using the
   ``duration: SECONDS`` option for sequences in this case.
+- Set the ``config.tag=INFO`` option (or pass the ``--option "tag:INFO"``
+  argument), to provide some details about the target system.
+  (This string will be printed as part of the summary.)
 - Pass ``--log FOLDER`` so results can be reviewed later.
 - Pass ``--verbose`` (``-v``) so logging will contain useful additional information.
 
@@ -53,6 +56,9 @@ Benchmarks
 - Or define a script that runs a number of sequences, for example using the
   ``repeat: COUNT`` option for sequences. |br|
   Take note of 'run time' in the summary.
+- Set the ``config.tag=INFO`` option (or pass the ``--option "tag:INFO"``
+  argument), to provide some details about the target system.
+  (This string will be printed as part of the summary.)
 - Optionally define ``monitor: true`` for selected activities, to collect extra
   statistics.
 

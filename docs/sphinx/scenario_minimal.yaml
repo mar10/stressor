@@ -1,5 +1,9 @@
+# ----------------------------------------------------------------------------
 # Stressor Scenario Definition
-# See https://stressor.readthedocs.io/
+# See
+#   - https://stressor.readthedocs.io/
+#   - https://stressor.readthedocs.io/en/latest/ug_reference.html
+# ----------------------------------------------------------------------------
 file_version: stressor#0
 
 # The run configuration defines how the `sequences` are executed in parallel

@@ -8,3 +8,6 @@ Reference Guide
    rg_architecture
    rg_modules
    genindex
+
+.. seealso::
+   See also :doc:`ug_reference`.
