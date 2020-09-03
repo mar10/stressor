@@ -382,7 +382,7 @@ last_result (any)
     The result of the previous activity. Mostly a string, possibly truncated
     to a reasonable length.
 session_id (str)
-    The ID of the current session, e.g. ``"t3"``. |br|
+    The ID of the current session, e.g. ``"t03"``. |br|
     This string may be handy to construct session-specific file names, URLs, etc.::
 
         - activity: PutRequest

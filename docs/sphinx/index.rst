@@ -38,9 +38,16 @@ stressor
 Features
 ========
 
-  * This is a command line tool...
+  * Run a sequence of *activities* in one or more parallel sessions.
+  * Can be used for testing, benchmarking, load testing, or to generate
+    test data.
+  * The most common use case is to run a test script with HTTP commands
+    against a web server, simulating a bunch of parallel user sessions.
+  * A *monitor* GUI is available to view live progress of running sesssions.
+  * Comes with prebuilt activities for HTTP-request and more, but can be
+    extended by custom activity-plugins.
+  * This is a command line tool that runs on Linux, macOS, and Windows...
   * ... and a library for use in custom Python projects.
-  * The command line tool runs on Linux, macOS, and Windows.
 
 
 Quickstart
