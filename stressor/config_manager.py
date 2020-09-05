@@ -8,13 +8,8 @@ import re
 
 import yaml
 
-from stressor.plugins.base import (
-    ActivityBase,
-    ActivityCompileError,
-    activity_plugin_map,
-    macro_plugin_map,
-    register_plugins,
-)
+from stressor.plugin_manager import PluginManager
+from stressor.plugins.base import ActivityBase, ActivityCompileError
 from stressor.util import (
     NO_DEFAULT,
     PathStack,
@@ -86,7 +81,7 @@ def replace_var_macros(value, context):
     return res
 
 
-register_plugins()
+# register_plugins()
 
 
 class ConfigManager:
@@ -357,6 +352,9 @@ class ConfigManager:
         **Note:** Some makros, especially `$(CONTEXT.VAR)` are *not* resolved here,
         because this needs to be done at run-time.
         """
+        pm = PluginManager
+        assert pm.activity_plugin_map
+
         stats = self.stats_manager
         if stack is None:
             # Top-Level call; `value` is the YAML cnfig dict
@@ -381,7 +379,7 @@ class ConfigManager:
             #   - "$load()" -> list or dict that needs to be compiled as well
             if isinstance(value, str) and "$" in value:
                 has_match = False
-                for macro_cls in macro_plugin_map.values():
+                for macro_cls in pm.macro_plugin_map.values():
                     try:
                         macro = macro_cls()
                         handled, res = macro.match_apply(self, parent, parent_key)
@@ -418,10 +416,10 @@ class ConfigManager:
 
             # Either 'activity' was already an activity name, or a preceeding macro
             # set it:
-            if isinstance(value, str) and value in activity_plugin_map:
+            if isinstance(value, str) and value in pm.activity_plugin_map:
                 # Replace the activity definition with an instance of the class.
                 # Allow activities to do compile-time checking ad processing
-                activity_cls = activity_plugin_map[value]
+                activity_cls = pm.activity_plugin_map[value]
                 try:
                     # print(parent)
                     activity_inst = activity_cls(self, **parent)

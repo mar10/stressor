@@ -11,9 +11,9 @@ from collections import defaultdict
 from datetime import datetime
 
 from snazzy import emoji, green, red, yellow
+
 from stressor.config_manager import ConfigManager
 from stressor.monitor.server import MonitorServer
-from stressor.plugins.base import register_plugins
 from stressor.session_manager import SessionManager, User
 from stressor.statistic_manager import StatisticManager
 from stressor.util import (
@@ -88,7 +88,7 @@ class RunManager:
         self.end_dt = None
         self.end_stamp = None
 
-        register_plugins()
+        # register_plugins()
         self.CURRENT_RUN_MANAGER = self
         self.set_console_ctrl_handler()
 
