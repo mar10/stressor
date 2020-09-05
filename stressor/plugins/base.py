@@ -6,25 +6,7 @@
 import re
 from abc import ABC, abstractmethod
 
-from stressor.util import (
-    StressorError,
-    assert_always,
-    check_arg,
-    logger,
-    parse_args_from_str,
-)
-
-#: (dict) Currently known activity classes by their script name,
-#: e.g. {'GetRequest': GetRequestActivity, ...}
-#: (Call :func:`register_activity_plugins()` to update this map after new plugins
-#: have been imported.)
-activity_plugin_map = {}
-
-#: (dict) Currently known macro classes by their script name,
-#: e.g. {'load': LoadMacro, ...}
-#: (Call :func:`register_macro_plugins()` to update this map after new plugins
-#: have been imported.)
-macro_plugin_map = {}
+from stressor.util import StressorError, assert_always, check_arg, parse_args_from_str
 
 #: (set) all activities accept these arguments
 common_args = set(
@@ -38,11 +20,6 @@ common_args = set(
         "name",
     )
 )
-
-
-def register_plugins():
-    register_activity_plugins()
-    register_macro_plugins()
 
 
 class ActivityError(StressorError):
@@ -263,32 +240,6 @@ class ActivityBase(ABC):
         """
 
 
-def register_activity_plugins():
-    """Register currently loaded activity plugins.
-
-    These are all currently known subclasses of :class:`stressor.plugins.ActivityBase`.
-    """
-    # Import stock class definitions, so we can scan the subclasses
-    import stressor.plugins.common  # noqa F401
-    import stressor.plugins.http_activities  # noqa F401
-    import stressor.plugins.script_activities  # noqa F401
-
-    def _add(cls):
-        for act_cls in cls.__subclasses__():
-            name = act_cls.get_script_name()
-            # print("register" ,act_cls, name)
-            assert_always(
-                macro_plugin_map.get(name) in (None, act_cls),
-                "Class name conflict: {}".format(act_cls),
-            )
-            if not name.startswith("_"):
-                activity_plugin_map[name] = act_cls
-            _add(act_cls)
-
-    _add(ActivityBase)
-    logger.debug("Registered activity plugins:\n{}".format(activity_plugin_map))
-
-
 class MacroBase(ABC):
     """
     Common base class for all load-time script macros of the form ``$NAME(ARGS)``.
@@ -386,26 +337,3 @@ class MacroBase(ABC):
         Returns:
             (any) The result that was produced (and stored into `parent[parent_key]`)
         """
-
-
-def register_macro_plugins():
-    """Register currently loaded macro plugins.
-
-    These are all currently known subclasses of :class:`~stressor.plugins.MacroBase`.
-    """
-    # Import stock class definitions, so we can scan the subclasses
-    import stressor.plugins.common  # noqa F401
-
-    def _add(cls):
-        for macro_cls in cls.__subclasses__():
-            name = macro_cls.get_script_name()
-            assert_always(
-                macro_plugin_map.get(name) in (None, macro_cls),
-                "Class name conflict: {}".format(macro_cls),
-            )
-            if not name.startswith("_"):
-                macro_plugin_map[name] = macro_cls
-            _add(macro_cls)
-
-    _add(MacroBase)
-    logger.debug("Registered macro plugins:\n{}".format(macro_plugin_map))

@@ -12,12 +12,14 @@ from stressor.config_manager import (
     ConfigurationError,
     replace_var_macros,
 )
+from stressor.plugin_manager import PluginManager
 from stressor.statistic_manager import StatisticManager
 
 
 class TestConfigReader:
     def setup_method(self):
         self.fixtures_path = os.path.join(os.path.dirname(__file__), "fixtures")
+        PluginManager.register_plugins(arg_parser=None)
 
     def test_path_check(self):
         path = os.path.join(self.fixtures_path, "INVALID")

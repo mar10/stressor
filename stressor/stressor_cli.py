@@ -10,17 +10,25 @@ Usage examples:
     $ stressor run .
 """
 import argparse
+import logging
 import os
 import sys
 
 import yaml
-
 from snazzy import enable_colors
+
 from stressor import __version__
 from stressor.cli_common import common_parser, verbose_parser
 from stressor.convert.har_converter import HarConverter
+from stressor.plugin_manager import PluginManager
 from stressor.run_manager import RunManager
-from stressor.util import init_logging, logger, parse_option_args, version_info
+from stressor.util import (
+    check_cli_verbose,
+    init_logging,
+    logger,
+    parse_option_args,
+    version_info,
+)
 
 
 def handle_run_command(parser, args):
@@ -212,6 +220,13 @@ def run():
     # )
 
     # sp.set_defaults(command=handle_listen_command)
+
+    # --- Let all sublasses of `WorkflowTask` add their arguments --------------
+    # We want to see some logging, even if init_logging() wasn't called yet:
+    level = logging.DEBUG if check_cli_verbose() >= 4 else logging.INFO
+    logging.basicConfig(level=level, format="%(message)s", datefmt="%H:%M:%S")
+
+    PluginManager.register_plugins(parser)
 
     # --- Parse command line ---------------------------------------------------
 
