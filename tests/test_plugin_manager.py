@@ -13,5 +13,4 @@ class TestPluginManager:
     def test_plugins(self):
         pm = PluginManager
         pm.register_plugins(arg_parser=None)
-        print(pm.activity_plugin_map)
         assert "PsAlloc" in pm.activity_plugin_map
