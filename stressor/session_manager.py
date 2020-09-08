@@ -317,8 +317,12 @@ class SessionManager:
         self.stats.report_start(self, seq_name, None)
         start_sequence = time.monotonic()
         for act_idx, activity_args in enumerate(sequence, 1):
+            # activity_args["activity"] is an instance of ActivityBase that
+            # we want to re-use it for every session.
+            # The rest of activity_args is copied, so session data is separated
+            activity = activity_args["activity"]
             activity_args = deepcopy(activity_args)
-            activity = activity_args.pop("activity")
+            activity_args.pop("activity")
 
             # Add activity info to path
             # Note: `get_info()` is not as detailed as it could b, since we don't
