@@ -90,6 +90,10 @@ class SessionManager:
         self.user = user or User("anonymous", "")
         #: (dict) Copy of `run_config.sessions` configuration
         self.sessions = run_manager.config_manager.sessions.copy()
+        #: (dict) Activities can store per-session data here.
+        #: Note that the activity objects are instintiated only once and shared
+        #: by all sessions.
+        self.data = {}
         #: (bool) True: only simulate activities
         self.dry_run = bool(context.get("dry_run"))
         #: (int) Verbosity 0..5
@@ -325,19 +329,22 @@ class SessionManager:
             activity_args.pop("activity")
 
             # Add activity info to path
-            # Note: `get_info()` is not as detailed as it could b, since we don't
+            # Note: `get_info()` is not as detailed as it could, since we don't
             # pass the expanded args here. We set it anyway, so we have a valid
             # stack in case `_evaluate_macros()` blows.
-            with stack.enter("#{:02}-{}".format(act_idx, activity.get_info())):
-
+            with stack.enter(
+                "#{:02}-{}".format(act_idx, activity.get_info(session=self))
+            ):
                 expanded_args = self._evaluate_macros(activity_args, context)
 
                 # Let activity do internal calculations, that might be used by
                 # the follwing call to `get_info()`
-                activity.prepare_execute(self, **expanded_args)
+                activity.prepare_execute(self, expanded_args)
 
                 # Enhance the path info with expanded args
-                stack.set_last_part(activity.get_info(expanded_args=expanded_args))
+                stack.set_last_part(
+                    activity.get_info(expanded_args=expanded_args, session=self)
+                )
 
                 error = None
                 result = None

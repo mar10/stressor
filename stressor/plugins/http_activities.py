@@ -76,7 +76,7 @@ class HTTPRequestActivity(ActivityBase):
         #     k: v for k, v in self.raw_args.items() if k not in self.REQUEST_ARGS
         # }
 
-    def get_info(self, info_args=True, expanded_args=None):
+    def get_info(self, info_args=True, expanded_args=None, session=None):
         args_dict = expanded_args if expanded_args else self.raw_args
         url = args_dict.get("url")
         params = args_dict.get("params") or ""

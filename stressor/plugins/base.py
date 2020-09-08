@@ -171,8 +171,11 @@ class ActivityBase(ABC):
             cls._script_name = cls.__name__[:-8]
         return cls._script_name
 
-    def get_info(self, info_args=True, expanded_args=None):
+    def get_info(self, info_args=True, expanded_args=None, session=None):
         """Return a descriptive string (optionally using expanded args).
+
+        This method can be called with or without the additional context of
+        the current session and expanded argument macros.
 
         Args:
             info_args (tuple|bool):
@@ -182,6 +185,8 @@ class ActivityBase(ABC):
                 None: all arguments
             expanded_args (dict, optional):
                 optional argment dict (defaults to `self.raw_args`)
+            session (SessionManager, optional):
+                Running session context
         """
         if info_args is True:
             info_args = self._info_args
@@ -199,14 +204,14 @@ class ActivityBase(ABC):
             )
         return "{}({})".format(self.get_script_name(), ", ".join(args))
 
-    def prepare_execute(self, session, **expanded_args):
+    def prepare_execute(self, session, expanded_args):
         """Allow an activity to prepare the next execution.
 
         The session manager calls this for every activity instance, directly
         before `get_info()` and `execute()`.
         Normally this method does not need to be implemented. (One exception is
-        `SleepActivity`, that calculates the next random duration, so it can
-        be displayed by `get_info()`.)
+        `SleepActivity`, that calculates the next random duration per session,
+        so it can be displayed by `get_info(..., session)`.)
         """
         pass
 
