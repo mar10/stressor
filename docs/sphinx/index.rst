@@ -65,15 +65,6 @@ be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_
   (stressor) $ stressor run ./scenario_1/scenario.yaml
 
 
-..
-  Indices and tables
-  ==================
-
-  * :ref:`genindex`
-  * :ref:`modindex`
-  * :ref:`search`
-
-
 .. |travis_badge| image:: https://travis-ci.org/mar10/stressor.svg?branch=master
    :alt: Build Status
    :target: https://travis-ci.org/mar10/stressor

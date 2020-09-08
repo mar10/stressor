@@ -9,12 +9,13 @@ Writing Plugins
 Additional activity and macro types can be added to *stressor* by the way of
 *plugins*.
 
-For example let's assume we need a new activity `memory` that is used like so:
+For example let's assume we need a new activity `PsAlloc` that is used like so:
 
 .. code-block:: yaml
 
-    - activity: memory
-      allocate: 1GiB
+    - activity: PsAlloc
+      allocate_mb: 1024
+      per_session: true
 
 
 This can be implemented by a separate installable Python module, that
@@ -25,28 +26,19 @@ exposes a special entry point:
     [options.entry_points]
     # Plugins are found by the 'stressor.plugins' namespace.
     # The 'register()' function is then called by the plugin loader.
-    # The 'memory' name is used as stressor task type name.
+    # The 'ps' name is used as stressor entry point name name.
+    # The actual name of activities and macros is defined by the implementing
+    # classes.
     stressor.plugins =
-        memory = stressor_memory:register
+        ps = stressor_ps:register
 
-See the `sample implementation <https://github.com/mar10/stressor-memory>`_
-for implemntation details and the
-`sample project <https://github.com/mar10/test-stressor-memory/blob/master/stressor.yaml>`_
-for a usage example.
+See the `sample implementation <https://github.com/mar10/stressor-ps>`_
+for implemntation details.
 
 The new plugin will become available by installing it::
 
-    $ pip install stressor-memory
+    $ pip install stressor-ps
 
-
-.. code-block:: py
-
-    # TODO: Python implementation
-
-
-.. seealso::
-    In case you don't want to create a sub class of the passed in
-    https://stackoverflow.com/a/9270908/19166
 
 .. note::
 

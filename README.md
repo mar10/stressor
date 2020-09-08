@@ -9,20 +9,20 @@
 
 > Stress-test your web app.
 
-|stressor| is a tool, that runs a sequence of activities in one or more
-parallel sessions. |br|
+*Stressor* is a tool, that runs a sequence of activities in one or more
+parallel sessions.
 The most common use case is to run a test script with HTTP commands
-against a web server, simulating a bunch of parallel user sessions. |br|
+against a web server, simulating a bunch of parallel user sessions.
 As a result we get metrics about reponse times, failures, resource usage,
 etc.
 
 Stressor can be used for testing, benchmarking, load testing, or to generate
-test data. |br|
+test data.
 Stressor comes with prebuilt activities for HTTP-request and more, and can be
 extended by custom activity-plugins.
 
 Test scripts can be defined as text files, using a special syntax, that is then
-executed by the `stressor` command line tool. |br|
+executed by the `stressor` command line tool.
 Stressor is also an Open Source Python library that can be included into your
 own projects. This allows to define test *scenarios* programmtically.
 
