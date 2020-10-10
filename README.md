@@ -5,6 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/stressor/badge/?version=latest)](http://stressor.readthedocs.io/)
 [![Coverage Status](https://coveralls.io/repos/github/mar10/stressor/badge.svg?branch=master)](https://coveralls.io/github/mar10/stressor?branch=master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Released with: Yabs](https://img.shields.io/badge/released%20with-yabs-yellowgreen)](https://github.com/mar10/yabs)
 [![StackOverflow: stressor](https://img.shields.io/badge/StackOverflow-stressor-blue.svg)](https://stackoverflow.com/questions/tagged/stressor)
 
 > Stress-test your web app.
