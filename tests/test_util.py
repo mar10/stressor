@@ -16,8 +16,8 @@ from stressor.util import (
     get_dict_attr,
     get_random_number,
     is_yaml_keyword,
-    parse_option_args,
     parse_args_from_str,
+    parse_option_args,
     shorten_string,
 )
 
@@ -244,7 +244,7 @@ class TestBasics:
         # assert res == {"name": "http://example.com/foo", "amount": 8, "hint": "test"}
 
     def test_log(self):
-        from snazzy import red, green, enable_colors, colors_enabled
+        from snazzy import colors_enabled, enable_colors, green, red
 
         assert not colors_enabled()
         assert red("error") == "error"

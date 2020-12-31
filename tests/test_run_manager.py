@@ -5,8 +5,8 @@
 """
 import os
 
-from stressor.session_manager import User
 from stressor.run_manager import RunManager
+from stressor.session_manager import User
 
 
 class TestRunManager:

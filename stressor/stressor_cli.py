@@ -180,10 +180,13 @@ def run():
         help="optional HAR file that is converted",
     )
     sp.add_argument(
-        "--force", action="store_true", help="override existing files",
+        "--force",
+        action="store_true",
+        help="override existing files",
     )
     sp.add_argument(
-        "--opts", help="YAML file with conversion options",
+        "--opts",
+        help="YAML file with conversion options",
     )
     sp.set_defaults(command=handle_init_command)
 

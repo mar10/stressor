@@ -295,14 +295,16 @@ class ConfigManager:
 
                 if not isinstance(act_list, list):
                     self.report_error(
-                        "Expected list of activities", stack=stack,
+                        "Expected list of activities",
+                        stack=stack,
                     )
                 else:
                     for idx, act_def in enumerate(act_list):
                         stack = "sequences/{}#{:02}".format(seq_name, idx)
                         if not isinstance(act_def, dict):
                             self.report_error(
-                                "Expected dict with `activity` key", stack=stack,
+                                "Expected dict with `activity` key",
+                                stack=stack,
                             )
                         else:
                             activity = act_def.get("activity")
@@ -330,11 +332,13 @@ class ConfigManager:
                 stack = ".scenario#{:02}".format(idx)
                 if not isinstance(seq_def, dict) or "sequence" not in seq_def:
                     self.report_error(
-                        "Expected dict with `sequence` key", stack=stack,
+                        "Expected dict with `sequence` key",
+                        stack=stack,
                     )
                 elif seq_def["sequence"] not in sequence_names:
                     self.report_error(
-                        "sequence name is not defined in `sequences`", stack=stack,
+                        "sequence name is not defined in `sequences`",
+                        stack=stack,
                     )
 
         # TODO:

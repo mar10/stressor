@@ -197,7 +197,9 @@ class RunManager:
         )
         ap(
             "Executed {:,} activities in {:,} sequences, using {:,} parallel sessions.".format(
-                self.stats["act_count"], self.stats["seq_count"], user_count,
+                self.stats["act_count"],
+                self.stats["seq_count"],
+                user_count,
             )
         )
         if run_time and self.stats["seq_count"]:
@@ -248,7 +250,8 @@ class RunManager:
             ap(
                 red(
                     "Result: ERROR, found {:,} errors and {:,} warnings.".format(
-                        self.stats["errors"], self.stats["warnings"],
+                        self.stats["errors"],
+                        self.stats["warnings"],
                     )
                     + pics
                 )

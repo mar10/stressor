@@ -4,9 +4,10 @@
 """
 """
 import os
-from tests.mock_server import WsgiDavTestServer
 
 import pytest
+
+from tests.mock_server import WsgiDavTestServer
 
 
 @pytest.fixture(scope="session")

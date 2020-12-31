@@ -9,8 +9,8 @@ from pprint import pformat
 from queue import Empty, Queue
 from urllib.parse import urlencode
 
-from lxml import html
 import requests
+from lxml import html
 from requests.exceptions import RequestException
 
 from stressor import __version__
@@ -23,10 +23,10 @@ from stressor.plugins.base import (
 from stressor.util import (
     check_arg,
     get_dict_attr,
-    logger,
-    shorten_string,
     is_relative_url,
+    logger,
     resolve_url,
+    shorten_string,
 )
 
 
@@ -294,8 +294,7 @@ class StaticRequestsActivity(ActivityBase):
         super().__init__(config_manager, **activity_args)
 
     def execute(self, session, **expanded_args):
-        """
-        """
+        """"""
         url_list = expanded_args.pop("url_list")
         base_url = session.get_context("base_url")
         expanded_args.setdefault("timeout", session.get_context("request_timeout"))

@@ -8,8 +8,8 @@ import time
 from copy import deepcopy
 
 import requests
-
 from snazzy import red, yellow
+
 from stressor.config_manager import replace_var_macros
 from stressor.context_stack import ContextStack
 from stressor.plugins.base import ActivityAssertionError
@@ -316,7 +316,10 @@ class SessionManager:
         context = stack.context
 
         self.publish(
-            "start_sequence", session=self, sequence=sequence, path=stack,
+            "start_sequence",
+            session=self,
+            sequence=sequence,
+            path=stack,
         )
         self.stats.report_start(self, seq_name, None)
         start_sequence = time.monotonic()
@@ -372,10 +375,17 @@ class SessionManager:
                     # Evaluate standard `assert_...` and `store_...` clauses:
                     elap = time.monotonic() - start_activity
                     self._process_activity_result(
-                        activity, activity_args, result, elap,
+                        activity,
+                        activity_args,
+                        result,
+                        elap,
                     )
                     self.report_activity_result(
-                        seq_name, activity, activity_args, result, elap,
+                        seq_name,
+                        activity,
+                        activity_args,
+                        result,
+                        elap,
                     )
                 except (Exception, KeyboardInterrupt) as e:
                     if isinstance(e, KeyboardInterrupt):
@@ -403,7 +413,11 @@ class SessionManager:
         elap = time.monotonic() - start_sequence
         self.stats.report_end(self, seq_name, None)
         self.publish(
-            "end_sequence", session=self, sequence=sequence, path=stack, elap=elap,
+            "end_sequence",
+            session=self,
+            sequence=sequence,
+            path=stack,
+            elap=elap,
         )
         context["last_result"] = None
         return not self.has_errors()
