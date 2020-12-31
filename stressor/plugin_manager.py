@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2020 Martin Wendt and contributors; see https://github.com/mar10/yabs
+# (c) 2020-2021 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
