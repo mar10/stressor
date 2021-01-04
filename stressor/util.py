@@ -178,6 +178,8 @@ def init_logging(verbose=3, path=None):
         # format="%(asctime)s.%(msecs)d <%(process)d.%(thread)d> %(message)s",
         datefmt="%H:%M:%S",
     )
+    # Make sure it is set (when running from tox, the above basicConfig() did not set it)
+    logger.setLevel(level)
 
     if path:
         if os.path.isdir(path):
