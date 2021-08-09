@@ -38,7 +38,11 @@ sequences:
       store_json:
         user_guid: result.guid
       # Allow unit-test in dry-run mode:
-      mock_result: {"status": "ok", "result": {"guid": "1234"}}
+      mock_result:
+        {
+          "status": "ok",
+          "result": { "guid": "{BBFC98E6-DD92-473C-A65C-BDD868E64CF2}" },
+        }
       # debug: true
 
     - activity: Sleep
@@ -51,7 +55,6 @@ sequences:
     - activity: $sleep(0.01, 0.02)
 
     # - activity: $debug()
-
 
   # Other sections can have arbitrary names and are executed in order of appearance
   main:

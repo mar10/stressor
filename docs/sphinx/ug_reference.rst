@@ -257,13 +257,15 @@ assert_html (dict, optional)
     (See also the common ``assert_match`` argument.)
 
 assert_json (dict, optional)
-    Check if the response has JSON format and contains a specific value, e.g.
-    ``{"response": {"key": "1234abc"}}``::
+    Check if the response has JSON format and contains a specific value
+    or format, e.g.
+    ``{"status": "ok", "result": {"guid": "{BBFC98E6-DD92-473C-A65C-BDD868E64CF2}"}}``::
 
         - activity: GetRequest
           url: /my_target
           assert_json:
-            result.user_guid: "{abc123}"
+            status: 'ok'
+            result.guid: '[{]?[0-9a-fA-F\-]{36}[}]?'
 
     (See also the common ``store_json`` argument.)
 

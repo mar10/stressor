@@ -232,7 +232,7 @@ class StatisticManager:
         self._report("error", session, sequence, activity, error=error)
 
     def report_limit_violation(self, msg):
-        """"Register 'limit reached' error (not more than once)."""
+        """Register 'limit reached' error (not more than once)."""
         if not self.stats["run_limit_reached"]:
             self.stats["run_limit_reached"] = True
             self.stats["errors"] += 1

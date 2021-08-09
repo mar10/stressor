@@ -52,7 +52,7 @@ sequences:
       # Use `base_url` by default:
       url: mock_login_response.json
       assert_json:
-        result.user_guid: "{abc123}"
+        result.user_guid: '[{]?[0-9a-fA-F\-]{36}[}]?'
       store_json:
         user_guid: "result.user_guid"
 

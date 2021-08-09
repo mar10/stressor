@@ -35,10 +35,11 @@ def match_value(pattern, value, info):
     check_arg(pattern, str)
 
     value = str(value)
-    if "." in pattern or "*" in pattern:
-        match = re.match(pattern, value)  # , re.MULTILINE)
-    else:
-        match = pattern == value
+    match = re.match(pattern, value)  # , re.MULTILINE)
+    # if "." in pattern or "*" in pattern:
+    #     match = re.match(pattern, value)  # , re.MULTILINE)
+    # else:
+    #     match = pattern == value
 
     if not match:
         msg = "`{}` value {!r} does not match pattern {!r}".format(info, value, pattern)
