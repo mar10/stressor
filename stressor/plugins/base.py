@@ -162,6 +162,9 @@ class ActivityBase(ABC):
         """Return a descriptive string."""
         return self.get_info()
 
+    #: Provide nicer display for pprint(), etc.
+    __repr__ = __str__
+
     @classmethod
     def get_script_name(cls):
         # Note: we must check `cls.__dict__` instead of `cls._script_name`,

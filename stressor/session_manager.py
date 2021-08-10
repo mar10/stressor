@@ -43,6 +43,9 @@ class User:
     def __str__(self):
         return "User<{}>".format(self.name)
 
+    # Provide nicer display for pprint(), etc.
+    __repr__ = __str__
+
     @property
     def auth(self):
         """Return (name, password) tuple or None."""
@@ -60,6 +63,10 @@ class SessionHelper:
     @property
     def browser(self):
         return self.__session.browser_session
+
+    def __repr__(self):
+        return f"SessionHelper<{self.__session.session_id}>"
+
 
 
 class SessionManager:
@@ -135,6 +142,9 @@ class SessionManager:
     def __str__(self):
         return "SessionManager<{}>".format(self.session_id)
 
+    # Provide nicer display for pprint(), etc.
+    __repr__ = __str__
+
     def publish(self, channel, *args, **kwargs):
         kwargs["session_id"] = self.session_id
         return self.run_manager.publish(channel, *args, **kwargs)
@@ -143,7 +153,7 @@ class SessionManager:
         replace_var_macros(kwargs, context)
         return kwargs
 
-    def make_helper(self):
+    def make_session_helper(self):
         """Return a :class:`SessionHelper` instance for this session."""
         res = SessionHelper(self)
         return res

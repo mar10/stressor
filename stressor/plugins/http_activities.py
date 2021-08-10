@@ -121,7 +121,7 @@ class HTTPRequestActivity(ActivityBase):
         if short:
             s = shorten_string(s, 500, 100, place_holder="\n[...]\n")
         res.append(s)
-        res.append("<<< ---")
+        res.append("<<< " + "-" * 36)
         return "\n".join(res)
 
     @classmethod

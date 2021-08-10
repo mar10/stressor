@@ -76,7 +76,7 @@ class RunScriptActivity(ActivityBase):
         local_vars = session.context.copy()
         assert "result" not in local_vars
         assert "session" not in local_vars
-        local_vars["session"] = session.make_helper()
+        local_vars["session"] = session.make_session_helper()
 
         # prev_local_keys = set(locals())
         prev_global_keys = set(globals())

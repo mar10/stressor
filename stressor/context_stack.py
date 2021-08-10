@@ -88,6 +88,10 @@ class ContextStack:
     def __str__(self):
         return self.path()
 
+    #: Provide nicer display for pprint(), etc.
+    def __repr__(self):
+        return f"ContextStack<{self}>"
+
     def __enter__(self):
         return self
 

@@ -100,6 +100,10 @@ class PathStack:
         # stack = (str(s) for s in self.stack if s is not _VOID_SEGMENT)
         # return self.delimiter + self.delimiter.join(stack)
 
+    #: Provide nicer display for pprint(), etc.
+    def __repr__(self):
+        return f"PathStack<{self}>"
+
     def __enter__(self):
         return self
 
