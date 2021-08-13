@@ -68,7 +68,6 @@ class SessionHelper:
         return f"SessionHelper<{self.__session.session_id}>"
 
 
-
 class SessionManager:
     """
     Run a scenario in a single session.
