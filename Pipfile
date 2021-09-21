@@ -4,22 +4,23 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "==20.8b1"
-# TODO: relax cheroot specifier when WsgiDAV 3.0.4 becomes available
-cheroot = "<8.5"
+black = "==21.9b0"
+# # TODO: relax cheroot specifier when WsgiDAV 3.0.4 becomes available
+# cheroot = "<8.5"
+cheroot = "*"
 cx_Freeze = {version = "*", os_name = "== 'nt'"}
-flake8 = "*"  # "~=3.5"
-flake8-bugbear = "*" # "~=18.2"
-flake8-isort = "*" # "~=1.0"
-flake8-quotes = "*" # "~=1.0"
-isort = "*"  # "~=4.3"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-isort = "*"
+flake8-quotes = "*"
+isort = "*"
 psutil = "*"
 pylint = "*"
 pytest = "*"
 pytest-cov = "*"
 recommonmark = "*"
 setuptools = ">=42.0"
-Sphinx = "*"  # "~=2.2"
+Sphinx = "*"
 sphinx_rtd_theme = "*"
 stressor-ps = "*"
 tox = "*"
@@ -31,9 +32,9 @@ stressor = {path = ".",editable = true}
 
 [packages]
 fabulist = "*"
-lxml = "*"  # "~=4.4"
+lxml = "*"
 python-dateutil = "*"
-PyYAML = "*"  # "~=5.2"
+PyYAML = "*"
 requests = "*"
 snazzy = "*"
 
@@ -41,5 +42,4 @@ snazzy = "*"
 python_version = "3.9"
 
 [pipenv]
-# TODO: remove this when black releases a real version
-allow_prereleases = true
+# allow_prereleases = true
