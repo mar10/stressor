@@ -15,7 +15,27 @@ config:
 
   details: |
     Auto-generated {date}
+
+  #: (str)
   base_url: '{base_url}'
+
+  #: Optional string that describes the current run.
+  #: May be used to display additional info about boundary conditions, etc.
+  #: Example 'Test-Run STAGING nightly'
+  #: (pass `-o "tag:MY TAG INFO"` to override)
+#  tag:
+  #: (int) Output verbosity level [0..5], default: 3
+#  verbose: 3
+  #: (float) Default timeout on seconds for web requests (i.e. HTTP activities)
+  #: This value can be overridden with HTTP-Activity's `timeout` parameter
+  request_timeout: 10.0
+  #: (int) Max. total error count that is tolerated before stopping
+  #: Override with `--max-errors` argument.
+  #: Default: 0: don't stop on errors
+#  max_errors: 0
+  #: (float) Max. run time in seconds before stopping (override with `--max-time`)
+  #: Default: 0.0: no time limit
+#  max_time: 0.0
 
 context:
 

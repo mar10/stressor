@@ -16,12 +16,12 @@ config:
 
   #: Optional multi-line string with additional info
   details: |
-  This scenario runs some tests against a WebDAV server.
-  We use it to test stressor against a locally running WsgiDAV server:
-    - Open a terminal and run
-    $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
-    - Open a second terminal and run
-    $ stressor run tests/fixtures/test_mock_server
+    This scenario runs some tests against a WebDAV server.
+    We use it to test stressor against a locally running WsgiDAV server:
+      - Open a terminal and run
+      $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
+      - Open a second terminal and run
+      $ stressor run tests/fixtures/test_mock_server
 
   # Optional string that describes the current run.
   # May be used to display additional info about boundary conditions, etc.

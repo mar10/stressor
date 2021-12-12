@@ -26,9 +26,11 @@ Quickstart
     ```
 
     Use the `--monitor` argument to view the progress in a separate window:
+    Also, `scenario.yaml` is the default, so we can omitt it and only pass the
+    folder name:
 
     ```bash
-    $ stressor run ./scenario_1/scenario.yaml --monitor
+    $ stressor run scenario_1 --monitor
     ```
 
     Use the `--log` argument to write output to a file or folder:
