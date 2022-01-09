@@ -1,5 +1,5 @@
 # ![logo](https://raw.githubusercontent.com/mar10/stressor/master/stressor/monitor/htdocs/stressor_48x48.png) stressor
-[![Build Status](https://travis-ci.com/mar10/stressor.svg?branch=master)](https://travis-ci.com/mar10/stressor)
+[![Build Status](https://travis-ci.com/mar10/stressor.svg?branch=master)](https://app.travis-ci.com/github/mar10/stressor)
 [![Latest Version](https://img.shields.io/pypi/v/stressor.svg)](https://pypi.python.org/pypi/stressor/)
 [![License](https://img.shields.io/pypi/l/stressor.svg)](https://github.com/mar10/stressor/blob/master/LICENSE.txt)
 [![Documentation Status](https://readthedocs.org/projects/stressor/badge/?version=latest)](http://stressor.readthedocs.io/)
