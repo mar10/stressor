@@ -97,9 +97,9 @@ class HTTPRequestActivity(ActivityBase):
             s = resp.json()
             s = pformat(s)
         except ValueError:
-            s = resp.text
+            rt = resp.text
             lines = []
-            for s in s.split("\n"):
+            for s in rt.split("\n"):
                 s = s.rstrip()
                 if s:
                     lines.append(s)
