@@ -44,7 +44,7 @@ PYTHON_VERSION = "{}.{}.{}".format(
 version_info = "stressor/{} Python/{}({} bit) {}".format(
     __version__,
     PYTHON_VERSION,
-    "64" if sys.maxsize > 2 ** 32 else "32",
+    "64" if sys.maxsize > 2**32 else "32",
     platform.platform(),
 )
 
