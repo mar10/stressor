@@ -64,22 +64,20 @@ try:
 except IOError:
     readme = "(readme not found. Running from tox/setup.py test?)"
 
+# NOTE: Only need to list requirements that are not discoverable by scanning
+#       the main package. For example due to dynamic or optional imports.
+# Also, cx_Freeze may have difficulties with packages listed here, e.g. PyYAML:
+#    https://github.com/marcelotduarte/cx_Freeze/issues/1541
 install_requires = [
-    "dateutil",  # NOTE: import 'dateutil' although PyPI package is named 'python-dateutil'
-    "fabulist",
-    "lxml",
-    "requests",
-    "snazzy",
-    "yaml",  # NOTE: 'yaml' although PyPI package is named 'PyYAML'
+    # "dateutil",  # NOTE: import 'dateutil' although PyPI package is named 'python-dateutil'
+    # "fabulist",
+    # "lxml",
+    # "requests",
+    # "snazzy",
+    # "yaml",  # NOTE: 'yaml' although PyPI package is named 'PyYAML'
 ]
 setup_requires = install_requires
-tests_require = []  # "pytest", "pytest-cov", "tox", "virtualenv"]
-
-# # cx_Freeze seems to be confused by module name 'PyYAML' which
-# # must be imported as 'yaml', so we rename here. However it must
-# # be listed as 'PyYAML' in the requirements.txt and be installed!
-# install_requires.remove("PyYAML")
-# install_requires.append("yaml")
+tests_require = []
 
 executables = [
     Executable(
