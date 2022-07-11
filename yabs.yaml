@@ -27,6 +27,8 @@ tasks:
     up_to_date: true        # everything pulled from remote
     venv: true              # running inside a virtual environment
     version: true           # `setup.py --version` returns the configured version
+    winget: true            # `wingetcreate` is available
+    # yabs: ">=0.5"           # SemVer specifier
 
   # 'run': Run arbitrary shell command
   - task: exec
