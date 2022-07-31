@@ -27,11 +27,11 @@ Work in a Virtual Environment
 
 Install Python
 ^^^^^^^^^^^^^^
-We need `Python 3.5+ <https://www.python.org/downloads/>`_,
+We need `Python 3.7+ <https://www.python.org/downloads/>`_,
 and `pipenv <https://github.com/kennethreitz/pipenv>`_ on our system.
 
-If you want to run tests on *all* supported platforms, install Python 3.5,
-3.6, 3.7, and 3.8.
+If you want to run tests on *all* supported platforms, install Python 3.7,
+3.8, 3.9, and 3.10.
 
 Create and Activate the Virtual Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

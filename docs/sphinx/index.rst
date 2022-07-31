@@ -55,7 +55,7 @@ Quickstart
 
 Releases are hosted on `PyPI <https://pypi.python.org/pypi/stressor>`_ and can
 be installed using `pipenv <https://github.com/kennethreitz/pipenv>`_
-(`Python 3.5+ <https://www.python.org/downloads/>`_ is required) ::
+(`Python 3.7+ <https://www.python.org/downloads/>`_ is required) ::
 
   $ pipenv shell
   (stressor) $ pipenv install stressor --upgrade

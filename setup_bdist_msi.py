@@ -66,14 +66,7 @@ except IOError:
 #       the main package. For example due to dynamic or optional imports.
 # Also, cx_Freeze may have difficulties with packages listed here, e.g. PyYAML:
 #    https://github.com/marcelotduarte/cx_Freeze/issues/1541
-install_requires = [
-    # "dateutil",  # NOTE: import 'dateutil' although PyPI package is named 'python-dateutil'
-    # "fabulist",
-    # "lxml",
-    # "requests",
-    # "snazzy",
-    # "yaml",  # NOTE: 'yaml' although PyPI package is named 'PyYAML'
-]
+install_requires = []
 setup_requires = install_requires
 tests_require = []
 

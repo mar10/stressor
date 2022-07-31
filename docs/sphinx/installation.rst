@@ -1,15 +1,19 @@
 Installation
 ============
 
-Requirements: `Python <https://www.python.org/downloads/>`_ 3.5+ is required.
+Requirements: `Python <https://www.python.org/downloads/>`_ 3.7+ is required.
 Releases are hosted on `PyPI <https://pypi.python.org/pypi/stressor>`_ and can
 be installed using
 `pip <https://pip.pypa.io/en/stable>`_
 or `pipenv <https://github.com/kennethreitz/pipenv>`_.
 
 .. note::
-  MS Windows users that only need the command line interface may prefer the
-  `MSI installer <https://github.com/mar10/stressor/releases>`_.
+   MS Windows users that only need the command line interface may prefer the
+   `MSI installer <https://github.com/mar10/stressor/releases>`_ or install
+   using the Windows Package  Manager::
+
+     > winget install stressor
+
 
 Install Into the System Python
 ------------------------------

@@ -22,7 +22,7 @@ import sys
 import os
 # import shlex
 
-from recommonmark.parser import CommonMarkParser
+# from recommonmark.parser import CommonMarkParser
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -46,7 +46,8 @@ print("Add package root to sys.path: %r" % package_root)
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'recommonmark',
+    'myst_parser',
+    # 'recommonmark',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
@@ -57,6 +58,7 @@ extensions = [
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.napoleon',
 #    'sphinxcontrib.fulltoc',
+    'sphinxcontrib.mermaid',
 ]
 
 # A string of reStructuredText that will be included at the end of every source file that is read.
@@ -95,6 +97,27 @@ source_suffix = {
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
+
+# MyST Markdown Support
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
+    "deflist",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
+    "colon_fence",
+    "smartquotes",
+    "replacements",
+    "linkify",
+    "strikethrough",
+    "substitution",
+    "tasklist",
+]
+myst_number_code_blocks = ["typescript"]
+myst_heading_anchors = 2
+myst_footnote_transition = True
+myst_dmath_double_inline = True
 
 # The master toctree document.
 master_doc = 'index'
