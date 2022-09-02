@@ -107,4 +107,4 @@ tasks:
 
   - task: winget_release
     upload: bdist_msi
-    package_id: foobat
+    package_id: 'mar10.stressor'

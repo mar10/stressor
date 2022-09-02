@@ -25,6 +25,7 @@ org_version = __version__
 # Since we included pywin32 extensions, cx_Freeze tries to create a
 # version resource. This only supports the 'a.b.c[.d]' format.
 # Our version has either the for '1.2.3' or '1.2.3-a1'
+unsafe_version = False
 major, minor, patch = org_version.split(".", 3)
 major = int(major)
 minor = int(minor)
@@ -45,7 +46,7 @@ if "-" in patch:
     # Remove leading letters
     alpha = re.sub("^[a-zA-Z]+", "", alpha)
     alpha = int(alpha)
-    if patch >= 1:
+    if unsafe_version and patch >= 1:
         patch -= 1  # 1.2.3-a1 => 1.2.2.1
     else:
         # may be 1.2.0-a1 or 2.0.0-a1: we don't know what the previous release was
@@ -86,6 +87,9 @@ build_exe_options = {
     # "init_script": "Console",
     "includes": install_requires,
     # "packages": ["keyring.backends"],  # loaded dynamically
+    "excludes": [
+        "tkinter",
+    ],
     "constants": "BUILD_COPYRIGHT='(c) 2020-2021 Martin Wendt'",
 }
 
