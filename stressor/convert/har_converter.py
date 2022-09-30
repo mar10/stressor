@@ -156,7 +156,7 @@ class HarConverter:
         timings = har_entry["timings"]
         for name in self._time_names:
             v = timings.get(name)
-            if v > 0:
+            if v is not None and v > 0:
                 t += v
         return t * 0.001
 
