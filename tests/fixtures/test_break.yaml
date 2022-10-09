@@ -11,7 +11,7 @@ context:
 sessions:
   users: $load(users.yaml)
   count: 3
-  # duration: 5
+  # max_duration: 5
 
 # Define what actions should be performed by every session
 scenario:

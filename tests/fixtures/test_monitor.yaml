@@ -29,7 +29,7 @@ sessions:
   count: 20
   # basic_auth: true
   # verify_ssl: false
-  # duration: 0.0
+  # max_duration: 0.0
   ramp_up_delay: 0.5
 
 # Define what actions should be performed by every session

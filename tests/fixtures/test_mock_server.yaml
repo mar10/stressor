@@ -9,7 +9,7 @@ config:
     This scenario runs some tests against a WebDAV server.
     We use it to test stressor against a locally running WsgiDAV server:
     - Open a terminal and run
-      $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
+      $ wsgidav --root tests/fixtures/htdocs --host 127.0.0.1 --port 8082 --auth anonymous --no-config
     - Open a second terminal and run
       $ stressor run tests/fixtures/test_mock_server
   verbose: 4
@@ -27,14 +27,14 @@ sessions:
   users: $load(users.yaml)
   count: 3
   # basic_auth: true
-  # duration: 5
+  # max_duration: 15
 
 # Define what actions should be performed by every session
 scenario:
   - sequence: init
   - sequence: main
     # repeat: 3
-    # duration: 40
+    duration: 20
   - sequence: end
 
 

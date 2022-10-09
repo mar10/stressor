@@ -10,7 +10,7 @@
 
 > Stress-test your web app.
 
-*Stressor* is a tool, that runs a sequence of activities in one or more
+*Stressor* is a tool that runs a sequence of activities in one or more
 parallel sessions.
 The most common use case is to run a test script with HTTP commands
 against a web server, simulating a bunch of parallel user sessions.
@@ -19,7 +19,7 @@ etc.
 
 Stressor can be used for testing, benchmarking, load testing, or to generate
 test data.
-Stressor comes with prebuilt activities for HTTP-request and more, and can be
+It comes with prebuilt activities for HTTP-request and more, and can be
 extended by custom activity-plugins.
 
 Test scripts can be defined as text files, using a special syntax, that is then

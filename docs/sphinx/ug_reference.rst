@@ -82,13 +82,22 @@ sessions.basic_auth (bool, default: `false`)
 sessions.count (int, default: `1`)
     Number of sessions (virtual users). If greater than no. of users,
     users will be re-used round robin.
-sessions.duration (float, default: `0.0`)
-    max. run time in seconds, before the session stops. The current
+sessions.max_duration (float, default: `0.0`)
+    Maximum run time in seconds, before the session stops. The current
     and the 'end' sequences are completed.
     Default: 0.0 means no time limit.
+sessions.min_duration (float, default: `0.0`)
+    Minimal run time in seconds, before the session stops. The main
+    sequences (all sequences excluding 'init' and 'end') are repeated in a loop
+    until this time is reached. After that, the 'end' sequence is run.
+    Default: 0.0 means no time looping.
 sessions.ramp_up_delay (float, default: `0.0`)
     Waiting time between starting distinct user sessions in seconds.
     Default 0.0 means start all session at once.
+sessions.repeat (int, default: `0`)
+    The main sequences (all sequences excluding 'init' and 'end') are
+    repeated in a loop N times. After that, the 'end' sequence is run.
+    Default: 0 (or 1) means no looping.
 sessions.users (list, default: `[]`)
     Defines a list of user dicts, with at least `name` and `pasword`
     attributes. Often stored in a separate file and included like so:

@@ -17,7 +17,7 @@ sessions:
   users: $load(users.yaml)
   count: 10
   # basic_auth: true
-  # duration: 5
+  # max_duration: 5
 
 # Define what actions should be performed by every session
 scenario:

@@ -64,10 +64,19 @@ sessions:
   #: users will be re-used round robin.
   #: Default: 1
   count: 1
-  #: (float) max. run time in seconds, before the session stops. The current
+  #: (int) The main sequences (all sequences excluding 'init' and 'end') are
+  #: repeated in a loop N times. After that, the 'end' sequence is run.
+  #: Default: 0 (or 1) means no looping.
+  repeat: 0
+  #: (float) Minimal run time in seconds, before the session stops. The main
+  #: sequences (all sequences excluding 'init' and 'end') are repeated in a loop
+  #: until this time is reached. After that, the 'end' sequence is run.
+  #: Default: 0.0 means no time looping.
+  min_duration: 0.0
+  #: (float) Maximal run time in seconds, before the session stops. The current
   #: and the 'end' sequences are completed.
   #: Default: 0.0 means no time limit.
-  duration: 0.0
+  max_duration: 0.0
   #: (bool) Pass true to enable HTTP basic authentication, using user's credentials
   #: Default: false
   basic_auth: false

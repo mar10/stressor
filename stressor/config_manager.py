@@ -248,9 +248,7 @@ class ConfigManager:
         file_version = int(file_version.split("#", 1)[1])
         if file_version != self.FILE_VERSION:
             raise ConfigurationError(
-                "File version mismatch: expected {}, but found {}.".format(
-                    self.FILE_VERSION, file_version
-                )
+                f"File version mismatch: expected {self.FILE_VERSION}, but found {file_version}."
             )
 
         missing = known_sections.difference(sections)
@@ -266,9 +264,7 @@ class ConfigManager:
             base_url = get_dict_attr(cfg, "config.base_url", None)
             if base_url and (not base_url.startswith("http") or "://" not in base_url):
                 self.report_error(
-                    "config.base_url must be an absolute URL ('http(s)://...'): {!r}".format(
-                        base_url
-                    ),
+                    f"config.base_url must be an absolute URL ('http(s)://...'): {base_url!r}"
                 )
 
         if _check_type("context", (dict, None)):
@@ -288,7 +284,7 @@ class ConfigManager:
                     act_list = []
                     cfg["sequences"][seq_name] = act_list
                     self.report_error(
-                        "Ignored undefined list of activities",
+                        "Ignored undefined list of activities.",
                         level="warning",
                         stack=stack,
                     )
@@ -303,7 +299,7 @@ class ConfigManager:
                         stack = "sequences/{}#{:02}".format(seq_name, idx)
                         if not isinstance(act_def, dict):
                             self.report_error(
-                                "Expected dict with `activity` key",
+                                "Expected dict with `activity` key.",
                                 stack=stack,
                             )
                         else:
@@ -311,7 +307,7 @@ class ConfigManager:
                             if not isinstance(activity, ActivityBase):
                                 self.report_error(
                                     "`activity` must be an instance of ActivityBase "
-                                    "instance (found {!r})".format(activity),
+                                    f"instance (found {activity!r}).",
                                     stack=stack,
                                 )
                             assert_match = act_def.get("assert_match")
@@ -320,30 +316,40 @@ class ConfigManager:
                                     re.compile(assert_match)
                                 except re.error as e:
                                     self.report_error(
-                                        "Invalid regular expression: {}: {}".format(
-                                            assert_match, e
-                                        ),
+                                        f"Invalid regular expression: {assert_match}: {e}",
                                         stack=stack,
                                     )
 
         # Scenario list must contain 'sequence' keys and all sequences must exist
         if _check_type("scenario", list):
+            sequence_count = len(cfg["scenario"])
             for idx, seq_def in enumerate(cfg["scenario"]):
                 stack = ".scenario#{:02}".format(idx)
                 if not isinstance(seq_def, dict) or "sequence" not in seq_def:
                     self.report_error(
-                        "Expected dict with `sequence` key",
+                        f"Expected dict with `sequence` key: {seq_def}",
                         stack=stack,
                     )
-                elif seq_def["sequence"] not in sequence_names:
+                    continue
+
+                seq_name = seq_def.get("sequence")
+                if seq_name not in sequence_names:
                     self.report_error(
-                        "sequence name is not defined in `sequences`",
+                        f"Sequence name {seq_name} is not defined in `sequences`.",
+                        stack=stack,
+                    )
+                if seq_name == "init" and idx > 0:
+                    self.report_error(
+                        "If sequence 'init' is given, it must be the first entry in `sequences`.",
+                        stack=stack,
+                    )
+                elif seq_name == "end" and idx != sequence_count - 1:
+                    self.report_error(
+                        "If sequence 'end' is given, it must be the last entry in `sequences`.",
                         stack=stack,
                     )
 
         # TODO:
-        #   - if init is given, it must be first?
-        #   - if end is given, it must be last?
         #   - assert_json, assert_match, ...
         return file_version
 

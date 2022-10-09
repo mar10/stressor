@@ -24,7 +24,7 @@ scenario:
   - sequence: init
   - sequence: main
     # repeat: 3
-    duration: 5
+    max_duration: 5
   - sequence: end
 
 # List of named action sequences. Used as building blocks for scenarios

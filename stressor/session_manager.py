@@ -214,13 +214,9 @@ class SessionManager:
             self._cancelled_seq = seq_name
             # self.stats.stats["run_limit_reached"] = True
             if err_limit_reached:
-                msg = "Reached max. error limit of {}: stopping...".format(
-                    self.max_errors
-                )
+                msg = f"Reached max. error limit of {self.max_errors}: stopping..."
             elif time_limit_reached:
-                msg = "Reached max. run time limit of {}: stopping...".format(
-                    self.max_time
-                )
+                msg = f"Reached max. run time limit of {self.max_time}: stopping..."
             self.stats.report_limit_violation(msg)
             logger.warning(yellow(msg))
             return False
@@ -436,23 +432,67 @@ class SessionManager:
         rm = self.run_manager
         config_manager = rm.config_manager
         config = config_manager.config
-        sequences = config_manager.sequences
+        sequences = config_manager.sequences.copy()
         scenario = config_manager.scenario
         sessions = config_manager.sessions
-        session_duration = float(sessions.get("duration", 0.0))
+        skip_all = False
+        skip_all_but_end = False
+        now = time.monotonic()
+        session_max_duration = float(sessions.get("max_duration", 0.0))
+        session_min_duration = float(sessions.get("min_duration", 0.0))
+        session_stop_time = now + session_min_duration if session_min_duration else 0
+        session_repeat = int(sessions.get("max_duration", 0))
+
+        # Extract 'init', 'end', and the rest
+        init_sequence = None
+        end_sequence = None
+        main_sequences = []
+        for seq_ref in scenario:
+            seq_name = seq_ref["sequence"]
+            seq_def = sequences[seq_name]
+            if seq_name == "init":
+                init_sequence = seq_def
+            elif seq_name == "end":
+                end_sequence = seq_def
+            else:
+                main_sequences.append(seq_def)
+
+        # Helper iterator to allow looping of the main sequences according
+        # sessions.min_duration, sessions.repeat, ...
+        def _iter_seqs():
+            if init_sequence:
+                yield init_sequence
+            loop_idx = 0
+            while True:
+                loop_idx += 1
+                for seq_def in main_sequences:
+                    seq_name = seq_def["sequence"]
+                    if skip_all or skip_all_but_end:
+                        logger.warning(f"Skipping sequence '{seq_name}' and following...")
+                        break
+                    # if session_min_duration > 0.0 and duration < session_min_duration:
+                    #     continue
+                    if not self.check_run_limits(seq_name=seq_name):
+                        skip_all_but_end = True
+                        break
+                    yield seq_def
+                if skip_all or skip_all_but_end:
+                    logger.warning(f"Skipping sequence '{seq_name}' and following...")
+                    break
+            if end_sequence and not skip_all:
+                yield end_sequence
+            return
 
         self.publish("start_session", session=self)
         self.stats.report_start(self, None, None)
 
         start_session = time.monotonic()
-        skip_all = False
-        skip_all_but_end = False
 
-        for seq_idx, seq_def in enumerate(scenario, 1):
+        for seq_idx, seq_def in enumerate(_iter_seqs, 1):
             seq_name = seq_def["sequence"]
-            if skip_all or (skip_all_but_end and seq_name != "end"):
-                logger.warning("Skipping sequence '{}'.".format(seq_name))
-                continue
+            # if skip_all or (skip_all_but_end and seq_name != "end"):
+            #     logger.warning(f"Skipping sequence '{seq_name}'.")
+            #     continue
 
             sequence = sequences.get(seq_name)
             loop_repeat = int(seq_def.get("repeat", 0))
@@ -483,21 +523,19 @@ class SessionManager:
                 # `Sequence duration: SECS`:
                 if loop_duration > 0 and now > (start_seq_loop + loop_duration):
                     logger.info(
-                        "Stopping sequence '{}' loop after {} sec.".format(
-                            seq_name, loop_duration
-                        )
+                        f"Stopping sequence '{seq_name}' loop "
+                        f"after duration {loop_duration} sec."
                     )
                     break
-                # `Session duration: SECS` (but run 'end' sequence):
+                # `Session max_duration: SECS` (but run 'end' sequence):
                 elif (
                     seq_name != "end"
-                    and session_duration > 0
-                    and now > (start_session + session_duration)
+                    and session_max_duration > 0
+                    and now > (start_session + session_max_duration)
                 ):
                     logger.info(
-                        "Stopping scenario '{}' loop after {} sec.".format(
-                            seq_name, session_duration
-                        )
+                        f"Stopping scenario '{seq_name}' loop after "
+                        f"sessions.max_duration: {session_max_duration} sec."
                     )
                     skip_all_but_end = True
                     break
