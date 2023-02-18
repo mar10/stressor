@@ -112,7 +112,7 @@ setup(
     maintainer="Martin Wendt",
     maintainer_email="stressor@wwwendt.de",
     url="https://github.com/mar10/stressor",
-    description="Synchronize directories using FTP(S), SFTP, or file system access.",
+    description="Stress-test your web app.",
     long_description=readme,
     long_description_content_type="text/markdown",
     # Not required for this build-only setup config:
