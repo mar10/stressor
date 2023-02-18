@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "~=22.1"
+black = "~=22.12"
 # # TODO: relax cheroot specifier when WsgiDAV 3.0.4 becomes available
 # cheroot = "<8.5"
 cheroot = "*"
@@ -39,7 +39,7 @@ requests = "*"
 snazzy = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"
 
 [pipenv]
 # allow_prereleases = true
