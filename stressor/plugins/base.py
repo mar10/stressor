@@ -216,7 +216,7 @@ class ActivityBase(ABC):
         `SleepActivity`, that calculates the next random duration per session,
         so it can be displayed by `get_info(..., session)`.)
         """
-        pass
+        return
 
     @abstractmethod
     def execute(self, session, **expanded_args):
@@ -294,6 +294,7 @@ class MacroBase(ABC):
 
     def __init__(self, **macro_args):
         """"""
+        return
 
     @classmethod
     def get_script_name(cls):
