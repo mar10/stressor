@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2020-2021 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """

@@ -1,6 +1,6 @@
 language: python
 os: linux
-jobs:  # matrix:
+jobs:  
   include:
     - python: "3.11"  # EOL 2027-10-24
       env: TOXENV=check,py311
@@ -16,10 +16,15 @@ jobs:  # matrix:
       env: TOXENV=py37
       dist: xenial
       before_install:
+        # Fix error: can't find Rust compiler
+        - pip install -U pip
         # Fix "AttributeError: 'str' object has no attribute 'name'" on Py37
-        - pip install -U importlib_metadata
-    # - python: "3.6"  # EOL 2021-12-21
-    #   env: TOXENV=py36
+        - pip install -U pip importlib_metadata
+    # - python: "3.6"
+    #   env: TOXENV=py36  # EOL 2021-12-21
+    #   before_install:
+    #     # Fix for cryptography on Py36
+    #     - pip install --upgrade virtualenv
     # - python: "3.5"  # EOL 2020-09-13
     #   env: TOXENV=py35
     - python: "3.12-dev"
@@ -29,8 +34,9 @@ jobs:  # matrix:
     - python: "3.12-dev"
       env: TOXENV=py312
       dist: bionic
+
 install:
-  - pip install tox-travis flake8 coveralls coverage
+  - pip install tox-travis flake8 coveralls coverage isort
 script:
   - tox
 after_success:
