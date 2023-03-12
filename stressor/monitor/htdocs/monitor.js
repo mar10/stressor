@@ -102,6 +102,8 @@ function update(result) {
   document.getElementById("btnStop").toggleAttribute("disabled",
     !(stage === "running" || stage === "waiting")
   )
+  document.getElementById("baseUrl").setAttribute("href", result.baseUrl);
+  document.getElementById("version").textContent = result.version;
 
   for (let elem of document.querySelectorAll("span.value")) {
     elem.textContent = result[elem.dataset.value];
