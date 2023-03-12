@@ -38,16 +38,13 @@ simple_dc:
 #: Set verbosity level (but will be overridden by -v or -q arguments)
 verbose: 3
 
-#: Set logging output format
-#: (see https://docs.python.org/3/library/logging.html#logging.Formatter)
-logger_format: "%(asctime)s.%(msecs)03d - %(levelname)-8s: %(message)s"
-# logger_format: "%(asctime)s.%(msecs)03d - <%(thread)05d> %(name)-27s %(levelname)-8s: %(message)s"
-#logger_format: "%(asctime)s.%(msecs)03d - %(levelname)-8s: %(message)s"
-logger_date_format: "%H:%M:%S"
-
-#: Let ErrorPrinter middleware catch all exceptions to return as 500 Internal Error
-error_printer:
-    catch_all: false
+logging:
+    #: Set logging output format
+    #: (see https://docs.python.org/3/library/logging.html#logging.Formatter)
+    logger_format: "%(asctime)s.%(msecs)03d - %(levelname)-8s: %(message)s"
+    # logger_format: "%(asctime)s.%(msecs)03d - <%(thread)05d> %(name)-27s %(levelname)-8s: %(message)s"
+    #logger_format: "%(asctime)s.%(msecs)03d - %(levelname)-8s: %(message)s"
+    logger_date_format: "%H:%M:%S"
 
 dir_browser:
     enable: true
@@ -60,10 +57,10 @@ dir_browser:
     show_user: true
     show_logout: true
     davmount: false
-    ms_mount: false
     ms_sharepoint_support: true
 
 property_manager: true
 mutable_live_props:
     - "{DAV:}getlastmodified"
-lock_manager: true
+
+lock_storage: true

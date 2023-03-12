@@ -5,8 +5,6 @@ name = "pypi"
 
 [dev-packages]
 black = "~=22.12"
-# # TODO: relax cheroot specifier when WsgiDAV 3.0.4 becomes available
-# cheroot = "<8.5"
 cheroot = "*"
 cx_Freeze = {version = "*", os_name = "== 'nt'"}
 flake8 = "*"
