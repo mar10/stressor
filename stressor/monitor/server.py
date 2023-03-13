@@ -126,7 +126,7 @@ class MonitorServer(Thread):
 
     def open_browser(self):
         assert self.bind == ""
-        monitor_url = "http://localhost:{}/".format(self.port)
+        monitor_url = f"http://localhost:{self.port}/"
         # monitor_url = "http://127.0.0.1:{}/".format(self.port)
-        logger.info("Open web browser at {}".format(monitor_url))
+        logger.info(f"Opening web browser at {monitor_url}")
         webbrowser.open_new_tab(monitor_url)

@@ -55,8 +55,8 @@ else:
     patch = int(patch)
     alpha = 0
 
-version = "{}.{}.{}.{}".format(major, minor, patch, alpha)
-print("Version {}, using {}".format(org_version, version))
+version = f"{major}.{minor}.{patch}.{alpha}"
+print(f"Version {org_version}, using {version}")
 
 try:
     readme = open("README.md", "rt").read()
