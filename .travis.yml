@@ -26,7 +26,7 @@ jobs:
     #     # Fix for cryptography on Py36
     #     - pip install --upgrade virtualenv
     # - python: "3.5"  # EOL 2020-09-13
-    #     env: TOXENV=py35
+    #   env: TOXENV=py35
     - python: "3.12-dev"
       env: TOXENV=py312
       dist: bionic

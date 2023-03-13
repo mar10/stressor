@@ -1,178 +1,168 @@
 <!doctype html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Stressor Monitor</title>
-    <link rel="stylesheet" href="style.css" type="text/css" />
-    <link rel="apple-touch-icon" href="/logo_57x57.png"/>
-    <script
-      defer
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"
-    ></script>
-    <script defer src="monitor.js"></script>
-  </head>
-  <body class="stage-ready">
-    <h1>
-      <span class="logo flash-on-update"></span>
-      Stressor Monitor
-      <span class="value stage" data-value="stageDisplay">ready</span>
-    </h1>
 
-    <button type="button" id="btnStop" disabled>Stop Run Manager</button>
-    <button type="button" id="btnRestart" disabled>Restart</button>
-    <button type="button" id="btnSave" disabled>Save Results</button>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Stressor Monitor</title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="apple-touch-icon" href="/logo_57x57.png" />
 
-    <label for="pollFreq" class="flash-on-update">Auto-refresh:</label>
-    off
-    <input
-      type="range"
-      id="pollFreq"
-      name="pollFreq"
-      min="0"
-      max="5"
-      value="4"
-      step="1"
-    />
-    <label for="pollFreq">fast</label>
+  <script defer type=module src="monitor.js"></script>
+</head>
 
-    <hr />
+<body class="stage-ready">
+  <h1>
+    <span class="logo flash-on-update"></span>
+    Stressor Monitor
+    <span class="value stage" data-value="stageDisplay">ready</span>
+  </h1>
 
-    <div id="details" class="info">
-      <span class="label">Scenario:</span>
-      <span class="value" data-value="name">n.a.</span>
-      <span class="label">Tag:</span>
-      <span class="value" data-value="tag">n.a.</span>
-      <span class="label">Started:</span>
-      <span class="value" data-value="startTimeStr">n.a.</span>
-      <span class="label">Ended:</span>
-      <span class="value" data-value="endTimeStr">n.a.</span>
-      <span class="label">Base URL:</span>
-      <span class="value" data-value="baseUrl">n.a.</span>
-      <!-- <br />
+  <button type="button" id="btnStop" disabled>Stop Run Manager</button>
+  <button type="button" id="btnRestart" disabled>Restart</button>
+  <button type="button" id="btnSave" disabled>Save Results</button>
+
+  <label for="pollFreq" class="flash-on-update">Auto-refresh:</label>
+  off
+  <input type="range" id="pollFreq" name="pollFreq" min="0" max="5" value="4" step="1" />
+  <label for="pollFreq">fast</label>
+
+  <hr />
+
+  <div id="details" class="info">
+    <span class="label">Scenario:</span>
+    <span class="value" data-value="name">n.a.</span>
+    <span class="label">Tag:</span>
+    <span class="value" data-value="tag">n.a.</span>
+    <span class="label">Started:</span>
+    <span class="value" data-value="startTimeStr">n.a.</span>
+    <span class="label">Ended:</span>
+    <span class="value" data-value="endTimeStr">n.a.</span>
+    <span class="label">Base URL:</span>
+    <a id="baseUrl" href="#"><span class="value" data-value="baseUrl">n.a.</span></a>
+    <!-- <br />
       <span class="label">Details:</span>
       <span class="value" data-value="scenarioDetails">n.a.</span> -->
-    </div>
-    <div id="statusContainer" class="info"></div>
+  </div>
+  <div id="statusContainer" class="info"></div>
 
-    <h2>
-      Run Status (
-      <span class="value" data-value="sessionCount">0</span>
-      sessions
-      )
-    </h2>
+  <h2>
+    Run Status (
+    <span class="value" data-value="sessionCount">0</span>
+    sessions
+    )
+  </h2>
 
-    <table id="run-metrics" class="metrics">
-      <!-- The colgroup is used by our JS code to copy class names to TDs -->
-      <colgroup>
-        <col class="text" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num err-num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th rowspan="2" class="text">Sequence</th>
-          <th colspan="4">Sequences</th>
-          <th colspan="2">Activities</th>
-          <th colspan="5">Net Activities</th>
-        </tr>
-        <tr>
-          <!-- rowspan -->
-          <th class="num">Iterations</th>
-          <th class="num">Σ</th>
-          <th class="num">Ø</th>
-          <th class="num">Max.</th>
+  <table id="run-metrics" class="metrics">
+    <!-- The colgroup is used by our JS code to copy class names to TDs -->
+    <colgroup>
+      <col class="text" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num err-num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th rowspan="2" class="text">Sequence</th>
+        <th colspan="4">Sequences</th>
+        <th colspan="2">Activities</th>
+        <th colspan="5">Net Activities</th>
+      </tr>
+      <tr>
+        <!-- rowspan -->
+        <th class="num">Iterations</th>
+        <th class="num">Σ</th>
+        <th class="num">Ø</th>
+        <th class="num">Max.</th>
 
-          <th class="num">Count</th>
-          <th class="num err-num">Errors</th>
+        <th class="num">Count</th>
+        <th class="num err-num">Errors</th>
 
-          <th class="num">Count</th>
-          <th class="num">Σ</th>
-          <th class="num">Ø</th>
-          <th class="num">Max.</th>
-          <th class="num">1/sec</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+        <th class="num">Count</th>
+        <th class="num">Σ</th>
+        <th class="num">Ø</th>
+        <th class="num">Max.</th>
+        <th class="num">1/sec</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
-    <h2>Monitored Activities</h2>
+  <h2>Monitored Activities</h2>
 
-    <table id="special-metrics" class="metrics">
-      <!-- The colgroup is used by our JS code to copy class names to TDs -->
-      <colgroup>
-        <col class="text" />
-        <col class="num" />
-        <col class="num err-num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num" />
-        <col class="text trim err-text" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="text">Activity</th>
-          <th class="num">Count</th>
-          <th class="num">Errors</th>
-          <th class="num">Σ</th>
-          <th class="num">Min.</th>
-          <th class="num">Ø</th>
-          <th class="num">Max.</th>
-          <th class="text">Last Error</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  <table id="special-metrics" class="metrics">
+    <!-- The colgroup is used by our JS code to copy class names to TDs -->
+    <colgroup>
+      <col class="text" />
+      <col class="num" />
+      <col class="num err-num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num" />
+      <col class="text trim err-text" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="text">Activity</th>
+        <th class="num">Count</th>
+        <th class="num">Errors</th>
+        <th class="num">Σ</th>
+        <th class="num">Min.</th>
+        <th class="num">Ø</th>
+        <th class="num">Max.</th>
+        <th class="text">Last Error</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
-    <h2>
-      <span class="value" data-value="sessionCount">0</span>
-      Sessions (
-      <span class="value" data-value="sessionsRunning">0</span>
-      running )
-    </h2>
+  <h2>
+    <span class="value" data-value="sessionCount">0</span>
+    Sessions (
+    <span class="value" data-value="sessionsRunning">0</span>
+    running )
+  </h2>
 
-    <table id="session-metrics" class="metrics">
-      <!-- The colgroup is used by our JS code to copy class names to TDs -->
-      <colgroup>
-        <col class="num w-xs" />
-        <col class="text w-s" />
-        <col class="text w-m" />
-        <col class="num" />
-        <col class="num" />
-        <col class="num err-num" />
-        <col class="text" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="num w-xs">#</th>
-          <th class="text w-s">ID</th>
-          <th class="text w-m">User</th>
-          <th class="num">Sequences</th>
-          <th class="num">Activities</th>
-          <th class="num">Errors</th>
-          <th class="text">Current Path</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  <table id="session-metrics" class="metrics">
+    <!-- The colgroup is used by our JS code to copy class names to TDs -->
+    <colgroup>
+      <col class="num w-xs" />
+      <col class="text w-s" />
+      <col class="text w-m" />
+      <col class="num" />
+      <col class="num" />
+      <col class="num err-num" />
+      <col class="text" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="num w-xs">#</th>
+        <th class="text w-s">ID</th>
+        <th class="text w-m">User</th>
+        <th class="num">Sequences</th>
+        <th class="num">Activities</th>
+        <th class="num">Errors</th>
+        <th class="text">Current Path</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
-    <div id="statusBar">
-      <a href="https://github.com/mar10/stressor">Stressor</a> &copy; 2020-2023
-      Martin Wendt
-    </div>
-  </body>
+  <div id="statusBar">
+    <a href="https://github.com/mar10/stressor">Stressor v<span id="version"></span></a> 
+    &copy; 2020-2023 Martin Wendt
+  </div>
+</body>
+
 </html>

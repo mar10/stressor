@@ -31,7 +31,7 @@ We need `Python 3.7+ <https://www.python.org/downloads/>`_,
 and `pipenv <https://github.com/kennethreitz/pipenv>`_ on our system.
 
 If you want to run tests on *all* supported platforms, install Python 3.7,
-3.8, 3.9, and 3.10.
+3.8, 3.9, 3.10, and 3.11.
 
 Create and Activate the Virtual Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -69,8 +69,26 @@ Run all tests with coverage report. Results are written to <stressor>/htmlcov/in
 
 Run selective tests::
 
-    $ tox -e py37
-    $ tox -e py37 -- -k test_context_manager
+    $ tox -e py311
+    $ tox -e py311 -- -k test_context_manager
+
+
+Run Demo Stress Test
+--------------------
+
+First, install stressor for debugging in a virtual environment as described above.
+Now start a test webserver from the console::
+
+    $ cd /path/to/stressor
+    $ pipenv shell
+    $ wsgidav
+
+Open a second shell and run the stress test::
+
+    $ cd /path/to/stressor
+    $ pipenv shell
+    $ stressor run tests/fixtures/test_mock_server.yaml --monitor
+
 
 
 Code

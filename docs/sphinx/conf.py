@@ -206,19 +206,35 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# html_theme = 'alabaster'
-if not on_rtd:
-    # only import and set the theme if we're building docs locally
-    # otherwise, readthedocs.org uses their theme by default, so no need to specify it
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'furo'
+# if not on_rtd:
+#     # only import and set the theme if we're building docs locally
+#     # otherwise, readthedocs.org uses their theme by default, so no need to specify it
+#     import sphinx_rtd_theme
+#     html_theme = 'sphinx_rtd_theme'
+#     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
+html_theme_options = {
+    # "logo": "favicon-32x32.png",
+    # "logo_text_align": "left",
+    "show_powered_by": False,
+    "github_user": "mar10",
+    "github_repo": "stressor",
+    "github_banner": True,
+    "github_button": True,
+    "github_type": "star",
+    # "github_size": "small",
+    "github_count": "true",
+    # "travis_button": True,
+    # "codecov_button": True,
+    "show_related": False,
+    "note_bg": "#FFF59C",
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []

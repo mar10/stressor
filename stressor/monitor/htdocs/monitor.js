@@ -1,137 +1,161 @@
-(function () {
-  var interval = 3000,
-    pollTimer = null,
-    pollMap = { 0: 0, 1: 60000, 2: 30000, 3: 10000, 4: 3000, 5: 1000 };
+const pollMap = { 0: 0, 1: 60000, 2: 30000, 3: 10000, 4: 3000, 5: 1000 };
 
-  function poll() {
-    const tag = "Poll status from stressor";
-    console.time(tag);
-    $(".flash-on-update").removeClass("flash");
-    $.ajax({
-      url: "getStats",
-      // data: { arg1: "bar" }
-    })
-      .done(function (result) {
-        $(".flash-on-update").addClass("flash");
-        update(result);
-        pollTimer = setTimeout(poll, interval);
-      })
-      .fail(function (err) {
-        status = "error";
-        console.error("ERROR: " + JSON.stringify(err), arguments);
-        $("#statusContainer").text(JSON.stringify(err)).addClass("error");
-        // alert("Ajax error")
-        // pollTimer = setTimeout(poll, interval);
-      })
-      .always(function () {
-        console.timeEnd(tag);
-      });
-  }
+let interval = 3000;
+let pollTimer = null;
 
-  function updateTable(table, data, emptyMsg) {
-    var tbody = table.tBodies[0];
-    // The lowest header row defines column style:
-    var colgroup = table.getElementsByTagName("colgroup")[0].children;
-    var colCount = colgroup.length;
+function toggleClassByPrefix(elemOrSelector, prefix, addName = null) {
+  const regex = new RegExp("\\b" + prefix + "[^ ]*[ ]?\\b", "g");
 
-    // console.log(data, colCount);
-
-    if (!data || !data.length) {
-      emptyMsg = emptyMsg || "No data.";
-      tbody.innerHTML = `<tr class="no-data"><td colspan="${colCount}">${emptyMsg}</td></tr>`;
-      return;
+  function _process(elem) {
+    elem.className = elem.className.replace(regex, "");
+    if (addName) {
+      elem.classList.add(addName)
     }
-    tbody.innerHTML = "";
-    data.forEach((row, i) => {
-      var tr = table.insertRow(i);
-      row.cols.forEach((val, j) => {
-        var cell = tr.insertCell(j);
-        if (typeof val === "number") {
-          cell.innerHTML = val.toLocaleString();
-        } else {
-          cell.innerHTML = val;
-        }
-        // Copy class from related <col> element
-        var cl = colgroup[j].classList;
-        cell.classList = cl;
-        if (cl.contains("err-text") && val !== "n.a.") {
-          cell.classList.add("warn");
-        }
-        if (cl.contains("err-num")) {
-          cell.classList.add(val === 0 ? "ok" : "warn");
-          if (val > 0 && row.key) {
-            cell.innerHTML =
-              "<a href='getErrorInfo?type=" +
-              row.type +
-              "&key=" +
-              row.key +
-              "' target=_blank>" +
-              // " <img src='info_red_16.png' width=16 heigth=16> &nbsp;" +
-              cell.innerHTML +
-              "</a>";
-          }
-        }
-      });
-      tbody.appendChild(tr);
-    });
+  }
+  if (typeof elemOrSelector === "string") {
+    for (let elem of document.querySelectorAll(selector)) {
+      _process(elem)
+    }
+  } else {
+    _process(elemOrSelector)
+  }
+}
+
+function poll() {
+  const tag = "Poll status from stressor";
+  console.time(tag);
+
+  for (let elem of document.querySelectorAll(".flash-on-update")) {
+    elem.classList.remove("flash");
   }
 
-  function update(result) {
-    var table,
-      stage = result.stage;
-
-    $("#btnStop").attr(
-      "disabled",
-      !(stage === "running" || stage === "waiting")
-    );
-
-    $("span.value").each(function () {
-      var $this = $(this);
-      $this.text(result[$this.data("value")]);
+  fetch("getStats")
+    .then((response) => response.json())
+    .then((data) => {
+      for (let elem of document.querySelectorAll(".flash-on-update")) {
+        elem.classList.add("flash");
+      }
+      update(data);
+      pollTimer = setTimeout(poll, interval);
+    })
+    .catch((err) => {
+      console.error("ERROR", err);
+      const sc = document.getElementById("statusContainer")
+      sc.textContent = JSON.stringify(err)
+      sc.classList.add("error");
+    })
+    .finally(() => {
+      console.timeEnd(tag);
     });
-    $("body")
-      .removeClass(function (index, className) {
-        return (className.match(/(^|\s)stage-\S+/g) || []).join(" ");
-      })
-      .addClass("stage-" + result.stage)
-      .toggleClass("has-errors", !!result.hasErrors);
+}
 
-    table = document.getElementById("run-metrics");
-    updateTable(table, result.stats.seq_stats); //, result.sessions);
+function updateTable(table, data, emptyMsg) {
+  const tbody = table.tBodies[0];
+  // The lowest header row defines column style:
+  const colgroup = table.getElementsByTagName("colgroup")[0].children;
+  const colCount = colgroup.length;
 
-    table = document.getElementById("session-metrics");
-    updateTable(table, result.stats.sess_stats);
-
-    table = document.getElementById("special-metrics");
-    updateTable(
-      table,
-      result.stats.act_stats,
-      "No data (use `monitor` option to mark activities)."
-    );
+  if (!data || !data.length) {
+    emptyMsg = emptyMsg || "No data.";
+    tbody.innerHTML = `<tr class="no-data"><td colspan="${colCount}">${emptyMsg}</td></tr>`;
+    return;
   }
-
-  console.info("loaded...");
-  // alert("loaded...");
-  $(function () {
-    console.info("start...");
-    // alert("start...");
-    $("#btnStop").on("click", function () {
-      $(this).prop("disabled", true);
-      $.ajax({ url: "stopManager" }).done(function (result) {
-        clearTimeout(pollTimer);
-        $("#btnStop").text("Cancelled.");
-      });
-    });
-    $("#pollFreq").on("change", function () {
-      interval = parseInt($(this).val(), 10);
-      interval = pollMap[interval];
-      clearTimeout(pollTimer);
-      if (interval) {
-        poll();
+  tbody.innerHTML = "";
+  data.forEach((row, i) => {
+    const tr = table.insertRow(i);
+    row.cols.forEach((val, j) => {
+      const cell = tr.insertCell(j);
+      if (typeof val === "number") {
+        cell.innerHTML = val.toLocaleString();
+      } else {
+        cell.innerHTML = val;
+      }
+      // Copy class from related <col> element
+      const cl = colgroup[j].classList;
+      cell.classList = cl;
+      if (cl.contains("err-text") && val !== "n.a.") {
+        cell.classList.add("warn");
+      }
+      if (cl.contains("err-num")) {
+        cell.classList.add(val === 0 ? "ok" : "warn");
+        if (val > 0 && row.key) {
+          cell.innerHTML =
+            "<a href='getErrorInfo?type=" +
+            row.type +
+            "&key=" +
+            row.key +
+            "' target=_blank>" +
+            // " <img src='info_red_16.png' width=16 heigth=16> &nbsp;" +
+            cell.innerHTML +
+            "</a>";
+        }
       }
     });
-    setTimeout(function () {
-      poll();
-    }, 1000);
+    tbody.appendChild(tr);
   });
-})();
+}
+
+function update(result) {
+  let table;
+  const stage = result.stage;
+
+  document.getElementById("btnStop").toggleAttribute("disabled",
+    !(stage === "running" || stage === "waiting")
+  )
+  document.getElementById("baseUrl").setAttribute("href", result.baseUrl);
+  document.getElementById("version").textContent = result.version;
+
+  for (let elem of document.querySelectorAll("span.value")) {
+    elem.textContent = result[elem.dataset.value];
+  }
+
+  const body = document.querySelector("body")
+  toggleClassByPrefix(body, "stage-", "stage-" + result.stage)
+  body.classList.toggle("has-errors", !!result.hasErrors)
+
+  table = document.getElementById("run-metrics");
+  updateTable(table, result.stats.seq_stats); //, result.sessions);
+
+  table = document.getElementById("session-metrics");
+  updateTable(table, result.stats.sess_stats);
+
+  table = document.getElementById("special-metrics");
+  updateTable(
+    table,
+    result.stats.act_stats,
+    "No data (use `monitor` option to mark activities)."
+  );
+}
+
+/* -----------------------------------------------------------------------------
+ *  
+ */
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  console.info("Document loaded.");
+
+  document.getElementById("btnStop").addEventListener("click", (event) => {
+    event.target.disabled = true;
+    fetch("stopManager")
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        clearTimeout(pollTimer);
+        event.target.textContent = "Cancelled.";
+      });
+  });
+
+  document.getElementById("pollFreq").addEventListener("change", (event) => {
+    interval = parseInt(event.target.value, 10);
+    interval = pollMap[interval];
+    clearTimeout(pollTimer);
+    if (interval) {
+      poll();
+    }
+  });
+
+  setTimeout(() => {
+    poll();
+  }, 1000);
+})
