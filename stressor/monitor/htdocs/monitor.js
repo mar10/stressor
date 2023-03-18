@@ -21,6 +21,38 @@ function toggleClassByPrefix(elemOrSelector, prefix, addName = null) {
   }
 }
 
+/**
+ * https://fontawesome.com/search?o=r&c=emoji
+ * https://fontawesome.com/icons/face-woozy?s=regular&f=sharp
+ */
+function setIcon(status, ok = true) {
+  const statusToIcon = {
+    ready: "waiting",
+    running: "running",
+    done: "done",
+    waiting: "done",
+    stopping: "done",
+    stopped: "done",
+    error: "error",
+  }
+  status = statusToIcon[status] ?? "done";
+  const warn = ok ? "" : "-warnings";
+  const url = `/favicon-${status}${warn}.png`;
+
+  // let link = document.querySelector("link[rel='icon']");
+  let link = document.querySelector("link[rel='shortcut icon']");
+  if (link && link.href !== url) link.href = url
+
+  link = document.querySelector("link[rel='apple-touch-icon']");
+  if (link && link.href !== url) link.href = url
+
+  console.info(`setIcon(${status})`, link)
+}
+
+
+/**
+ * 
+ */
 function poll() {
   const tag = "Poll status from stressor";
   console.time(tag);
@@ -43,6 +75,7 @@ function poll() {
       const sc = document.getElementById("statusContainer")
       sc.textContent = JSON.stringify(err)
       sc.classList.add("error");
+      setIcon("error")
     })
     .finally(() => {
       console.timeEnd(tag);
@@ -112,6 +145,7 @@ function update(result) {
   const body = document.querySelector("body")
   toggleClassByPrefix(body, "stage-", "stage-" + result.stage)
   body.classList.toggle("has-errors", !!result.hasErrors)
+  setIcon(result.stage, !result.hasErrors);
 
   table = document.getElementById("run-metrics");
   updateTable(table, result.stats.seq_stats); //, result.sessions);
@@ -133,6 +167,7 @@ function update(result) {
 
 document.addEventListener("DOMContentLoaded", (event) => {
   console.info("Document loaded.");
+  setIcon("ready");
 
   document.getElementById("btnStop").addEventListener("click", (event) => {
     event.target.disabled = true;

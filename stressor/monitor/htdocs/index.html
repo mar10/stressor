@@ -4,8 +4,12 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Stressor Monitor</title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
-  <link rel="apple-touch-icon" href="/logo_57x57.png" />
+  <link rel="stylesheet" href="style.css" type="text/css" >
+  <!-- Set dynamicall while running:  -->
+  <link rel="apple-touch-icon" type="image/png" href="/favicon.png" >
+  <!-- <link rel="apple-touch-icon" type="image/png" href="/logo_57x57.png" /> -->
+  <link rel="shortcut icon" type="image/png" href="/favicon.png" >
+  <!-- <link rel="icon" type="image/png" href="/favicon-waiting.png" > -->
 
   <script defer type=module src="monitor.js"></script>
 </head>
@@ -38,7 +42,7 @@
     <span class="label">Ended:</span>
     <span class="value" data-value="endTimeStr">n.a.</span>
     <span class="label">Base URL:</span>
-    <a id="baseUrl" href="#"><span class="value" data-value="baseUrl">n.a.</span></a>
+    <a id="baseUrl" href="#" target="_blank"><span class="value" data-value="baseUrl">n.a.</span></a>
     <!-- <br />
       <span class="label">Details:</span>
       <span class="value" data-value="scenarioDetails">n.a.</span> -->
