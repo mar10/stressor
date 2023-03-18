@@ -12,6 +12,7 @@ from datetime import datetime
 
 from snazzy import emoji, green, red, yellow
 
+from stressor import __version__
 from stressor.config_manager import ConfigManager
 from stressor.monitor.server import MonitorServer
 from stressor.session_manager import SessionManager, User
@@ -286,6 +287,7 @@ class RunManager:
             "sessionCount": self.stats["sess_count"],
             "sessionsRunning": self.stats["sess_running"],
             "stats": stats_info,
+            "version": __version__,
         }
         if self.end_dt:
             elap = self.end_dt - self.start_dt
