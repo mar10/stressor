@@ -105,6 +105,7 @@ class PluginManager:
         # and MacroBase.__subclasses__():
         import stressor.plugins.common  # noqa F401
         import stressor.plugins.http_activities  # noqa F401
+        import stressor.plugins.report_activities  # noqa F401
         import stressor.plugins.script_activities  # noqa F401
 
         # Load entry points from all installed mosules that have the

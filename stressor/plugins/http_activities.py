@@ -115,7 +115,7 @@ class HTTPRequestActivity(ActivityBase):
         )
 
         for k, v in resp.headers.items():
-            res.append("{}: {}".format(k, v))
+            res.append(f"{k}: {v}")
         res.append("- " * 20)
 
         if short:

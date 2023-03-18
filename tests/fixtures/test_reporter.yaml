@@ -1,0 +1,87 @@
+file_version: stressor#0
+
+# The run configuration defines how the `sequences` are executed in parallel
+# sessions.
+config:
+  name: Test Reporting
+  details: |
+    This scenario runs some tests against a WebDAV server.
+    We use it to test stressor against a locally running WsgiDAV server:
+    - Open a terminal and run
+      $ wsgidav --root tests/fixtures/ --port 8082 --auth anonymous
+    - Open a second terminal and run
+      $ stressor run tests/fixtures/test_mock_server
+  base_url: http://127.0.0.1:8082
+
+context:
+
+sessions:
+  users: $load(users.yaml)
+  count: 3
+
+# Define what actions should be performed by every session
+scenario:
+  - sequence: init
+  - sequence: main
+    # repeat: 3
+    duration: 5
+  - sequence: end
+
+# List of named action sequences. Used as building blocks for scenarios
+sequences:
+  # 'init' is the reserved name for the set-up sequence.
+  init:
+    # Log-in
+    - activity: HTTPRequest
+      url: $(base_url)
+      method: OPTIONS
+      assert_match_headers: ".*'DAV'.*"
+
+    # - activity: $debug()
+    
+    - activity: Report
+
+  # Other sections can have arbitrary names and are excuted in order of appearance
+  main:
+
+    - activity: RunScript
+      name: "GET example.com"
+      # debug: true
+      script: |
+        r = session.browser.get("http://example.com")
+        result = r.status_code
+
+    - activity: $debug()
+
+    - activity: RunScript
+      export: ["the_answer"]
+      script: |
+        the_answer = 6 * 7
+
+    - activity: RunScript
+      export: ["the_answer"]
+      script: |
+        the_answer = 6 * 7
+
+    - activity: RunScript
+      name: "Fabulate"
+      export: null
+      # debug: true
+      script: |
+        from fabulist import Fabulist
+        fab = Fabulist()
+        result = fab.get_quote("$(verb:ing) is better than $(verb:ing)")
+
+    # - activity: $sleep(0.3)
+
+
+    - activity: RunScript
+      path: script_1.py
+    # - activity: RunScript
+    #   script: |
+    #     temp = Fabulist.quote("${verb}")
+    #     PutRequest(url="hurz")
+
+  # 'end' is the reserved name for the tear-down sequence
+  end:
+    - activity: $sleep(0.1)

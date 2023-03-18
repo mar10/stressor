@@ -27,6 +27,9 @@ GENERIC_MACRO_REX = re.compile(r"\$\w+.*\(.*\).*")
 class ConfigurationError(StressorError):
     """"""
 
+# YAML_DEFAULTS = {
+#     "config": {}
+# }
 
 def replace_var_macros(value, context):
     """
@@ -132,10 +135,10 @@ class ConfigManager:
         path = os.path.abspath(path)
         if check_root and not path.startswith(self.root_folder):
             raise ValueError(
-                "Path must be in or below {}: {}".format(self.root_folder, path)
+                f"Path must be in or below {self.root_folder}: {path}"
             )
         if must_exist and not os.path.isfile(path):
-            raise ValueError("File not found: {}".format(path))
+            raise ValueError(f"File not found: {path}")
         return path
 
     def report_error(self, msg, level="error", exc=None, stack=None):
@@ -454,7 +457,7 @@ class ConfigManager:
             path += ".yaml"
         path = os.path.abspath(path)
         if not os.path.isfile(path):
-            raise ConfigurationError("File not found: {}".format(path))
+            raise ConfigurationError(f"File not found: {path}")
         self.path = path
         self.root_folder = os.path.dirname(path)
         self.name = os.path.splitext(os.path.basename(path))[0]
@@ -463,7 +466,7 @@ class ConfigManager:
             try:
                 res = yaml.safe_load(f)
             except yaml.parser.ParserError as e:
-                raise ConfigurationError("Could not parse YAML: {}".format(e)) from None
+                raise ConfigurationError(f"Could not parse YAML: {e!r}") from None
 
         if not isinstance(res, dict) or not res.get("file_version", "").startswith(
             "stressor#"

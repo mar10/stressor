@@ -316,7 +316,7 @@ def _check_arg(argument, types, condition, accept_none):
         )
 
 
-def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
+def check_arg(argument, allowed_types, *, condition=NO_DEFAULT, or_none=False) -> None:
     """Check if `argument` has the expected type and value.
 
     **Note:** the exception's traceback is manipulated, so that the back frame
