@@ -1,8 +1,16 @@
 # Changelog
 
-## 1.0.0 (unreleased)
+# 1.0.0 / Unreleased
 
-Initial release.
+First release.
+
+# Beta-Changes since v0.5.0
+
+> This section will be removed after the beta phase. <br>
+> Note that semantic versioning rules are not strictly followed in this phase.
+
+- v0.5.3: Add status-dependant  browser tabs icons
+- v0.5.3: Drop jQuery for monitor app
 
 
 ..
