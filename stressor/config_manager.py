@@ -392,21 +392,19 @@ class ConfigManager:
                         handled, res = macro.match_apply(self, parent, parent_key)
                         if handled:
                             has_match = True
-                            logger.debug("Eval {}: {} => {}".format(stack, value, res))
+                            logger.debug(f"Eval {stack}: {value} => {res}")
                             # Re-init `value` in case the macro replaced it
                             value = parent[parent_key]
                             break
                     except Exception as e:
-                        msg = "Could not evaluate macro {!r}".format(value)
+                        msg = f"Could not evaluate macro {value!r}"
                         self.report_error(msg, exc=e)
                         # raise ConfigurationError(
                         #     "Could not evaluate {!r} at {}: {}".format(value, stack, e)
                         # ) from e
 
                 if not has_match and GENERIC_MACRO_REX.match(value):
-                    msg = "Entry looks like a macro, but has no handler: '{}'".format(
-                        value
-                    )
+                    msg = f"Entry looks like a macro, but has no handler: '{value}'"
                     self.report_error(msg, level="warning")
 
             # Resolve lists and dicts recursively:

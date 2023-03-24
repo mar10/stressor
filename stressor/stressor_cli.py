@@ -66,7 +66,7 @@ def handle_run_command(parser, args):
     if not res:
         logger.error("Finished with errors.")
         return 1
-    logger.info("Stressor run succesfully completed.")
+    logger.info("Stressor run successfully completed.")
     return 0
 
 
@@ -74,7 +74,7 @@ def handle_init_command(parser, args):
     opts = {}
     if args.opts:
         if not os.path.isfile(args.opts):
-            parser.error("File not found: {}".format(args.opts))
+            parser.error(f"File not found: {args.opts}")
         with open(args.opts, "rt") as f:
             opts = yaml.safe_load(f)
 
