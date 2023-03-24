@@ -94,7 +94,7 @@ class ActivityBase(ABC):
 
         The compiler replaces the activity name in the definition's `activity`
         attribute with this instance.
-        The `execute()` method is then called by the session runner on or more
+        The `execute()` method is then called by the session runner one or more
         times.
         The default implementation stores `activity_args` as `self.raw_args`.
         however derived classes may choose to add named args explicitly for

@@ -21,6 +21,7 @@ class ReportActivity(ActivityBase):
     _mandatory_args = {"format", "path"}
     _known_args = {"columns", "tablename"}
     _info_args = ("name", "path")
+    _default_ignore_timing = True  # not considerd for net timings
 
     def __init__(self, config_manager, **activity_args):
         """"""
@@ -34,9 +35,9 @@ class ReportActivity(ActivityBase):
         tablename = activity_args.get("tablename")
 
         self.database = None
-        if format =="csv":
+        if format == "csv":
             check_arg(columns, list, condition=columns)
-        elif format =="sqlite":
+        elif format == "sqlite":
             check_arg(tablename, str, condition=tablename)
             self.database = sqlite3.connect(path)
         else:
@@ -62,14 +63,10 @@ class ReportActivity(ActivityBase):
 
         try:
             exec(self.script, global_vars, local_vars)
-        except ConnectionError as e:
-            # TODO: more requests-exceptions?
-            msg = "Script failed: {!r}: {}".format(e, e)
-            raise ScriptActivityError(msg)
         except Exception as e:
             msg = "Script failed: {!r}: {}".format(e, e)
             if session.verbose >= 4:
-                logger.exception(msg)
+                logger.debug(msg)
                 raise ScriptActivityError(msg) from e
             raise ScriptActivityError(msg)
         finally:
@@ -80,33 +77,11 @@ class ReportActivity(ActivityBase):
         context_keys = set(local_vars.keys())
         new_keys = context_keys.difference(prev_context_keys)
 
-        if new_keys:
-            if self.export is None:
-                logger.info(
-                    "Skript activity has no `export` defined. Ignoring new variables: '{}'".format(
-                        "', '".join(new_keys)
-                    )
-                )
-            else:
-                for k in self.export:
-                    v = local_vars.get(k)
-                    assert type(v) in (int, float, str, list, dict)
-                    session.context[k] = v
-                    logger.debug("Set context.{} = {!r}".format(k, v))
-                # store_keys = new_keys.intersection(self.export)
-
         # TODO: this cannot happen?
         new_globals = set(globals().keys()).difference(prev_global_keys)
         if new_globals:
             logger.warning("Script-defined globals: {}".format(new_globals))
             raise ScriptActivityError("Script introduced globals")
-
-        # new_context = context_keys.difference(prev_context_keys)
-        # logger.info("Script-defined context-keys: {}".format(new_context))
-
-        # new_locals = set(locals().keys()).difference(prev_local_keys)
-        # if new_locals:
-        #     logger.info("Script-defined locals: {}".format(new_locals))
 
         # logger.info("Script locals:\n{}".format(pformat(local_vars)))
         if expanded_args.get("debug") or session.verbose >= 5:

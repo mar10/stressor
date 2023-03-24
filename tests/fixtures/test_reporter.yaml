@@ -15,6 +15,17 @@ config:
 
 context:
 
+reporters:
+  - name: login_reporter
+    type: activityEvent
+    target_type: sqlite
+    tablename: login_stats
+    columns:
+      - date
+      - activity
+      - elap
+  # activity_name:
+
 sessions:
   users: $load(users.yaml)
   count: 3
@@ -38,8 +49,10 @@ sequences:
       assert_match_headers: ".*'DAV'.*"
 
     # - activity: $debug()
-    
+
     - activity: Report
+      report_name: login_reporter
+      if_session: [0]
 
   # Other sections can have arbitrary names and are excuted in order of appearance
   main:
