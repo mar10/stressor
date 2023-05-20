@@ -39,6 +39,13 @@ config:
 
 context:
 
+# reporters:
+#   # By default, 'timing' reporters are enabled for the scenario scope only.
+#   # Set activities option `report: true` or add `Report` activities otherwise.
+#   - type: timing
+#     format: sqlite
+#     path: reports.sqlite
+
 sessions:
   users: $load(users.yaml)
   count: 3

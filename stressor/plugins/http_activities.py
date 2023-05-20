@@ -65,6 +65,9 @@ class HTTPRequestActivity(ActivityBase):
 
     _info_args = ("name", "method", "url")
 
+    # #: (float)
+    # DEFAULT_REQUEST_TIMEOUT = 10.0
+
     def __init__(self, config_manager, **activity_args):
         super().__init__(config_manager, **activity_args)
 

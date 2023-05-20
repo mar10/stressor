@@ -9,6 +9,8 @@ First release.
 > This section will be removed after the beta phase. <br>
 > Note that semantic versioning rules are not strictly followed in this phase.
 
+- v0.6.0: Drop Python 3.7
+- v0.6.0: Add CSV & Sqlite reports
 - v0.5.3: Add status-dependant  browser tabs icons
 - v0.5.3: Drop jQuery for monitor app
 

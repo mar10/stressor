@@ -80,8 +80,11 @@ class RunManager:
         #: True: Finalize the current sequence, then do 'end' sequence before stopping?
         self.stop_request_monitor = None
         self.session_list = []
-        #: :class:`~stressor.statistic_manager.StatisticManager` object that containscurrent execution path
+        #: :class:`~stressor.statistic_manager.StatisticManager` object that 
+        #: contains the current execution path
         self.stats = StatisticManager()
+        #: :class:`ReportManager` used to emit statistics to files/databases
+        self.report_manager = None
         self.options = self.DEFAULT_OPTS.copy()
         self.stage = "ready"
         self.start_dt = None
@@ -90,7 +93,8 @@ class RunManager:
         self.end_stamp = None
 
         # register_plugins()
-        self.CURRENT_RUN_MANAGER = self
+        assert RunManager.CURRENT_RUN_MANAGER is None
+        RunManager.CURRENT_RUN_MANAGER = self
         self.set_console_ctrl_handler()
 
     def __str__(self):

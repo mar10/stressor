@@ -12,20 +12,43 @@ config:
     - Open a second terminal and run
       $ stressor run tests/fixtures/test_mock_server
   base_url: http://127.0.0.1:8082
+  request_timeout: 10.0
 
 context:
 
 reporters:
-  - name: login_reporter
-    type: activityEvent
-    target_type: sqlite
-    tablename: login_stats
-    columns:
-      - date
-      - activity
-      - elap
-  # activity_name:
+  # By default, 'timing' reporters are enabled for the scenario scope only.
+  # Set activities option `report: true` or add `Report` activities otherwise.
+  # For sqlite format, the table name will be 'timings'
+  - type: timing
+    format: sqlite
+    path: reports.sqlite
+    # enable: true
+    # purge_age_days: 90
 
+  - type: timing
+    format: csv
+    path: timings.csv  # relative to YAML file
+    # enable: true
+    # purge_age_days: 90
+
+  # 'alert' reporters are enabled by default for all warnings and errors
+  # For sqlite format, the table name will be 'alerts'
+  - type: alert
+    format: sqlite
+    path: reports.sqlite
+    # level: 0..3
+  
+  # 'custom' reporters must have a name and extra_column definition.
+  # For sqlite format, the table name will be '<name>'
+  - type: custom
+    format: sqlite
+    path: reports.sqlite
+    name: health_stats
+    extra_columns:
+      - user_count
+      - mem_usage
+  
 sessions:
   users: $load(users.yaml)
   count: 3
@@ -47,12 +70,13 @@ sequences:
       url: $(base_url)
       method: OPTIONS
       assert_match_headers: ".*'DAV'.*"
+      # report: true
 
     # - activity: $debug()
 
-    - activity: Report
-      report_name: login_reporter
-      if_session: [0]
+    # - activity: Report
+    #   report_name: login_reporter
+    #   if_session: [0]
 
   # Other sections can have arbitrary names and are excuted in order of appearance
   main:
@@ -63,6 +87,7 @@ sequences:
       script: |
         r = session.browser.get("http://example.com")
         result = r.status_code
+      # report: true
 
     - activity: $debug()
 

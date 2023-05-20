@@ -183,9 +183,9 @@ class HarConverter:
             "url": url,
             "elap": self._calc_request_time(har_entry),
         }
-        if req.get("httpVersion").upper() not in ("", "HTTP/1.1"):
+
+        if req.get("httpVersion").upper() not in ("", "HTTP/1.1", "HTTP/2.0"):
             logger.warning("Unknown httpVersion: {!r}".format(req.get("httpVersion")))
-            # logger.warning("Unknown httpVersion: {}".format(req))
 
         if req.get("comment"):
             entry["comment"] = req["comment"]

@@ -13,7 +13,7 @@ from stressor.plugins.base import ActivityBase, ActivityCompileError
 from stressor.util import (
     NO_DEFAULT,
     PathStack,
-    StressorError,
+    TerminatingStressorError,
     assert_always,
     check_arg,
     get_dict_attr,
@@ -24,12 +24,14 @@ VAR_MACRO_REX = re.compile(r"\$\(\s*(\w[\w.:]*)\s*\)")
 GENERIC_MACRO_REX = re.compile(r"\$\w+.*\(.*\).*")
 
 
-class ConfigurationError(StressorError):
-    """"""
+class ConfigurationError(TerminatingStressorError):
+    """Report a configuration error and exit without stacktrace."""
+
 
 # YAML_DEFAULTS = {
 #     "config": {}
 # }
+
 
 def replace_var_macros(value, context):
     """
@@ -134,9 +136,7 @@ class ConfigManager:
             path = os.path.join(self.root_folder, path)
         path = os.path.abspath(path)
         if check_root and not path.startswith(self.root_folder):
-            raise ValueError(
-                f"Path must be in or below {self.root_folder}: {path}"
-            )
+            raise ValueError(f"Path must be in or below {self.root_folder}: {path}")
         if must_exist and not os.path.isfile(path):
             raise ValueError(f"File not found: {path}")
         return path
@@ -222,14 +222,14 @@ class ConfigManager:
         if cfg is None:
             cfg = self.config_all
 
-        def _check_type(key, types):
+        def _check_type(key, types, or_none: bool = False) -> bool:
             try:
                 o = get_dict_attr(cfg, key)
             except Exception:
                 self.report_error("Could not find expected entry", stack=key)
                 return False
 
-            if o is None and None in types:
+            if o is None and or_none:
                 return True
             elif not isinstance(o, types):
                 self.report_error(
@@ -240,7 +240,15 @@ class ConfigManager:
 
         sections = set(cfg.keys())
         known_sections = set(
-            ("file_version", "config", "context", "sessions", "scenario", "sequences")
+            (
+                "config",
+                "context",
+                "file_version",
+                "reporters",
+                "scenario",
+                "sequences",
+                "sessions",
+            )
         )
 
         file_version = cfg.get("file_version", "")
@@ -273,8 +281,11 @@ class ConfigManager:
                         base_url
                     ),
                 )
+            _check_type("config.request_timeout", (int, float))
 
-        if _check_type("context", (dict, None)):
+        if _check_type("context", dict, or_none=True):
+            pass
+        if _check_type("reporters", list, or_none=True):
             pass
         if _check_type("sessions", dict):
             pass
@@ -311,7 +322,13 @@ class ConfigManager:
                             )
                         else:
                             activity = act_def.get("activity")
-                            if not isinstance(activity, ActivityBase):
+                            if type(activity) == str:
+                                # and activity in pm.activity_plugin_map:
+                                self.report_error(
+                                    f"Could not instantiate activity {activity!r}",
+                                    stack=stack,
+                                )
+                            elif not isinstance(activity, ActivityBase):
                                 self.report_error(
                                     "`activity` must be an instance of ActivityBase "
                                     "instance (found {!r})".format(activity),

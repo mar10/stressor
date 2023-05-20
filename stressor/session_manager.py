@@ -32,6 +32,10 @@ class SkippedError(StressorError):
 
 
 class User:
+    """
+    Represents a user that is assigned to a :class:`SessionManager`.
+    Often read from a `users.yaml` file.
+    """
     def __init__(self, name, password, **kwargs):
         self.name = name
         self.password = password
@@ -73,9 +77,6 @@ class SessionManager:
     Run a scenario in a single session.
     """
 
-    # #: (float)
-    # DEFAULT_REQUEST_TIMEOUT = 10.0
-
     def __init__(self, run_manager, context, session_id, user):
         # check_arg(run_manager, RunManager)
         check_arg(context, dict)
@@ -108,7 +109,6 @@ class SessionManager:
         self.stop_request = run_manager.stop_request
 
         # Set some default entries in context dict
-        # context.setdefault("timeout", self.DEFAULT_REQUEST_TIMEOUT)
         context.setdefault("session_id", self.session_id)
         context.setdefault("user", self.user)
 
@@ -350,7 +350,7 @@ class SessionManager:
                 expanded_args = self._evaluate_macros(activity_args, context)
 
                 # Let activity do internal calculations, that might be used by
-                # the follwing call to `get_info()`
+                # the following call to `get_info()`
                 activity.prepare_execute(self, expanded_args)
 
                 # Enhance the path info with expanded args
