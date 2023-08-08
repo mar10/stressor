@@ -18,9 +18,9 @@
 # Disable Black formatting
 # fmt: off
 
+import importlib.metadata
 import sys
 import os
-# import shlex
 
 # from recommonmark.parser import CommonMarkParser
 
@@ -135,12 +135,13 @@ author = u'Martin Wendt'
 #version = '1.0'
 # The full version, including alpha/beta/rc tags.
 #release = '1.0'
-import pkg_resources
+# import pkg_resources
 try:
-    release = pkg_resources.get_distribution('stressor').version
+    # release = pkg_resources.get_distribution('stressor').version
+    release = importlib.metadata.version("wsgidav")
     # print( "release", release)
-    del pkg_resources
-except pkg_resources.DistributionNotFound:
+    # del pkg_resources
+except importlib.metadata.PackageNotFoundError:
     print('To build the documentation, The distribution information')
     print('Has to be available.  Either install the package into your')
     print('development environment or run "setup.py develop" to setup the')
