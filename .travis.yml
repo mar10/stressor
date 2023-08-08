@@ -1,25 +1,24 @@
 language: python
-os: linux
-jobs:  
+dist: jammy
+
+matrix:  
   include:
     - python: "3.11"  # EOL 2027-10-24
       env: TOXENV=check,py311
-      dist: bionic
     - python: "3.10"  # EOL 2026-10-04
       env: TOXENV=py310
-      dist: bionic
     - python: "3.9"  # EOL 2025-10-05
       env: TOXENV=py39
     - python: "3.8"  # EOL 2024-10-14
       env: TOXENV=py38
     - python: "3.7"  # EOL 2023-06-27
       env: TOXENV=py37
-      dist: xenial
-      before_install:
-        # Fix error: can't find Rust compiler
-        - pip install -U pip
-        # Fix "AttributeError: 'str' object has no attribute 'name'" on Py37
-        - pip install -U importlib_metadata
+      # dist: xenial
+      # before_install:
+      #   # Fix error: can't find Rust compiler
+      #   - pip install -U pip
+      #   # Fix "AttributeError: 'str' object has no attribute 'name'" on Py37
+      #   - pip install -U importlib_metadata
     # - python: "3.6"
     #   env: TOXENV=py36  # EOL 2021-12-21
     #   before_install:
@@ -29,11 +28,9 @@ jobs:
     #   env: TOXENV=py35
     - python: "3.12-dev"
       env: TOXENV=py312
-      dist: bionic
   allow_failures:
     - python: "3.12-dev"
       env: TOXENV=py312
-      dist: bionic
 
 install:
   - pip install tox-travis flake8 coveralls coverage isort
