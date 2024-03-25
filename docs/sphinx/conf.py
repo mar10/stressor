@@ -138,7 +138,7 @@ author = u'Martin Wendt'
 # import pkg_resources
 try:
     # release = pkg_resources.get_distribution('stressor').version
-    release = importlib.metadata.version("wsgidav")
+    release = importlib.metadata.version("stressor")
     # print( "release", release)
     # del pkg_resources
 except importlib.metadata.PackageNotFoundError:
