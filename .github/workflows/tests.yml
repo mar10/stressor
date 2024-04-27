@@ -35,10 +35,11 @@ jobs:
         run: |
           python -V
           python -m pip install --upgrade pip
+          python -m pip install setuptools
           python -m pip install pytest pytest-cov pytest-html ruff
           python -m pip install requests cheroot lxml wsgidav
           # python -m pip install psutil stressor-ps
-          # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip list
 
       - name: Lint with ruff
