@@ -25,7 +25,7 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
@@ -37,7 +37,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install setuptools
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          python -m pip install pytest pytest-cov pytest-html ruff cheroot wsgidav
+          python -m pip install pytest pytest-cov pytest-html ruff
+          python -m pip install cheroot wsgidav
           python -m pip install psutil stressor-ps
           pip list
 
@@ -53,5 +54,7 @@ jobs:
           # pytest -ra -v -x --durations=10 --cov=stressor --html=build/pytest/report-${{ matrix.python-version }}.html --self-contained-html
           # pytest -ra -v -x --durations=10 --cov=stressor --html=build/pytest/report-{envname}.html --self-contained-html {posargs}
 
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+      # - name: Upload coverage reports to Codecov
+      #   uses: codecov/codecov-action@v3
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
