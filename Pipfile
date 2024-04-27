@@ -4,19 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "~=22.12"
+black = "~=24.4"
 cheroot = "*"
 cx_Freeze = {version = "*", os_name = "== 'nt'"}
-flake8 = "*"
-flake8-bugbear = "*"
-flake8-isort = "*"
-flake8-quotes = "*"
 isort = "*"
 psutil = "*"
 pylint = "*"
 pytest = "*"
 pytest-cov = "*"
 #recommonmark = "*"
+ruff = "*"
 setuptools = ">=42.0"
 Sphinx = "*"
 sphinx_rtd_theme = "*"
@@ -37,7 +34,7 @@ requests = "*"
 snazzy = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
 
 [pipenv]
 # allow_prereleases = true
