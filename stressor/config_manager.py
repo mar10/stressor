@@ -231,9 +231,14 @@ class ConfigManager:
             return True
 
         sections = set(cfg.keys())
-        known_sections = set(
-            ("file_version", "config", "context", "sessions", "scenario", "sequences")
-        )
+        known_sections = {
+            "file_version",
+            "config",
+            "context",
+            "sessions",
+            "scenario",
+            "sequences",
+        }
 
         file_version = cfg.get("file_version", "")
         if not file_version.startswith("stressor#"):
