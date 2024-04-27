@@ -163,7 +163,7 @@ class TestBasics:
     def test_coerce_str(self):
         assert coerce_str("1.2") == 1.2
         assert coerce_str("1") == 1
-        assert type(coerce_str("1")) is int
+        assert isinstance(coerce_str("1"), int)
         assert coerce_str("") == ""
         assert coerce_str("1.2.3") == "1.2.3"
         assert coerce_str(None) is None

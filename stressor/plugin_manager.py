@@ -50,14 +50,10 @@ class PluginManager:
 
         for ep in iter_entry_points(group=cls.namespace, name=None):
             plugin_name = f"{ep.dist}"
-            logger.debug(
-                f"Found plugin {plugin_name} from entry point `{ep}`"
-            )
+            logger.debug(f"Found plugin {plugin_name} from entry point `{ep}`")
 
             if ep.name in ep_map:
-                logger.warning(
-                    f"Duplicate entry point name: {ep.name}; skipping..."
-                )
+                logger.warning(f"Duplicate entry point name: {ep.name}; skipping...")
                 continue
             # elif ep.name in cls.task_class_map:
             #     # TODO: support overriding standard tasks?

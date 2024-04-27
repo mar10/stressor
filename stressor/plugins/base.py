@@ -138,9 +138,7 @@ class ActivityBase(ABC):
         if self._mandatory_args:
             missing = self._mandatory_args.difference(passed)
             if missing:
-                raise ActivityCompileError(
-                    f"Missing mandatory arguments: {missing}"
-                )
+                raise ActivityCompileError(f"Missing mandatory arguments: {missing}")
 
         if self._all_known_args is None:
             if self._known_args:
@@ -197,9 +195,7 @@ class ActivityBase(ABC):
         arg_dict = self.raw_args if expanded_args is None else expanded_args
         if info_args:
             # Add selected args
-            args = (
-                f"{a}={arg_dict.get(a)!r}" for a in info_args if a in arg_dict
-            )
+            args = (f"{a}={arg_dict.get(a)!r}" for a in info_args if a in arg_dict)
         else:  # add all args
             args = (
                 "{}={!r}".format(*kv) for kv in arg_dict.items() if kv[0] != "activity"

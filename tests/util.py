@@ -3,6 +3,7 @@
 """
 Test helpers.
 """
+# ruff: noqa: T201, T203 `print` found
 
 import sys
 import time

@@ -124,7 +124,9 @@ class RunManager:
         #     logger.warning("Got Ctrl-C a 2nd time: terminating...")
         #     time.sleep(0.1)
         #     # sys.exit(2)
-        print("Got Ctrl-C (windows handler), terminating...", file=sys.stderr)
+        print(  # noqa: T201
+            "Got Ctrl-C (windows handler), terminating...", file=sys.stderr
+        )
         logger.warning("Got Ctrl-C (windows handler), terminating...")
         # self.stop_request.set()
         self.stop()
@@ -226,7 +228,7 @@ class RunManager:
 
         # --- List of all activities that are marked `monitor: true`
         if self.stats["monitored"]:
-            print(self.stats["monitored"])
+            print(self.stats["monitored"])  # noqa: T201
             ap("{} monitored activities:".format(len(self.stats["monitored"])))
             for path, info in self.stats["monitored"].items():
                 errors = info.get("errors")
@@ -360,9 +362,7 @@ class RunManager:
         for i, t in enumerate(thread_list):
             if ramp_up_delay and i > 1:
                 delay = get_random_number(ramp_up_delay)
-                logger.info(
-                    f"Ramp-up delay for t{i:02}: {delay:.2f} seconds..."
-                )
+                logger.info(f"Ramp-up delay for t{i:02}: {delay:.2f} seconds...")
                 time.sleep(delay)
             t.start()
 

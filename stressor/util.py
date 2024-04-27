@@ -271,8 +271,6 @@ def assert_always(condition, msg=None):
         if not condition:
             raise AssertionError(msg) if msg is not None else AssertionError
     except AssertionError as e:
-        if sys.version_info < (3, 7):
-            raise
         # Strip last frames, so the exception's stacktrace points to the call
         # Credits: https://stackoverflow.com/a/58821552/19166
         _exc_type, _exc_value, traceback = sys.exc_info()
@@ -304,13 +302,9 @@ def _check_arg(argument, types, condition, accept_none):
         extra_msg = ""
 
     if not isinstance(argument, types):
-        raise TypeError(
-            f"Expected {extra_msg}{types}, but got {type(argument)}"
-        )
+        raise TypeError(f"Expected {extra_msg}{types}, but got {type(argument)}")
     if condition is not NO_DEFAULT and not bool(condition):
-        raise ValueError(
-            f"Invalid argument value: {type(argument)} {argument}"
-        )
+        raise ValueError(f"Invalid argument value: {type(argument)} {argument}")
 
 
 def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
@@ -343,8 +337,6 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
     try:
         _check_arg(argument, allowed_types, condition, accept_none=or_none)
     except (TypeError, ValueError) as e:
-        if sys.version_info < (3, 7):
-            raise
         # Strip last frames, so the exception's stacktrace points to the call
         _exc_type, _exc_value, traceback = sys.exc_info()
         back_frame = traceback.tb_frame.f_back
@@ -503,9 +495,7 @@ def parse_args_from_str(arg_str, arg_defs):  # , context=None):
             raise AssertionError(f"Expected 2- or 3-tuple: {arg_def}")
 
         if arg_type not in (float, int, str):
-            raise AssertionError(
-                f"Unsupported argument definition type: {arg_def}"
-            )
+            raise AssertionError(f"Unsupported argument definition type: {arg_def}")
 
         try:
             # Get next arg
@@ -525,9 +515,7 @@ def parse_args_from_str(arg_str, arg_defs):  # , context=None):
                 arg_val = arg_type(arg_val)
         except IndexError:
             if arg_default is NO_DEFAULT:
-                raise ValueError(
-                    f"Missing mandatory arg `{arg_name}` in '{arg_str}'."
-                )
+                raise ValueError(f"Missing mandatory arg `{arg_name}` in '{arg_str}'.")
             arg_val = arg_default
 
         res[arg_name] = arg_val

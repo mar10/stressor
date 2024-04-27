@@ -128,9 +128,7 @@ class ConfigManager:
             path = os.path.join(self.root_folder, path)
         path = os.path.abspath(path)
         if check_root and not path.startswith(self.root_folder):
-            raise ValueError(
-                f"Path must be in or below {self.root_folder}: {path}"
-            )
+            raise ValueError(f"Path must be in or below {self.root_folder}: {path}")
         if must_exist and not os.path.isfile(path):
             raise ValueError(f"File not found: {path}")
         return path

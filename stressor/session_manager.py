@@ -333,9 +333,7 @@ class SessionManager:
             # Note: `get_info()` is not as detailed as it could, since we don't
             # pass the expanded args here. We set it anyway, so we have a valid
             # stack in case `_evaluate_macros()` blows.
-            with stack.enter(
-                f"#{act_idx:02}-{activity.get_info(session=self)}"
-            ):
+            with stack.enter(f"#{act_idx:02}-{activity.get_info(session=self)}"):
                 expanded_args = self._evaluate_macros(activity_args, context)
 
                 # Let activity do internal calculations, that might be used by

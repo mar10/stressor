@@ -8,6 +8,7 @@ Usage examples:
     $ stressor --help
     $ stressor run .
 """
+
 import argparse
 import logging
 import os
@@ -250,7 +251,7 @@ def run():
             info += f"\nPython from: {sys.executable}"
         else:
             info = __version__
-        print(info)
+        print(info)  # noqa: T201
         sys.exit(0)
 
     if not callable(getattr(args, "command", None)):
@@ -259,7 +260,7 @@ def run():
     try:
         return args.command(parser, args)
     except KeyboardInterrupt:
-        print("\nAborted by user.", file=sys.stderr)
+        print("\nAborted by user.", file=sys.stderr)  # noqa: T201
         sys.exit(3)
     # Unreachable...
     return

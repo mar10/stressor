@@ -33,6 +33,7 @@ the test whole session::
             ...
 
 """
+# ruff: noqa: T201, T203 `print` found
 
 import multiprocessing
 import os

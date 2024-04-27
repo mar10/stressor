@@ -210,9 +210,7 @@ class HTTPRequestActivity(ActivityBase):
         if arg:
             text = str(resp.headers)
             if not re.match(arg, text):
-                self._raise_assertion(
-                    f"Result headers do not match `{arg}`", resp
-                )
+                self._raise_assertion(f"Result headers do not match `{arg}`", resp)
 
         arg = expanded_args.get("assert_json")
         if arg:
@@ -344,9 +342,7 @@ class StaticRequestsActivity(ActivityBase):
             logger.debug(f"StaticRequests({name}) stopped.")
             return
 
-        logger.debug(
-            f"Starting {thread_count} StaticRequestsActivity workers..."
-        )
+        logger.debug(f"Starting {thread_count} StaticRequestsActivity workers...")
 
         thread_list = []
         for i in range(thread_count):
@@ -364,9 +360,7 @@ class StaticRequestsActivity(ActivityBase):
             t.join()
         errors = [f"{error}" for ok, name, url, error in results if not ok]
         if errors:
-            raise ActivityError(
-                f"{len(errors)} reqests failed:\n{format(errors)}"
-            )
+            raise ActivityError(f"{len(errors)} reqests failed:\n{format(errors)}")
             # logger.error(pformat(errors))
         return bool(errors)
 

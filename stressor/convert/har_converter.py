@@ -109,9 +109,7 @@ class HarConverter:
 
     def _copy_template(self, tmpl_name, target_path, kwargs):
         if not self.opts["force"] and os.path.isfile(target_path):
-            raise RuntimeError(
-                f"File exists (use --force to continue): {target_path}"
-            )
+            raise RuntimeError(f"File exists (use --force to continue): {target_path}")
             # raise FileExistsError(target_path)
         tmpl_folder = os.path.dirname(__file__)
         src_path = os.path.join(tmpl_folder, tmpl_name)
@@ -371,9 +369,7 @@ class HarConverter:
             # lines.append("    - ['{}', {}]\n".format(name, json.dumps(value)))
 
             if name in used:
-                logger.error(
-                    f"Discarding multiple param name: {name}: {value}"
-                )
+                logger.error(f"Discarding multiple param name: {name}: {value}")
                 continue
             used.add(name)
             if not is_yaml_keyword(name):
@@ -440,7 +436,7 @@ class HarConverter:
                 # Must be a 'params' list of {name: ..., value: ...} objects
                 self._write_args(lines, "data", data)
             else:
-                assert type(data) is str
+                assert isinstance(data, str), data
                 logger.warning(f"Expected list, but got text: {data!r}")
                 lines.append(f"  data: {json.dumps(data)}\n")
 
