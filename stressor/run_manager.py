@@ -349,7 +349,7 @@ class RunManager:
             sess = SessionManager(self, context, name, user)
             self.session_list.append(sess)
             t = threading.Thread(name=name, target=self._run_one, args=[sess])
-            t.setDaemon(True)  # Required to make Ctrl-C work
+            t.daemon = True  # Required to make Ctrl-C work
             thread_list.append(t)
 
         logger.info(f"Starting {len(thread_list)} session workers...")
