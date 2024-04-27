@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -96,7 +95,7 @@ class RunManager:
     def __str__(self):
         # name = self.config_manager.path if self.config_manager else "?"
         # name = self.run_config.get("name") if self.run_config else "?"
-        return "RunManager<{}>".format(self.stage.upper())
+        return f"RunManager<{self.stage.upper()}>"
 
     @staticmethod
     def set_console_ctrl_handler():
@@ -134,7 +133,7 @@ class RunManager:
 
     def set_stage(self, stage):
         check_arg(stage, str, stage in self.STAGES)
-        logger.info("Enter stage '{}'".format(stage.upper()))
+        logger.info(f"Enter stage '{stage.upper()}'")
         self.stage = stage
 
     def publish(self, channel, allow_cancel=False, *args, **kwargs):
@@ -185,7 +184,7 @@ class RunManager:
 
         ap("Result Summary:")
         ap(horz_line)
-        ap("Stressor scenario '{}' finished.".format(cm.name))
+        ap(f"Stressor scenario '{cm.name}' finished.")
         ap("  Tag:      '{}'".format(cm.config.get("tag", "n.a.")))
         ap("  Base URL: {}".format(cm.config.get("base_url", "")))
         ap("  Start:    {}".format(self.start_dt.strftime("%Y-%m-%d %H:%M:%S")))
@@ -231,7 +230,7 @@ class RunManager:
             ap("{} monitored activities:".format(len(self.stats["monitored"])))
             for path, info in self.stats["monitored"].items():
                 errors = info.get("errors")
-                ap("  - {}".format(path))
+                ap(f"  - {path}")
                 if not info:
                     ap("    n: 0, min: n.a., avg: n.a., max: n.a.")
                     continue
@@ -242,7 +241,7 @@ class RunManager:
                         format_elap(info["act_time_min"], high_prec=True),
                         format_elap(info["act_time_avg"], high_prec=True),
                         format_elap(info["act_time_max"], high_prec=True),
-                        red(", {} errors".format(errors)) if errors else "",
+                        red(f", {errors} errors") if errors else "",
                     )
                 )
 
@@ -297,9 +296,7 @@ class RunManager:
             )
         else:
             elap = datetime.now() - self.start_dt
-            res["endTimeStr"] = "(running for {}...)".format(
-                format_elap(elap.total_seconds())
-            )
+            res["endTimeStr"] = f"(running for {format_elap(elap.total_seconds())}...)"
 
         return res
 
@@ -313,7 +310,7 @@ class RunManager:
 
         self.config_manager = cr
         # self.run_config = cr.run_config
-        logger.info("Successfully compiled configuration {}.".format(cr.path))
+        logger.info(f"Successfully compiled configuration {cr.path}.")
 
     def _run_one(self, session_manager):
         """Run inside a separate thread."""
@@ -346,14 +343,14 @@ class RunManager:
         thread_list = []
         self.session_list = []
         for i, user in enumerate(user_list, 1):
-            name = "t{:02}".format(i)
+            name = f"t{i:02}"
             sess = SessionManager(self, context, name, user)
             self.session_list.append(sess)
             t = threading.Thread(name=name, target=self._run_one, args=[sess])
             t.setDaemon(True)  # Required to make Ctrl-C work
             thread_list.append(t)
 
-        logger.info("Starting {} session workers...".format(len(thread_list)))
+        logger.info(f"Starting {len(thread_list)} session workers...")
         self.set_stage("running")
         self.stats.report_start(None, None, None)
 
@@ -364,15 +361,13 @@ class RunManager:
             if ramp_up_delay and i > 1:
                 delay = get_random_number(ramp_up_delay)
                 logger.info(
-                    "Ramp-up delay for t{:02}: {:.2f} seconds...".format(i, delay)
+                    f"Ramp-up delay for t{i:02}: {delay:.2f} seconds..."
                 )
                 time.sleep(delay)
             t.start()
 
         logger.important(
-            "All {} sessions running, waiting for them to terminate...".format(
-                len(thread_list)
-            )
+            f"All {len(thread_list)} sessions running, waiting for them to terminate..."
         )
         for t in thread_list:
             t.join()
@@ -385,7 +380,7 @@ class RunManager:
 
         self.publish("end_run", run_manager=self, elap=elap)
 
-        logger.debug("Results for {}:\n{}".format(self, self.stats.format_result()))
+        logger.debug(f"Results for {self}:\n{self.stats.format_result()}")
 
         return not self.has_errors()
 

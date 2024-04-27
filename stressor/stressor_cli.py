@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Stress-test your web app.
 
@@ -42,7 +41,7 @@ def handle_run_command(parser, args):
     try:
         extra_context.update(parse_option_args(args.option, coerce_values=True))
     except Exception as e:
-        parser.error("--option: {}".format(e))
+        parser.error(f"--option: {e}")
     # Make sure that --dry-run arg is always honored:
     if args.dry_run:
         extra_context["dry_run"] = True
@@ -50,7 +49,7 @@ def handle_run_command(parser, args):
     scenario_fspec = args.scenario
     if os.path.isdir(scenario_fspec):
         scenario_fspec = os.path.join(scenario_fspec, "scenario.yaml")
-        logger.info("Looking for {}".format(scenario_fspec))
+        logger.info(f"Looking for {scenario_fspec}")
 
     rm = RunManager()
     rm.load_config(scenario_fspec)
@@ -75,7 +74,7 @@ def handle_init_command(parser, args):
     if args.opts:
         if not os.path.isfile(args.opts):
             parser.error(f"File not found: {args.opts}")
-        with open(args.opts, "rt") as f:
+        with open(args.opts) as f:
             opts = yaml.safe_load(f)
 
     opts.update(
@@ -248,7 +247,7 @@ def run():
     if getattr(args, "version", None):
         if args.verbose >= 4:
             info = version_info
-            info += "\nPython from: {}".format(sys.executable)
+            info += f"\nPython from: {sys.executable}"
         else:
             info = __version__
         print(info)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -21,7 +20,7 @@ class LoadMacro(MacroBase):
 
         if path.lower().endswith(".py"):
             assert parent_key == "script"
-            with open(path, "rt") as f:
+            with open(path) as f:
                 res = f.read()
             parent[parent_key] = res
             return res
@@ -29,7 +28,7 @@ class LoadMacro(MacroBase):
         if not path.lower().endswith((".yaml", ".yml")):
             raise NotImplementedError
         # Load (and )
-        with open(path, "rt") as f:
+        with open(path) as f:
             res = yaml.safe_load(f)
         assert isinstance(parent, dict)
         assert isinstance(res, list)

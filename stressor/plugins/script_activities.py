@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -44,7 +43,7 @@ class RunScriptActivity(ActivityBase):
                     "`path` and `script` args are mutually exclusive"
                 )
             path = config_manager.resolve_path(path)
-            with open(path, "rt") as f:
+            with open(path) as f:
                 script = f.read()
             #:
             self.script = compile(script, path, "exec")
@@ -86,10 +85,10 @@ class RunScriptActivity(ActivityBase):
             exec(self.script, global_vars, local_vars)
         except ConnectionError as e:
             # TODO: more requests-exceptions?
-            msg = "Script failed: {!r}: {}".format(e, e)
+            msg = f"Script failed: {e!r}: {e}"
             raise ScriptActivityError(msg)
         except Exception as e:
-            msg = "Script failed: {!r}: {}".format(e, e)
+            msg = f"Script failed: {e!r}: {e}"
             if session.verbose >= 4:
                 logger.exception(msg)
                 raise ScriptActivityError(msg) from e
@@ -114,13 +113,13 @@ class RunScriptActivity(ActivityBase):
                     v = local_vars.get(k)
                     assert type(v) in (int, float, str, list, dict)
                     session.context[k] = v
-                    logger.debug("Set context.{} = {!r}".format(k, v))
+                    logger.debug(f"Set context.{k} = {v!r}")
                 # store_keys = new_keys.intersection(self.export)
 
         # TODO: this cannot happen?
         new_globals = set(globals().keys()).difference(prev_global_keys)
         if new_globals:
-            logger.warning("Script-defined globals: {}".format(new_globals))
+            logger.warning(f"Script-defined globals: {new_globals}")
             raise ScriptActivityError("Script introduced globals")
 
         # new_context = context_keys.difference(prev_context_keys)
@@ -133,19 +132,11 @@ class RunScriptActivity(ActivityBase):
         # logger.info("Script locals:\n{}".format(pformat(local_vars)))
         if expanded_args.get("debug") or session.verbose >= 5:
             logger.info(
-                "{} {}\n  Context after execute:\n    {}\n  return value: {!r}".format(
-                    session.context_stack,
-                    self,
-                    pformat(session.context, indent=4),
-                    result,
-                )
+                f"{session.context_stack} {self}\n  Context after execute:\n    {pformat(session.context, indent=4)}\n  return value: {result!r}"
             )
         elif session.verbose >= 3 and result is not None:
             logger.info(
-                "{} returnd: {!r}".format(
-                    session.context_stack,
-                    shorten_string(result, 200) if isinstance(result, str) else result,
-                )
+                f"{session.context_stack} returnd: {shorten_string(result, 200) if isinstance(result, str) else result!r}"
             )
 
         return result

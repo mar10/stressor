@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -68,9 +67,7 @@ def replace_var_macros(value, context):
                             value = value.replace(macro, str(var_value))
                         except (KeyError, TypeError):
                             raise RuntimeError(
-                                "Error evaluating {}: '{}': '{}' not found in context (or is None).".format(
-                                    stack, org_value, var_name
-                                )
+                                f"Error evaluating {stack}: '{org_value}': '{var_name}' not found in context (or is None)."
                             )
                     if not found_one or not isinstance(value, str):
                         break
@@ -132,10 +129,10 @@ class ConfigManager:
         path = os.path.abspath(path)
         if check_root and not path.startswith(self.root_folder):
             raise ValueError(
-                "Path must be in or below {}: {}".format(self.root_folder, path)
+                f"Path must be in or below {self.root_folder}: {path}"
             )
         if must_exist and not os.path.isfile(path):
-            raise ValueError("File not found: {}".format(path))
+            raise ValueError(f"File not found: {path}")
         return path
 
     def report_error(self, msg, level="error", exc=None, stack=None):
@@ -146,7 +143,7 @@ class ConfigManager:
         check_arg(level, str, level in ("error", "warning"))
         path = stack if stack else str(self.stack)
 
-        hint = "{}: {}".format(path, msg)
+        hint = f"{path}: {msg}"
         if exc:
             logger.exception(hint)
         # No need to log, since self.results are also summarized later
@@ -202,10 +199,10 @@ class ConfigManager:
         context = self.context
         for k, v in extra_config.items():
             if not context_only:
-                logger.info("Set config.{}: {!r} -> {!r}".format(k, config.get(k), v))
+                logger.info(f"Set config.{k}: {config.get(k)!r} -> {v!r}")
                 config[k] = v
             else:
-                logger.info("Set context.{}: {!r} -> {!r}".format(k, context.get(k), v))
+                logger.info(f"Set context.{k}: {context.get(k)!r} -> {v!r}")
             context[k] = v
         return
 
@@ -230,7 +227,7 @@ class ConfigManager:
                 return True
             elif not isinstance(o, types):
                 self.report_error(
-                    "Expected type {}, but found {!r}".format(types, type(o)), stack=key
+                    f"Expected type {types}, but found {type(o)!r}", stack=key
                 )
                 return False
             return True
@@ -248,9 +245,7 @@ class ConfigManager:
         file_version = int(file_version.split("#", 1)[1])
         if file_version != self.FILE_VERSION:
             raise ConfigurationError(
-                "File version mismatch: expected {}, but found {}.".format(
-                    self.FILE_VERSION, file_version
-                )
+                f"File version mismatch: expected {self.FILE_VERSION}, but found {file_version}."
             )
 
         missing = known_sections.difference(sections)
@@ -266,9 +261,7 @@ class ConfigManager:
             base_url = get_dict_attr(cfg, "config.base_url", None)
             if base_url and (not base_url.startswith("http") or "://" not in base_url):
                 self.report_error(
-                    "config.base_url must be an absolute URL ('http(s)://...'): {!r}".format(
-                        base_url
-                    ),
+                    f"config.base_url must be an absolute URL ('http(s)://...'): {base_url!r}",
                 )
 
         if _check_type("context", (dict, None)):
@@ -283,7 +276,7 @@ class ConfigManager:
         if _check_type("sequences", dict):
             for seq_name, act_list in cfg["sequences"].items():
                 sequence_names.add(seq_name)
-                stack = "sequences/{}".format(seq_name)
+                stack = f"sequences/{seq_name}"
                 if act_list is None:
                     act_list = []
                     cfg["sequences"][seq_name] = act_list
@@ -300,7 +293,7 @@ class ConfigManager:
                     )
                 else:
                     for idx, act_def in enumerate(act_list):
-                        stack = "sequences/{}#{:02}".format(seq_name, idx)
+                        stack = f"sequences/{seq_name}#{idx:02}"
                         if not isinstance(act_def, dict):
                             self.report_error(
                                 "Expected dict with `activity` key",
@@ -311,7 +304,7 @@ class ConfigManager:
                             if not isinstance(activity, ActivityBase):
                                 self.report_error(
                                     "`activity` must be an instance of ActivityBase "
-                                    "instance (found {!r})".format(activity),
+                                    f"instance (found {activity!r})",
                                     stack=stack,
                                 )
                             assert_match = act_def.get("assert_match")
@@ -320,16 +313,14 @@ class ConfigManager:
                                     re.compile(assert_match)
                                 except re.error as e:
                                     self.report_error(
-                                        "Invalid regular expression: {}: {}".format(
-                                            assert_match, e
-                                        ),
+                                        f"Invalid regular expression: {assert_match}: {e}",
                                         stack=stack,
                                     )
 
         # Scenario list must contain 'sequence' keys and all sequences must exist
         if _check_type("scenario", list):
             for idx, seq_def in enumerate(cfg["scenario"]):
-                stack = ".scenario#{:02}".format(idx)
+                stack = f".scenario#{idx:02}"
                 if not isinstance(seq_def, dict) or "sequence" not in seq_def:
                     self.report_error(
                         "Expected dict with `sequence` key",
@@ -430,9 +421,9 @@ class ConfigManager:
                         stats.register_activity(activity_inst)
                 except ActivityCompileError as e:
                     # Don't pass exc to supress stack trace
-                    self.report_error("{}".format(e))
+                    self.report_error(f"{e}")
                 except Exception as e:
-                    msg = "Could not evaluate activity {!r}".format(value)
+                    msg = f"Could not evaluate activity {value!r}"
                     self.report_error(msg, exc=e)
                     # logger.error("{} {}: {}".format(stack, value, e))
 
@@ -452,16 +443,16 @@ class ConfigManager:
             path += ".yaml"
         path = os.path.abspath(path)
         if not os.path.isfile(path):
-            raise ConfigurationError("File not found: {}".format(path))
+            raise ConfigurationError(f"File not found: {path}")
         self.path = path
         self.root_folder = os.path.dirname(path)
         self.name = os.path.splitext(os.path.basename(path))[0]
 
-        with open(path, "rt") as f:
+        with open(path) as f:
             try:
                 res = yaml.safe_load(f)
             except yaml.parser.ParserError as e:
-                raise ConfigurationError("Could not parse YAML: {}".format(e)) from None
+                raise ConfigurationError(f"Could not parse YAML: {e}") from None
 
         if not isinstance(res, dict) or not res.get("file_version", "").startswith(
             "stressor#"

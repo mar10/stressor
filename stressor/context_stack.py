@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -119,7 +118,7 @@ class ContextStack:
         check_arg(context, RunContext)
 
         if len(self.ctx_stack) >= self.MAX_DEPTH:
-            raise RuntimeError("Max depth exceeded ({})".format(self.MAX_DEPTH))
+            raise RuntimeError(f"Max depth exceeded ({self.MAX_DEPTH})")
         self.ctx_stack.append(context)
         return context
 
@@ -159,7 +158,7 @@ class ContextStack:
         return ctx
 
     def path(self):
-        path = "/".join((ctx.name for ctx in self.ctx_stack))
+        path = "/".join(ctx.name for ctx in self.ctx_stack)
         return "/" + path
 
     def as_dict(self):

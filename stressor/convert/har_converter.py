@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -87,7 +86,7 @@ class HarConverter:
             if not os.path.isfile(har_path):
                 raise FileNotFoundError(har_path)
 
-            logger.info("Parsing {}...".format(har_path))
+            logger.info(f"Parsing {har_path}...")
             self._parse(har_path)
 
             self._postprocess()
@@ -95,10 +94,10 @@ class HarConverter:
         if target_folder is None:
             assert har_path
             name = os.path.splitext(os.path.basename(har_path))[0].strip(".")
-            target_folder = "./{}".format(name)
+            target_folder = f"./{name}"
         target_folder = os.path.abspath(target_folder)
         if not os.path.isdir(target_folder):
-            logger.info("Creating folder {}...".format(target_folder))
+            logger.info(f"Creating folder {target_folder}...")
             os.mkdir(target_folder)
 
         self._init_from_templates(target_folder)
@@ -111,14 +110,14 @@ class HarConverter:
     def _copy_template(self, tmpl_name, target_path, kwargs):
         if not self.opts["force"] and os.path.isfile(target_path):
             raise RuntimeError(
-                "File exists (use --force to continue): {}".format(target_path)
+                f"File exists (use --force to continue): {target_path}"
             )
             # raise FileExistsError(target_path)
         tmpl_folder = os.path.dirname(__file__)
         src_path = os.path.join(tmpl_folder, tmpl_name)
-        tmpl = open(src_path, "rt", encoding=self.encoding).read()
+        tmpl = open(src_path, encoding=self.encoding).read()
         tmpl = tmpl.format(**kwargs)
-        logger.info("Writing {:,} bytes to {!r}...".format(len(tmpl), target_path))
+        logger.info(f"Writing {len(tmpl):,} bytes to {target_path!r}...")
         with open(target_path, "w") as fp:
             fp.write(tmpl)
         # print(tmpl)
@@ -170,7 +169,7 @@ class HarConverter:
         # base_url later:
         url = req["url"]
         parse_result = urlparse(url)
-        prefix = "{o.scheme}://{o.netloc}".format(o=parse_result)
+        prefix = f"{parse_result.scheme}://{parse_result.netloc}"
         self.prefix_counter[prefix] += 1
 
         entry_dt = har_entry["startedDateTime"]
@@ -227,7 +226,7 @@ class HarConverter:
         self.entries.append(entry)
 
     def _parse(self, fspec):
-        with open(fspec, "r", encoding=self.encoding) as fp:
+        with open(fspec, encoding=self.encoding) as fp:
             har_data = json.load(fp)
         log = har_data["log"]
         assert len(har_data.keys()) == 1
@@ -251,7 +250,7 @@ class HarConverter:
         # ("However the reader application should always make sure the array is sorted")
         self.entries.sort(key=itemgetter("start"))
 
-        logger.debug("HAR:\n{}".format(pformat(self.entries)))
+        logger.debug(f"HAR:\n{pformat(self.entries)}")
         # print("HAR:\n{}".format(pformat(self.entries)))
         return
 
@@ -263,7 +262,7 @@ class HarConverter:
             # print(pformat(self.prefix_counter))
             base_url = self.prefix_counter.most_common(1)[0][0]
         self.base_url = base_url
-        logger.info("Using base_url {!r}.".format(base_url))
+        logger.info(f"Using base_url {base_url!r}.")
         # print(base_url)
 
         # Remove unwanted entries and strip base_url where possible
@@ -299,7 +298,7 @@ class HarConverter:
             is_external = rel_url is url
             if is_external:
                 if skip_ext:
-                    logger.warning("Skipping external URL: {}".format(url))
+                    logger.warning(f"Skipping external URL: {url}")
                     self.stats["external_urls"] += 1
                     skip = True
             else:
@@ -359,7 +358,7 @@ class HarConverter:
         """
         assert isinstance(data, (list, tuple))
         used = set()
-        lines.append("  {}:\n".format(name))
+        lines.append(f"  {name}:\n")
         for p in data:
             # TODO: coerce value (which in HAR is always a string)
 
@@ -373,13 +372,13 @@ class HarConverter:
 
             if name in used:
                 logger.error(
-                    "Discarding multiple param name: {}: {}".format(name, value)
+                    f"Discarding multiple param name: {name}: {value}"
                 )
                 continue
             used.add(name)
             if not is_yaml_keyword(name):
                 name = '"' + name + '"'
-            lines.append("    {}: {}\n".format(name, json.dumps(value)))
+            lines.append(f"    {name}: {json.dumps(value)}\n")
 
         return
 
@@ -395,7 +394,7 @@ class HarConverter:
         if entry.get("comment"):
             lines.append("# {}\n".format(shorten_string(entry["comment"], 75)))
         if is_bucket:
-            lines.append("# Auto-collated {:,} GET requests\n".format(len(url_list)))
+            lines.append(f"# Auto-collated {len(url_list):,} GET requests\n")
         else:
             lines.append(
                 "# Response type: {!r}, size: {:,} bytes, time: {}\n".format(
@@ -410,17 +409,17 @@ class HarConverter:
         url = entry["url"]
         expand_url_params = False
 
-        lines.append("- activity: {}\n".format(activity))
+        lines.append(f"- activity: {activity}\n")
         if is_bucket:
             lines.append("  thread_count: {}\n".format(opts["collate_thread_count"]))
             lines.append("  url_list:\n")
             for url in url_list:
-                lines.append("    - '{}'\n".format(url))
+                lines.append(f"    - '{url}'\n")
         else:
             if entry.get("query"):
                 expand_url_params = True
                 url = base_url(url)
-            lines.append("  url: '{}'\n".format(url))
+            lines.append(f"  url: '{url}'\n")
 
         if activity == "HTTPRequest":
             lines.append("  method: {}\n".format(entry["method"]))
@@ -442,26 +441,26 @@ class HarConverter:
                 self._write_args(lines, "data", data)
             else:
                 assert type(data) is str
-                logger.warning("Expected list, but got text: {!r}".format(data))
-                lines.append("  data: {}\n".format(json.dumps(data)))
+                logger.warning(f"Expected list, but got text: {data!r}")
+                lines.append(f"  data: {json.dumps(data)}\n")
 
         lines.append("\n")
         fp.writelines(lines)
 
     def _write_sequence(self, fspec):
-        logger.info("Writing activity sequence to {!r}...".format(fspec))
-        with open(fspec, "wt") as fp:
+        logger.info(f"Writing activity sequence to {fspec!r}...")
+        with open(fspec, "w") as fp:
             fp.write("# Stressor Activity Definitions\n")
             fp.write("# See https://stressor.readthedocs.io/\n")
-            fp.write("# Auto-generated {}\n".format(datetime_to_iso()))
+            fp.write(f"# Auto-generated {datetime_to_iso()}\n")
             fp.write("# Source:\n")
             fp.write("#     File: {}\n".format(self.opts["fspec"]))
-            fp.write("#     HAR Version: {}\n".format(self.har_version))
-            fp.write("#     Creator: {}\n".format(self.creator_info))
+            fp.write(f"#     HAR Version: {self.har_version}\n")
+            fp.write(f"#     Creator: {self.creator_info}\n")
             if self.browser_info:
-                fp.write("#     Browser: {}\n".format(self.browser_info))
-            fp.write("#     Recorded: {}\n".format(self.first_entry_dt))
-            fp.write("#     Using base URL {!r}\n".format(self.base_url))
+                fp.write(f"#     Browser: {self.browser_info}\n")
+            fp.write(f"#     Recorded: {self.first_entry_dt}\n")
+            fp.write(f"#     Using base URL {self.base_url!r}\n")
             fp.write("\n")
 
             for entry in self.entries:

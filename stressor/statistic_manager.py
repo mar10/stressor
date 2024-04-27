@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -261,7 +260,7 @@ class StatisticManager:
     def _add_error(self, d, error):
         d.setdefault("errors", 0)
         d["errors"] += 1
-        d["last_error"] = shorten_string("{}".format(error), 500, 100)
+        d["last_error"] = shorten_string(f"{error}", 500, 100)
 
     def error_count(self, or_warnings=False):
         error_count = self.stats["errors"]
@@ -272,7 +271,7 @@ class StatisticManager:
 
     def format_result(self):
         s = dict(self.stats)
-        return "{}".format(pformat(s))
+        return f"{pformat(s)}"
 
     def get_monitor_info(self, config_all):
         stats = self.stats
@@ -392,4 +391,4 @@ class StatisticManager:
         elif type_ == "monitored":
             errors = self.stats["monitored"][key]["last_error"]
 
-        return "Last Error Info ({}):\n\n{}".format(args, errors)
+        return f"Last Error Info ({args}):\n\n{errors}"

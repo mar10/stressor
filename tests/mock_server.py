@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -192,7 +191,7 @@ class WsgiDavTestServer:
             "startup_event": self.startup_event,
             "startup_timeout": self.startup_timeout,
         }
-        print("Starting WsgiDavTestServer...: {}".format(kwargs))
+        print(f"Starting WsgiDavTestServer...: {kwargs}")
         self.proc = multiprocessing.Process(target=run_wsgidav_server, kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
@@ -202,14 +201,10 @@ class WsgiDavTestServer:
 
         if not self.startup_event.wait(self.startup_timeout):
             raise RuntimeError(
-                "WsgiDavTestServer start() timed out after {} seconds".format(
-                    self.startup_timeout
-                )
+                f"WsgiDavTestServer start() timed out after {self.startup_timeout} seconds"
             )
         print(
-            "Starting WsgiDavTestServer... running (startup took {:.2f} sec).".format(
-                time.monotonic() - start
-            )
+            f"Starting WsgiDavTestServer... running (startup took {time.monotonic() - start:.2f} sec)."
         )
         return self
 

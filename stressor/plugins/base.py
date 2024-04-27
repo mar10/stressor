@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -140,7 +139,7 @@ class ActivityBase(ABC):
             missing = self._mandatory_args.difference(passed)
             if missing:
                 raise ActivityCompileError(
-                    "Missing mandatory arguments: {}".format(missing)
+                    f"Missing mandatory arguments: {missing}"
                 )
 
         if self._all_known_args is None:
@@ -151,7 +150,7 @@ class ActivityBase(ABC):
 
         extra = passed.difference(self._all_known_args)
         if extra:
-            raise ActivityCompileError("Unsupported arguments: {}".format(extra))
+            raise ActivityCompileError(f"Unsupported arguments: {extra}")
 
         self.monitor = activity_args.get("monitor", self._default_monitor)
         self.ignore_timing = activity_args.get(
@@ -199,7 +198,7 @@ class ActivityBase(ABC):
         if info_args:
             # Add selected args
             args = (
-                "{}={!r}".format(a, arg_dict.get(a)) for a in info_args if a in arg_dict
+                f"{a}={arg_dict.get(a)!r}" for a in info_args if a in arg_dict
             )
         else:  # add all args
             args = (
