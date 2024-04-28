@@ -1,4 +1,4 @@
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/yabs
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """

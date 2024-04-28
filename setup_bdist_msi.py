@@ -78,7 +78,7 @@ executables = [
         targetName="stressor.exe",
         icon="docs/logo.ico",
         shortcutName="stressor",
-        copyright="(c) 2020-2023 Martin Wendt",
+        copyright="(c) 2020-2024 Martin Wendt",
     )
 ]
 
@@ -90,7 +90,7 @@ build_exe_options = {
     "excludes": [
         "tkinter",
     ],
-    "constants": "BUILD_COPYRIGHT='(c) 2020-2023 Martin Wendt'",
+    "constants": "BUILD_COPYRIGHT='(c) 2020-2024 Martin Wendt'",
     "include_msvcr": True,
 }
 
@@ -109,7 +109,7 @@ setup(
     version=version,
     author="Martin Wendt",
     author_email="stressor@wwwendt.de",
-    # copyright="(c) 2020-2023 Martin Wendt",
+    # copyright="(c) 2020-2024 Martin Wendt",
     maintainer="Martin Wendt",
     maintainer_email="stressor@wwwendt.de",
     url="https://github.com/mar10/stressor",
