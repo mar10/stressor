@@ -35,6 +35,7 @@ class User:
     Represents a user that is assigned to a :class:`SessionManager`.
     Often read from a `users.yaml` file.
     """
+
     def __init__(self, name, password, **kwargs):
         self.name = name
         self.password = password

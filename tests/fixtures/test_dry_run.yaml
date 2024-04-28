@@ -12,6 +12,8 @@ context:
   default_sleep: .03
   new_title: "test"
 
+reporters:
+
 sessions:
   users: $load(users.yaml)
   count: 2

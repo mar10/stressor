@@ -39,12 +39,10 @@ class ReportTarget(ABC):
         self.scenario_stamp: float = scenario_stamp
 
     @abstractmethod
-    def connect_or_create(self):
-        ...
+    def connect_or_create(self): ...
 
     @abstractmethod
-    def emit(self):
-        ...
+    def emit(self): ...
 
     def alert(self) -> None:
         pass
@@ -99,6 +97,7 @@ class ReportManager:
     Manage a pool of :class:`ReportTarget` instances and provide methods
     to append report entries to CSV files or Sqlite databases.
     """
+
     def __init__(self, scenario_stamp: float) -> None:
         self.scenario_stamp = scenario_stamp
         self.targets = {}
@@ -120,7 +119,7 @@ class ReportManager:
         format: TReportFormat,
         path: Path,
         name: str = None,
-        extra_columns: List = None
+        extra_columns: List = None,
     ) -> None:
         if type not in ReportTarget.types:
             raise ValueError(f"{type=}")

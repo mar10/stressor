@@ -313,7 +313,7 @@ class ConfigManager:
                             )
                         else:
                             activity = act_def.get("activity")
-                            if type(activity) == str:
+                            if isinstance(activity, str):
                                 # and activity in pm.activity_plugin_map:
                                 self.report_error(
                                     f"Could not instantiate activity {activity!r}",

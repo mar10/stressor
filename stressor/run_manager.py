@@ -79,7 +79,7 @@ class RunManager:
         #: True: Finalize the current sequence, then do 'end' sequence before stopping?
         self.stop_request_monitor = None
         self.session_list = []
-        #: :class:`~stressor.statistic_manager.StatisticManager` object that 
+        #: :class:`~stressor.statistic_manager.StatisticManager` object that
         #: contains the current execution path
         self.stats = StatisticManager()
         #: :class:`ReportManager` used to emit statistics to files/databases
