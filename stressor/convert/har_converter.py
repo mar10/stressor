@@ -1,4 +1,4 @@
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 https://w3c.github.io/web-performance/specs/HAR/Overview.html
@@ -25,7 +25,6 @@ from stressor.util import (
 logger = logging.getLogger("stressor.har")
 
 EMPTY_TUPLE = tuple()
-PATTERN_TYPE = type(re.compile("foo"))  # 're.Pattern' requires Python 3.7+
 
 
 class HarConverter:
@@ -73,7 +72,6 @@ class HarConverter:
         for pattern in self.opts["statics_types"]:
             if isinstance(pattern, str):
                 pattern = re.compile(pattern, re.IGNORECASE)
-            assert isinstance(pattern, PATTERN_TYPE)
             pl.append(pattern)
         self.opts["statics_types"] = pl
 
