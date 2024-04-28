@@ -1,2 +1,3 @@
-# -*- coding: utf-8 -*-
+# ruff: noqa: T201
+
 print("Works")

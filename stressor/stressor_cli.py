@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
 """
 Stress-test your web app.
 
-(c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+(c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 
 Usage examples:
     $ stressor --help
     $ stressor run .
 """
+
 import argparse
 import logging
 import os
@@ -42,7 +42,7 @@ def handle_run_command(parser, args):
     try:
         extra_context.update(parse_option_args(args.option, coerce_values=True))
     except Exception as e:
-        parser.error("--option: {}".format(e))
+        parser.error(f"--option: {e}")
     # Make sure that --dry-run arg is always honored:
     if args.dry_run:
         extra_context["dry_run"] = True
@@ -50,7 +50,7 @@ def handle_run_command(parser, args):
     scenario_fspec = args.scenario
     if os.path.isdir(scenario_fspec):
         scenario_fspec = os.path.join(scenario_fspec, "scenario.yaml")
-        logger.info("Looking for {}".format(scenario_fspec))
+        logger.info(f"Looking for {scenario_fspec}")
 
     rm = RunManager()
     rm.load_config(scenario_fspec)
@@ -248,10 +248,10 @@ def run():
     if getattr(args, "version", None):
         if args.verbose >= 4:
             info = version_info
-            info += "\nPython from: {}".format(sys.executable)
+            info += f"\nPython from: {sys.executable}"
         else:
             info = __version__
-        print(info)
+        print(info)  # noqa: T201
         sys.exit(0)
 
     if not callable(getattr(args, "command", None)):
@@ -260,7 +260,7 @@ def run():
     try:
         return args.command(parser, args)
     except KeyboardInterrupt:
-        print("\nAborted by user.", file=sys.stderr)
+        print("\nAborted by user.", file=sys.stderr)  # noqa: T201
         sys.exit(3)
     # Unreachable...
     return

@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -61,4 +60,4 @@ class TestContextStack:
 
         with pytest.raises(RuntimeError):
             for i in range(ContextStack.MAX_DEPTH + 1):
-                cm.push("t{:02}".format(i), {})
+                cm.push(f"t{i:02}", {})

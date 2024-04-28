@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
+# ruff: noqa: T201, T203 `print` found
+
 import os
 from textwrap import dedent
 
@@ -55,7 +56,7 @@ class TestScripts:
         )
         assert res is None
         print("New built-ins:", set(__builtins__.keys()).difference(prev_builtins))
-        print("Result: {}".format(res))
-        print("Globals: {}".format(global_vars.keys()))
-        print("Locals: {}".format(local_vars))
+        print(f"Result: {res}")
+        print(f"Globals: {global_vars.keys()}")
+        print(f"Locals: {local_vars}")
         # assert 0

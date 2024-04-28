@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -29,7 +28,7 @@ class TestConvert:
             conv = HarConverter(opts)
             conv.run()
             act_yaml_path = os.path.join(target_folder, "main_sequence.yaml")
-            yaml = open(act_yaml_path, "rt").read()
+            yaml = open(act_yaml_path).read()
             # print(yaml)
             assert len(conv.entries) == 5
             assert conv.har_version == "1.2"

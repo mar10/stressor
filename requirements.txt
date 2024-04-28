@@ -1,0 +1,7 @@
+# used by GH action
+fabulist
+lxml
+python-dateutil
+PyYAML
+requests
+snazzy

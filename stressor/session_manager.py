@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -45,7 +44,7 @@ class User:
         return
 
     def __str__(self):
-        return "User<{}>".format(self.name)
+        return f"User<{self.name}>"
 
     # Provide nicer display for pprint(), etc.
     __repr__ = __str__
@@ -139,7 +138,7 @@ class SessionManager:
         self.stats.register_session(self)
 
     def __str__(self):
-        return "SessionManager<{}>".format(self.session_id)
+        return f"SessionManager<{self.session_id}>"
 
     # Provide nicer display for pprint(), etc.
     __repr__ = __str__
@@ -214,13 +213,9 @@ class SessionManager:
             self._cancelled_seq = seq_name
             # self.stats.stats["run_limit_reached"] = True
             if err_limit_reached:
-                msg = "Reached max. error limit of {}: stopping...".format(
-                    self.max_errors
-                )
+                msg = f"Reached max. error limit of {self.max_errors}: stopping..."
             elif time_limit_reached:
-                msg = "Reached max. run time limit of {}: stopping...".format(
-                    self.max_time
-                )
+                msg = f"Reached max. run time limit of {self.max_time}: stopping..."
             self.stats.report_limit_violation(msg)
             logger.warning(yellow(msg))
             return False
@@ -244,7 +239,7 @@ class SessionManager:
         # self.stats.inc("errors")
 
         if isinstance(exc, SkippedError):
-            logger.warning(yellow("Skipped {}".format(activity)))
+            logger.warning(yellow(f"Skipped {activity}"))
             self.pending_activity = None
             return
 
@@ -255,15 +250,15 @@ class SessionManager:
         msg = []
         # msg.append("{} {}: {!r}:".format(self.context_stack, activity, exc))
         # msg.append("{!r}:".format(exc))
-        msg.append("{!r}:".format(exc))
+        msg.append(f"{exc!r}:")
         if isinstance(exc, ActivityAssertionError):
             msg.append("Failed assertions:")
             for err in exc.assertion_list:
-                msg.append("  - {}".format(err))
-        msg.append("Execution path: {}".format(self.context_stack))
-        msg.append("Activity: {}".format(activity))
-        msg.append("Activity args: {}".format(activity_args))
-        msg.append("Context: {}".format(context))
+                msg.append(f"  - {err}")
+        msg.append(f"Execution path: {self.context_stack}")
+        msg.append(f"Activity: {activity}")
+        msg.append(f"Activity args: {activity_args}")
+        msg.append(f"Context: {context}")
 
         msg = "\n    ".join(msg)
         logger.error(red(msg))
@@ -287,9 +282,7 @@ class SessionManager:
         arg = float(activity_args.get("assert_max_time", 0))
         if arg and elap > arg:
             errors.append(
-                "Execution time limit of {} seconds exceeded: {:.3} sec.".format(
-                    arg, elap
-                )
+                f"Execution time limit of {arg} seconds exceeded: {elap:.3} sec."
             )
 
         arg = activity_args.get("assert_match")
@@ -298,9 +291,7 @@ class SessionManager:
             # Note: use re.search (not .match)!
             if not re.search(arg, text, re.MULTILINE):
                 errors.append(
-                    "Result does not match `{}`: {!r}".format(
-                        arg, shorten_string(text, 500, 100)
-                    )
+                    f"Result does not match `{arg}`: {shorten_string(text, 500, 100)!r}"
                 )
 
         arg = activity_args.get("store_json")
@@ -311,9 +302,7 @@ class SessionManager:
                     context[var_name] = val
                 except Exception:
                     errors.append(
-                        "store_json could not find `{}` in activity result {!r}".format(
-                            key_path, result
-                        )
+                        f"store_json could not find `{key_path}` in activity result {result!r}"
                     )
 
         if errors:
@@ -344,9 +333,7 @@ class SessionManager:
             # Note: `get_info()` is not as detailed as it could, since we don't
             # pass the expanded args here. We set it anyway, so we have a valid
             # stack in case `_evaluate_macros()` blows.
-            with stack.enter(
-                "#{:02}-{}".format(act_idx, activity.get_info(session=self))
-            ):
+            with stack.enter(f"#{act_idx:02}-{activity.get_info(session=self)}"):
                 expanded_args = self._evaluate_macros(activity_args, context)
 
                 # Let activity do internal calculations, that might be used by
@@ -451,7 +438,7 @@ class SessionManager:
         for seq_idx, seq_def in enumerate(scenario, 1):
             seq_name = seq_def["sequence"]
             if skip_all or (skip_all_but_end and seq_name != "end"):
-                logger.warning("Skipping sequence '{}'.".format(seq_name))
+                logger.warning(f"Skipping sequence '{seq_name}'.")
                 continue
 
             sequence = sequences.get(seq_name)
@@ -483,9 +470,7 @@ class SessionManager:
                 # `Sequence duration: SECS`:
                 if loop_duration > 0 and now > (start_seq_loop + loop_duration):
                     logger.info(
-                        "Stopping sequence '{}' loop after {} sec.".format(
-                            seq_name, loop_duration
-                        )
+                        f"Stopping sequence '{seq_name}' loop after {loop_duration} sec."
                     )
                     break
                 # `Session duration: SECS` (but run 'end' sequence):
@@ -495,14 +480,12 @@ class SessionManager:
                     and now > (start_session + session_duration)
                 ):
                     logger.info(
-                        "Stopping scenario '{}' loop after {} sec.".format(
-                            seq_name, session_duration
-                        )
+                        f"Stopping scenario '{seq_name}' loop after {session_duration} sec."
                     )
                     skip_all_but_end = True
                     break
 
-                with stack.enter("#{:02}-{}@{}".format(seq_idx, seq_name, loop_idx)):
+                with stack.enter(f"#{seq_idx:02}-{seq_name}@{loop_idx}"):
                     is_ok = self.run_sequence(seq_name, sequence)
                     if seq_name == "init" and not is_ok:
                         logger.error(

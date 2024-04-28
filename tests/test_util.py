@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -164,7 +163,7 @@ class TestBasics:
     def test_coerce_str(self):
         assert coerce_str("1.2") == 1.2
         assert coerce_str("1") == 1
-        assert type(coerce_str("1")) is int
+        assert isinstance(coerce_str("1"), int)
         assert coerce_str("") == ""
         assert coerce_str("1.2.3") == "1.2.3"
         assert coerce_str(None) is None

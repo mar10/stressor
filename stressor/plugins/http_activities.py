@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -42,7 +41,7 @@ def match_value(pattern, value, info):
     #     match = pattern == value
 
     if not match:
-        msg = "`{}` value {!r} does not match pattern {!r}".format(info, value, pattern)
+        msg = f"`{info}` value {value!r} does not match pattern {pattern!r}"
         return False, msg
     return True, None
 
@@ -91,7 +90,7 @@ class HTTPRequestActivity(ActivityBase):
             method = "{} ".format(args_dict["method"])
         else:
             method = ""
-        return "{}({}{}{})".format(self.get_script_name(), method, url, params)
+        return f"{self.get_script_name()}({method}{url}{params})"
 
     @classmethod
     def _format_response(cls, resp, short=False, add_headers=False, ruler=True):
@@ -112,9 +111,7 @@ class HTTPRequestActivity(ActivityBase):
         res = []
         res.append("")
         res.append(
-            "--- Response status: {}, len: {:,} bytes: >>>".format(
-                resp.status_code, len(resp.content)
-            )
+            f"--- Response status: {resp.status_code}, len: {len(resp.content):,} bytes: >>>"
         )
 
         for k, v in resp.headers.items():
@@ -131,7 +128,7 @@ class HTTPRequestActivity(ActivityBase):
     def _raise_assertion(cls, cause, resp):
         msg = cls._format_response(resp, short=True)
         msg = "\n  | ".join(msg.split("\n"))
-        raise ActivityAssertionError("{}\n{}".format(cause, msg))
+        raise ActivityAssertionError(f"{cause}\n{msg}")
 
     def execute(self, session, **expanded_args):
         """
@@ -172,7 +169,7 @@ class HTTPRequestActivity(ActivityBase):
         headers = r_args.setdefault("headers", {})
         headers.setdefault(
             "User-Agent",
-            "session/{} Stressor/{}".format(session.session_id, __version__),
+            f"session/{session.session_id} Stressor/{__version__}",
         )
 
         # if debug:
@@ -180,15 +177,15 @@ class HTTPRequestActivity(ActivityBase):
         # else:
         #     http_client.HTTPConnection.debuglevel = 0
         if debug:
-            logger.info("HTTPRequest({}, {}, {})...".format(method, url, r_args))
+            logger.info(f"HTTPRequest({method}, {url}, {r_args})...")
 
         # The actual HTTP request:
         try:
             resp = bs.request(method, url, **r_args)
         except requests.exceptions.Timeout as e:
-            raise ActivityTimeoutError("{}".format(e))
+            raise ActivityTimeoutError(f"{e}")
         except RequestException as e:
-            raise ActivityError("{}".format(e))
+            raise ActivityError(f"{e}")
 
         is_json = False
         try:
@@ -208,9 +205,7 @@ class HTTPRequestActivity(ActivityBase):
             resp.raise_for_status()
         elif resp.status_code not in assert_status:
             self._raise_assertion(
-                "HTTP status does not match {}: {}".format(
-                    assert_status, resp.status_code
-                ),
+                f"HTTP status does not match {assert_status}: {resp.status_code}",
                 resp,
             )
 
@@ -218,9 +213,7 @@ class HTTPRequestActivity(ActivityBase):
         if arg:
             text = str(resp.headers)
             if not re.match(arg, text):
-                self._raise_assertion(
-                    "Result headers do not match `{}`".format(arg), resp
-                )
+                self._raise_assertion(f"Result headers do not match `{arg}`", resp)
 
         arg = expanded_args.get("assert_json")
         if arg:
@@ -232,7 +225,7 @@ class HTTPRequestActivity(ActivityBase):
                 # print(result, key, value)
                 match, msg = match_value(pattern, value, key)
                 if not match:
-                    self._raise_assertion("Unexpected JSON result {}".format(msg), resp)
+                    self._raise_assertion(f"Unexpected JSON result {msg}", resp)
 
         arg = expanded_args.get("assert_html")
         if arg:
@@ -256,7 +249,7 @@ class HTTPRequestActivity(ActivityBase):
                     raise NotImplementedError
                 if not ok:
                     self._raise_assertion(
-                        "Unexpected HTML result: XPath {!r} -> {}".format(xpath, match),
+                        f"Unexpected HTML result: XPath {xpath!r} -> {match}",
                         resp,
                     )
 
@@ -317,7 +310,7 @@ class StaticRequestsActivity(ActivityBase):
         headers = r_args.setdefault("headers", {})
         headers.setdefault(
             "User-Agent",
-            "session/{} Stressor/{}".format(session.session_id, __version__),
+            f"session/{session.session_id} Stressor/{__version__}",
         )
 
         # TODO: requests.Session is not guaranteed to be thread-safe!
@@ -339,7 +332,7 @@ class StaticRequestsActivity(ActivityBase):
                     break
 
                 if debug:
-                    logger.info("StaticRequests({}, {})...".format(name, url))
+                    logger.info(f"StaticRequests({name}, {url})...")
                 # The actual HTTP request:
                 # TODO: requests.Session is not guaranteed to be thread-safe!
                 try:
@@ -347,18 +340,16 @@ class StaticRequestsActivity(ActivityBase):
                     res.raise_for_status()
                     results.append((True, name, url, None))
                 except Exception as e:
-                    results.append((False, name, url, "{}".format(e)))
+                    results.append((False, name, url, f"{e}"))
                 queue.task_done()
-            logger.debug("StaticRequests({}) stopped.".format(name))
+            logger.debug(f"StaticRequests({name}) stopped.")
             return
 
-        logger.debug(
-            "Starting {} StaticRequestsActivity workers...".format(thread_count)
-        )
+        logger.debug(f"Starting {thread_count} StaticRequestsActivity workers...")
 
         thread_list = []
         for i in range(thread_count):
-            name = "{}.{:02}".format(session.session_id, i + 1)
+            name = f"{session.session_id}.{i + 1:02}"
             t = threading.Thread(name=name, target=_work, args=[name])
             t.setDaemon(True)  # Required to make Ctrl-C work
             thread_list.append(t)
@@ -370,11 +361,9 @@ class StaticRequestsActivity(ActivityBase):
         queue.join()
         for t in thread_list:
             t.join()
-        errors = ["{}".format(error) for ok, name, url, error in results if not ok]
+        errors = [f"{error}" for ok, name, url, error in results if not ok]
         if errors:
-            raise ActivityError(
-                "{} reqests failed:\n{}".format(len(errors), format(errors))
-            )
+            raise ActivityError(f"{len(errors)} reqests failed:\n{format(errors)}")
             # logger.error(pformat(errors))
         return bool(errors)
 

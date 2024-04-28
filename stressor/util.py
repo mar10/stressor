@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/stressor
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/stressor
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -39,9 +38,7 @@ logging.Logger.important = log_important
 #: NOTE: YAML evaluates `0_` as "0" and `0_1_` as "1", so we don't accept leading numbers
 RE_YAML_KEYWORD = re.compile(r"^[a-zA-Z_]+\w*$")
 
-PYTHON_VERSION = "{}.{}.{}".format(
-    sys.version_info[0], sys.version_info[1], sys.version_info[2]
-)
+PYTHON_VERSION = f"{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}"
 version_info = "stressor/{} Python/{}({} bit) {}".format(
     __version__,
     PYTHON_VERSION,
@@ -149,7 +146,7 @@ def timetag(seconds=True, ms=False):
     if ms or seconds:
         s = now.strftime("%Y%m%d_%H%M%S")
         if ms:
-            s = "{}_{}".format(s, now.microsecond)
+            s = f"{s}_{now.microsecond}"
     else:
         s = now.strftime("%Y%m%d_%H%M")
     return s
@@ -194,11 +191,11 @@ def init_logging(verbose=3, path=None):
 
     if path:
         if os.path.isdir(path):
-            fname = "stressor_{}.log".format(timetag())
+            fname = f"stressor_{timetag()}.log"
             path = os.path.join(path, fname)
-        logger.info("Writing log to '{}'".format(path))
+        logger.info(f"Writing log to '{path}'")
         if os.path.isfile(path):
-            logger.warning("Removing log file '{}'".format(path))
+            logger.warning(f"Removing log file '{path}'")
             os.remove(path)
         hdlr = logging.FileHandler(path)
         formatter = logging.Formatter(
@@ -207,7 +204,7 @@ def init_logging(verbose=3, path=None):
         hdlr.setFormatter(formatter)
         logger.addHandler(hdlr)
         # logger.setLevel(logging.DEBUG)
-        logger.info("Start log ({})".format(datetime.now()))
+        logger.info(f"Start log ({datetime.now()})")
         logger.info(version_info)
         logger.info("Running {}".format(" ".join(sys.argv)))
 
@@ -247,7 +244,7 @@ def set_console_ctrl_handler(
         kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
         logger.info("Loaded kernel32 DLL on Windows.")
     except Exception as e:
-        logger.warning("Could not load kernel32 DLL on Windows: {}".format(e))
+        logger.warning(f"Could not load kernel32 DLL on Windows: {e}")
         return False
 
     CTRL_C_EVENT = 0
@@ -281,8 +278,6 @@ def assert_always(condition, msg=None):
         if not condition:
             raise AssertionError(msg) if msg is not None else AssertionError
     except AssertionError as e:
-        if sys.version_info < (3, 7):
-            raise
         # Strip last frames, so the exception's stacktrace points to the call
         # Credits: https://stackoverflow.com/a/58821552/19166
         _exc_type, _exc_value, traceback = sys.exc_info()
@@ -314,13 +309,9 @@ def _check_arg(argument, types, condition, accept_none):
         extra_msg = ""
 
     if not isinstance(argument, types):
-        raise TypeError(
-            "Expected {}{}, but got {}".format(extra_msg, types, type(argument))
-        )
+        raise TypeError(f"Expected {extra_msg}{types}, but got {type(argument)}")
     if condition is not NO_DEFAULT and not bool(condition):
-        raise ValueError(
-            "Invalid argument value: {} {}".format(type(argument), argument)
-        )
+        raise ValueError(f"Invalid argument value: {type(argument)} {argument}")
 
 
 def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False) -> None:
@@ -353,8 +344,6 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False) -
     try:
         _check_arg(argument, allowed_types, condition, accept_none=or_none)
     except (TypeError, ValueError) as e:
-        if sys.version_info < (3, 7):
-            raise
         # Strip last frames, so the exception's stacktrace points to the call
         _exc_type, _exc_value, traceback = sys.exc_info()
         back_frame = traceback.tb_frame.f_back
@@ -445,7 +434,7 @@ def parse_option_args(opt_list, coerce_values=True):
     for opt in opt_list:
         # print(opt_list, opt)
         if ":" not in opt:
-            raise ValueError("Expected 'NAME:VALUE', got {!r}".format(opt))
+            raise ValueError(f"Expected 'NAME:VALUE', got {opt!r}")
         config_name, config_val = opt.split(":", 1)
         if coerce_values:
             res[config_name.strip()] = coerce_str(config_val)
@@ -504,20 +493,16 @@ def parse_args_from_str(arg_str, arg_defs):  # , context=None):
             arg_default = NO_DEFAULT
             if optional_mode:
                 raise AssertionError(
-                    "Mandatory arg definition must not follow optional args: `{}`".format(
-                        arg_def
-                    )
+                    f"Mandatory arg definition must not follow optional args: `{arg_def}`"
                 )
         elif len(arg_def) == 3:
             arg_name, arg_type, arg_default = arg_def
             optional_mode = True
         else:
-            raise AssertionError("Expected 2- or 3-tuple: {}".format(arg_def))
+            raise AssertionError(f"Expected 2- or 3-tuple: {arg_def}")
 
         if arg_type not in (float, int, str):
-            raise AssertionError(
-                "Unsupported argument definition type: {}".format(arg_def)
-            )
+            raise AssertionError(f"Unsupported argument definition type: {arg_def}")
 
         try:
             # Get next arg
@@ -537,9 +522,7 @@ def parse_args_from_str(arg_str, arg_defs):  # , context=None):
                 arg_val = arg_type(arg_val)
         except IndexError:
             if arg_default is NO_DEFAULT:
-                raise ValueError(
-                    "Missing mandatory arg `{}` in '{}'.".format(arg_name, arg_str)
-                )
+                raise ValueError(f"Missing mandatory arg `{arg_name}` in '{arg_str}'.")
             arg_val = arg_default
 
         res[arg_name] = arg_val
@@ -573,9 +556,9 @@ def resolve_url(root, url):
 def base_url(url):
     parsed_uri = urlparse(url)
     if parsed_uri.netloc:
-        res = "{uri.scheme}://{uri.netloc}{uri.path}".format(uri=parsed_uri)
+        res = f"{parsed_uri.scheme}://{parsed_uri.netloc}{parsed_uri.path}"
     else:
-        res = "{uri.path}".format(uri=parsed_uri)
+        res = f"{parsed_uri.path}"
     return res
 
 
@@ -661,40 +644,40 @@ def format_elap(seconds, count=None, unit="items", high_prec=False):
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
         if high_prec:
-            res = "{:d}:{:02d}:{:04.1f} hrs".format(int(h), int(m), s)
+            res = f"{int(h):d}:{int(m):02d}:{s:04.1f} hrs"
         else:
-            res = "{:d}:{:02d}:{:02d} hrs".format(int(h), int(m), int(s))
+            res = f"{int(h):d}:{int(m):02d}:{int(s):02d} hrs"
     elif seconds >= 60:
         m, s = divmod(seconds, 60)
         if high_prec:
-            res = "{:d}:{:05.2f} min".format(int(m), s)
+            res = f"{int(m):d}:{s:05.2f} min"
         else:
-            res = "{:d}:{:02d} min".format(int(m), int(s))
+            res = f"{int(m):d}:{int(s):02d} min"
     else:
         if high_prec:
             if seconds > 0.01:
-                res = "{:.3f} sec".format(seconds)
+                res = f"{seconds:.3f} sec"
             else:
-                res = "{:f} sec".format(seconds)
+                res = f"{seconds:f} sec"
         elif seconds > 5:
-            res = "{:.1f} sec".format(seconds)
+            res = f"{seconds:.1f} sec"
         else:
-            res = "{:.2f} sec".format(seconds)
+            res = f"{seconds:.2f} sec"
 
     if days == 1:
-        res = "{} day {}".format(int(days), res)
+        res = f"{int(days)} day {res}"
     elif days:
-        res = "{} days {}".format(int(days), res)
+        res = f"{int(days)} days {res}"
 
     if count and (seconds > 0):
-        res += ", {:,.1f} {}/sec".format(float(count) / seconds, unit)
+        res += f", {float(count) / seconds:,.1f} {unit}/sec"
     return res
 
 
 def format_num(num):
     """Return num rounded to reasonable precision (promille)."""
     if num >= 1000.0:
-        res = "{:,}".format(round(num))
+        res = f"{round(num):,}"
     elif num >= 100.0:
         res = str(round(num, 1))
         # res = "{:,.1f}".format(num)
@@ -717,13 +700,13 @@ def format_rate(count, time, unit=None, high_prec=False):
 
     rate = float(count) / float(time)
     if rate >= 1000:
-        res = "{}".format(int(round(rate)))
+        res = f"{int(round(rate))}"
     elif rate >= 100:
-        res = "{}".format(round(rate, 1))
+        res = f"{round(rate, 1)}"
     elif rate >= 10:
-        res = "{}".format(round(rate, 2))
+        res = f"{round(rate, 2)}"
     else:
-        res = "{}".format(round(rate, 3))
+        res = f"{round(rate, 3)}"
     return res
 
 

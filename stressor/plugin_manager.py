@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# (c) 2020-2023 Martin Wendt and contributors; see https://github.com/mar10/yabs
+# (c) 2020-2024 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
@@ -47,18 +46,14 @@ class PluginManager:
             return
         cls.entry_points_searched = True
         ep_map = cls._entry_point_map
-        logger.debug("Search entry points for group '{}'...".format(cls.namespace))
+        logger.debug(f"Search entry points for group '{cls.namespace}'...")
 
         for ep in iter_entry_points(group=cls.namespace, name=None):
-            plugin_name = "{}".format(ep.dist)
-            logger.debug(
-                "Found plugin {} from entry point `{}`".format(plugin_name, ep)
-            )
+            plugin_name = f"{ep.dist}"
+            logger.debug(f"Found plugin {plugin_name} from entry point `{ep}`")
 
             if ep.name in ep_map:
-                logger.warning(
-                    "Duplicate entry point name: {}; skipping...".format(ep.name)
-                )
+                logger.warning(f"Duplicate entry point name: {ep.name}; skipping...")
                 continue
             # elif ep.name in cls.task_class_map:
             #     # TODO: support overriding standard tasks?
@@ -90,7 +85,7 @@ class PluginManager:
                     cls_map[name] = sub_cls
                 cls._register_subclasses(sub_cls, cls_map)
             else:
-                raise RuntimeError("Class name conflict: {}".format(sub_cls))
+                raise RuntimeError(f"Class name conflict: {sub_cls}")
         return
 
     @classmethod
@@ -115,19 +110,19 @@ class PluginManager:
         # Call `register_fn` on all loaded entry points_
         ep_map = cls._entry_point_map
         for name, ep in cls._entry_point_map.items():
-            logger.info("Load plugins {}...".format(ep.dist))
+            logger.info(f"Load plugins {ep.dist}...")
             try:
                 register_fn = ep.load()
                 if not callable(register_fn):
-                    raise RuntimeError("Entry point {} is not a function".format(ep))
+                    raise RuntimeError(f"Entry point {ep} is not a function")
                 ep_map[ep.name] = register_fn
             except Exception:
-                logger.exception("Failed to load {}".format(ep))
+                logger.exception(f"Failed to load {ep}")
 
             prev_activities = list(ActivityBase.__subclasses__())
             prev_macros = list(MacroBase.__subclasses__())
 
-            logger.debug("Register plugins {}...".format(ep.dist))
+            logger.debug(f"Register plugins {ep.dist}...")
             try:
                 # The plugin must declare new classes derrived from
                 # ActivityBase and/or MacroBase
@@ -137,7 +132,7 @@ class PluginManager:
                     arg_parser=arg_parser,
                 )
             except Exception:
-                logger.exception("Could not register {}".format(name))
+                logger.exception(f"Could not register {name}")
                 continue
 
             found_one = False
@@ -145,23 +140,23 @@ class PluginManager:
                 if activity_cls in prev_activities:
                     continue
                 found_one = True
-                logger.info("Register {}.{}".format(ep.dist, activity_cls))
+                logger.info(f"Register {ep.dist}.{activity_cls}")
 
             for macro_cls in MacroBase.__subclasses__():
                 if macro_cls in prev_macros:
                     continue
                 found_one = True
-                logger.info("Register {}.{}".format(ep.dist, macro_cls))
+                logger.info(f"Register {ep.dist}.{macro_cls}")
 
             if not found_one:
                 logger.warning(
-                    "Plugin {} did not register activites nor macros".format(ep.dist)
+                    f"Plugin {ep.dist} did not register activites nor macros"
                 )
 
         # Build plugin maps from currently known subclasses
         cls._register_subclasses(ActivityBase, cls.activity_plugin_map)
-        logger.debug("Registered activity plugins:\n{}".format(cls.activity_plugin_map))
+        logger.debug(f"Registered activity plugins:\n{cls.activity_plugin_map}")
 
         cls._register_subclasses(MacroBase, cls.macro_plugin_map)
-        logger.debug("Registered macro plugins:\n{}".format(cls.macro_plugin_map))
+        logger.debug(f"Registered macro plugins:\n{cls.macro_plugin_map}")
         return
