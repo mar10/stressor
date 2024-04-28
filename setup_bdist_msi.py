@@ -75,9 +75,9 @@ executables = [
     Executable(
         script="stressor/stressor_cli.py",
         base=None,
-        targetName="stressor.exe",
+        target_name="stressor.exe",
         icon="docs/logo.ico",
-        shortcutName="stressor",
+        shortcut_name="stressor",
         copyright="(c) 2020-2024 Martin Wendt",
     )
 ]
