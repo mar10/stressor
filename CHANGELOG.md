@@ -9,6 +9,7 @@ First release.
 > This section will be removed after the beta phase. <br>
 > Note that semantic versioning rules are not strictly followed in this phase.
 
+- v0.6.0: Add CSV & Sqlite reports
 - v0.6.0: Support Python 3.9 - 3.12, drop Python 3.7, 3.8
 - v0.6.0: Ust GH Actions instead of Travis CI
 

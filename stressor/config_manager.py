@@ -12,7 +12,7 @@ from stressor.plugins.base import ActivityBase, ActivityCompileError
 from stressor.util import (
     NO_DEFAULT,
     PathStack,
-    StressorError,
+    TerminatingStressorError,
     assert_always,
     check_arg,
     get_dict_attr,
@@ -23,8 +23,13 @@ VAR_MACRO_REX = re.compile(r"\$\(\s*(\w[\w.:]*)\s*\)")
 GENERIC_MACRO_REX = re.compile(r"\$\w+.*\(.*\).*")
 
 
-class ConfigurationError(StressorError):
-    """"""
+class ConfigurationError(TerminatingStressorError):
+    """Report a configuration error and exit without stacktrace."""
+
+
+# YAML_DEFAULTS = {
+#     "config": {}
+# }
 
 
 def replace_var_macros(value, context):
@@ -214,14 +219,14 @@ class ConfigManager:
         if cfg is None:
             cfg = self.config_all
 
-        def _check_type(key, types):
+        def _check_type(key, types, or_none: bool = False) -> bool:
             try:
                 o = get_dict_attr(cfg, key)
             except Exception:
                 self.report_error("Could not find expected entry", stack=key)
                 return False
 
-            if o is None and None in types:
+            if o is None and or_none:
                 return True
             elif not isinstance(o, types):
                 self.report_error(
@@ -235,6 +240,7 @@ class ConfigManager:
             "file_version",
             "config",
             "context",
+            "reporters",
             "sessions",
             "scenario",
             "sequences",
@@ -266,8 +272,11 @@ class ConfigManager:
                 self.report_error(
                     f"config.base_url must be an absolute URL ('http(s)://...'): {base_url!r}",
                 )
+            _check_type("config.request_timeout", (int, float))
 
-        if _check_type("context", (dict, None)):
+        if _check_type("context", dict, or_none=True):
+            pass
+        if _check_type("reporters", list, or_none=True):
             pass
         if _check_type("sessions", dict):
             pass
@@ -304,7 +313,13 @@ class ConfigManager:
                             )
                         else:
                             activity = act_def.get("activity")
-                            if not isinstance(activity, ActivityBase):
+                            if isinstance(activity, str):
+                                # and activity in pm.activity_plugin_map:
+                                self.report_error(
+                                    f"Could not instantiate activity {activity!r}",
+                                    stack=stack,
+                                )
+                            elif not isinstance(activity, ActivityBase):
                                 self.report_error(
                                     "`activity` must be an instance of ActivityBase "
                                     f"instance (found {activity!r})",
@@ -395,7 +410,9 @@ class ConfigManager:
                         # ) from e
 
                 if not has_match and GENERIC_MACRO_REX.match(value):
-                    msg = f"Entry looks like a macro, but has no handler: '{value}'"
+                    msg = "Entry looks like a macro, but has no handler: '{}'".format(
+                        value
+                    )
                     self.report_error(msg, level="warning")
 
             # Resolve lists and dicts recursively:
@@ -455,7 +472,7 @@ class ConfigManager:
             try:
                 res = yaml.safe_load(f)
             except yaml.parser.ParserError as e:
-                raise ConfigurationError(f"Could not parse YAML: {e}") from None
+                raise ConfigurationError(f"Could not parse YAML: {e!r}") from None
 
         if not isinstance(res, dict) or not res.get("file_version", "").startswith(
             "stressor#"

@@ -27,6 +27,10 @@ executed by the `stressor` command line tool. |br|
 Stressor is also an Open Source Python library that can be included into your
 own projects. This allows to define test *scenarios* programmtically.
 
+Stressor can open a live-monitor in the browser to track the current progress. |br|
+During a run, it is also possible to regularly write statistics which can be used
+for later evaluation or diagrams over time.
+
 
 Concepts
 ========
@@ -60,6 +64,9 @@ options.
 
 When a scenario is run, one or more  **sessions** are executed in parallel.
 Every session has a virtual *user* assigned.
+
+**Reporters** can be defined to store current statistics with time stamps in
+CSV or Sqlite formats.
 
 The **command line interface** (CLI) can be run from the computer console. It
 will read and compile the configuration file, execute the scenario, and display

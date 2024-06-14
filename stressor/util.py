@@ -11,6 +11,7 @@ import sys
 import types
 import warnings
 from datetime import datetime
+from typing import NewType
 from urllib.parse import urljoin, urlparse
 
 from dateutil.parser import isoparse
@@ -50,6 +51,10 @@ class StressorError(RuntimeError):
     """Base class for all exception that we deliberatly throw."""
 
 
+class TerminatingStressorError(SystemExit):
+    """Base class for all exception that we deliberatly throw to exit the app."""
+
+
 class NO_DEFAULT:
     """Used as default parameter to distinguish from `None`."""
 
@@ -71,6 +76,8 @@ class NO_DEFAULT:
 #         if cls not in cls._instances:
 #             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
 #         return cls._instances[cls]
+
+TContextPath = NewType("TContextPath", str)
 
 
 class _VOID_SEGMENT:
@@ -307,7 +314,7 @@ def _check_arg(argument, types, condition, accept_none):
         raise ValueError(f"Invalid argument value: {type(argument)} {argument}")
 
 
-def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
+def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False) -> None:
     """Check if `argument` has the expected type and value.
 
     **Note:** the exception's traceback is manipulated, so that the back frame

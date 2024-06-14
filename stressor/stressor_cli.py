@@ -75,7 +75,7 @@ def handle_init_command(parser, args):
     if args.opts:
         if not os.path.isfile(args.opts):
             parser.error(f"File not found: {args.opts}")
-        with open(args.opts) as f:
+        with open(args.opts, "rt") as f:
             opts = yaml.safe_load(f)
 
     opts.update(
